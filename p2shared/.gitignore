@@ -4,5 +4,5 @@
 # Ignore Gradle build output directory
 build
 /.classpath
-/.settings/
 /.project
+/.settings/

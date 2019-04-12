@@ -20,7 +20,6 @@ class FrameworkLauncher implements Serializable {
 	val static logger = LoggerFactory.getLogger(FrameworkLauncher)
 	val File frameworkStorage
 	val Iterable<String> extraSystemPackage
-		
 
 	def void createFramework(Iterable<File> bundles, Iterable<File> bundlesToRun) {
 		instantiateFramework() => [
@@ -100,12 +99,12 @@ class FrameworkLauncher implements Serializable {
 	}
 
 	def private void installBundles(BundleContext ctx, Iterable<File> bundleFiles) {
-		bundleFiles.forEach [ bf |
+		bundleFiles.map[it.toURI.toURL.toString].forEach [ loc |
 			try {
-				val b = ctx.installBundle(bf.toURI.toURL.toString.trim)
+				val b = ctx.installBundle(loc)
 				logger.info("installed status: {}, bundle: {}", b.formatState, b)
 			} catch (Exception e) {
-				logger.warn("failed install {} error:{}", bf.toURI.toURL.toString, e.message)
+				logger.error("failed install {} error:{}", loc, e.message)
 			}
 		]
 	}

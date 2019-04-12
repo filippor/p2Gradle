@@ -88,7 +88,13 @@ dependencies {
 	runtime("org.eclipse.platform:org.eclipse.equinox.p2.director:2.4.0")
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.director_2.4.0.v20180302-1057.jar"))
 	
-	runtime("org.eclipse.platform:org.eclipse.equinox.p2.director.app:1.1.0")
+	runtime("org.eclipse.platform:org.eclipse.equinox.p2.director.app:1.1.0"){
+		//TODO: exclude test
+		//org.ow2.sat4j:org.ow2.sat4j.core:2.3.5
+		//exclude(module = "org.ow2.sat4j.core")
+		//exclude(module = "org.sat4j.core")
+		//exclude(group = "org.ow2.sat4j")
+	}
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.director.app_1.1.0.v20180502-1549.jar"))
 	/**imported by ^^^^**/
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.sat4j.core_2.3.5.v201308161310.jar"))
@@ -170,7 +176,6 @@ dependencies {
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.identity_3.9.0.v20180426-1936.jar"))
 		
 	runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.filetransfer_5.0.100.v20180301-0132.jar"))
-
 	runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.provider.filetransfer_3.2.400.v20180306-0429.jar"))
 	runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.provider.filetransfer.httpclient4_1.1.300.v20180301-0132.jar"))
 	runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.provider.filetransfer.httpclient4.ssl_1.1.100.v20180301-0132.jar"))
