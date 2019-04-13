@@ -9,6 +9,7 @@ import java.util.function.Consumer
 import org.eclipse.xtend.lib.annotations.Data
 import org.osgi.framework.Bundle
 import org.osgi.framework.BundleContext
+import org.osgi.framework.BundleException
 import org.osgi.framework.Constants
 import org.osgi.framework.launch.Framework
 import org.osgi.framework.launch.FrameworkFactory
@@ -29,6 +30,7 @@ class FrameworkLauncher implements Serializable {
 				bundleContext => [
 					installBundles(bundles)
 					startBundles(bundlesToRun)
+					activateBundlesInWorkingOrder
 					if(logger.isWarnEnabled) checkAllBundles()
 				]
 			} finally {
@@ -80,6 +82,29 @@ class FrameworkLauncher implements Serializable {
 				}
 			} catch (Exception e) {
 				logger.warn("failed to start {} , {}", b, e.message)
+			}
+		]
+	}
+
+	def private activateBundlesInWorkingOrder(BundleContext it) {
+		// activate bundles which need to do work in their respective activator; stick to a working
+		// order (cf. bug 359787)
+		// TODO this order should come from the Configuration
+		tryActivateBundle("org.eclipse.equinox.ds");
+		tryActivateBundle("org.eclipse.equinox.registry");
+		tryActivateBundle("org.eclipse.core.net");
+	}
+
+	def private tryActivateBundle(BundleContext ctx, String symbolicName) {
+		ctx.bundles.forEach [ bundle |
+			if (symbolicName.equals(bundle.getSymbolicName())) {
+				try {
+					bundle.start(Bundle.START_TRANSIENT); // don't have OSGi remember the autostart
+					// setting; want to start these bundles
+					// manually to control the start order
+				} catch (BundleException e) {
+					logger.warn("Could not start bundle " + bundle.getSymbolicName(), e);
+				}
 			}
 		]
 	}

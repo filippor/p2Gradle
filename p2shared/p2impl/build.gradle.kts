@@ -27,6 +27,16 @@ dependencies {
 	/**imported by ^^^^**/
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.common_3.10.0.v20180412-1130.jar"))
 	
+	implementation("org.eclipse.platform:org.eclipse.equinox.p2.repository:2.4.0")
+	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.repository_2.4.0.v20180512-1128.jar"))
+	
+	runtime("org.eclipse.platform:org.eclipse.equinox.p2.artifact.repository:1.2.0")
+	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.artifact.repository_1.2.0.v20180413-0846.jar"))
+	/**imported by ^^^^**/
+	implementation("org.eclipse.platform:org.eclipse.equinox.p2.metadata:2.4.0")
+	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.metadata_2.4.0.v20180320-1220.jar"))
+	
+	
 	runtime("org.eclipse.ecf:org.apache.commons.codec:1.9.0.v20170208-1614")
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.apache.commons.codec_1.9.0.v20170208-1614.jar"))
 	
@@ -80,11 +90,6 @@ dependencies {
 	runtime("org.eclipse.platform:org.eclipse.equinox.launcher:1.5.0")
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.launcher_1.5.0.v20180512-1130.jar"))
 	
-	runtime("org.eclipse.platform:org.eclipse.equinox.p2.artifact.repository:1.2.0")
-	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.artifact.repository_1.2.0.v20180413-0846.jar"))
-	/**imported by ^^^^**/
-	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.metadata_2.4.0.v20180320-1220.jar"))
-	
 	runtime("org.eclipse.platform:org.eclipse.equinox.p2.director:2.4.0")
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.director_2.4.0.v20180302-1057.jar"))
 	
@@ -120,9 +125,6 @@ dependencies {
 		exclude(module = "org.eclipse.osgi")
 	}
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.publisher_1.5.0.v20180320-1332.jar"))
-	
-	runtime("org.eclipse.platform:org.eclipse.equinox.p2.repository:2.4.0")
-	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.repository_2.4.0.v20180512-1128.jar"))
 	
 	runtime("org.eclipse.platform:org.eclipse.equinox.p2.repository.tools:2.2.0")
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.repository.tools_2.2.0.v20180416-1436.jar"))
