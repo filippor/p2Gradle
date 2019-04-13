@@ -1,7 +1,7 @@
 tasks.register("run") {
 	group = "p2"
     dependsOn(gradle.includedBuild("p2test").task(":p2testNested:run"))
-    dependsOn(gradle.includedBuild("p2test").task(":run"))
+  //  dependsOn(gradle.includedBuild("p2test").task(":run"))
 }
 tasks.register("clean") {
   group = "build"

@@ -32,6 +32,10 @@ dependencies {
 	implementation("org.eclipse.platform:org.eclipse.equinox.p2.repository:2.4.0")
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.repository_2.4.0.v20180512-1128.jar"))
 	
+	implementation("org.eclipse.platform:org.eclipse.equinox.p2.engine:2.6.0")
+	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.engine_2.6.0.v20180409-1209.jar"))
+	
+	
 	runtime("org.eclipse.platform:org.eclipse.equinox.p2.artifact.repository:1.2.0")
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.artifact.repository_1.2.0.v20180413-0846.jar"))
 	/**imported by ^^^^**/
@@ -110,9 +114,6 @@ dependencies {
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.sat4j.core_2.3.5.v201308161310.jar"))
 	/**imported by ^^^^**/
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.sat4j.pb_2.3.5.v201404071733.jar"))
-	
-	runtime("org.eclipse.platform:org.eclipse.equinox.p2.engine:2.6.0")
-	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.engine_2.6.0.v20180409-1209.jar"))
 	
 	runtime("org.eclipse.platform:org.eclipse.equinox.p2.garbagecollector:1.1.0")
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.garbagecollector_1.1.0.v20180103-0918.jar"))
