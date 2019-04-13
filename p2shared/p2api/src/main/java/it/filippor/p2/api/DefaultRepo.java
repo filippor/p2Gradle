@@ -19,4 +19,8 @@ public class DefaultRepo {
     return file.toPath().resolve("p2").resolve("agent").toUri();
   }
 
+  public URI getRepoUri() {
+    return  file.toPath().resolve("p2").resolve("repo").toUri();
+  }
+
 }

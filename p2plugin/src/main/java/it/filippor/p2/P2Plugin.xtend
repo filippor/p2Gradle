@@ -18,8 +18,8 @@ class P2Plugin implements Plugin<Project> {
 
 		val frameworkStoragePath = prj.rootProject.buildDir.toPath.resolve("tmp").resolve("p2Framework").toFile
 		val p2ApiPackage = #{"it.filippor.p2.api"}
-
 		val p2FrameworkLauncher = new FrameworkLauncher(frameworkStoragePath, p2ApiPackage)
+
 
 		var tasks = prj.rootProject.tasks
 		val createFrameworkTask = if (tasks.exists[name.equals("createFramework")])
@@ -35,7 +35,7 @@ class P2Plugin implements Plugin<Project> {
 			t.group = "p2"
 			t.dependsOn += createFrameworkTask
 			t.doLast [
-				p2FrameworkLauncher.executeWithService(P2RepositoryManager) [
+				p2FrameworkLauncher.executeWithService(frameworkBundles,P2RepositoryManager) [
 					val Object result = resolve(new DefaultRepo(prj.buildDir),
 						"http://download.eclipse.org/releases/2019-03", "org.eclipse.core.resources",
 						"3.13.300.v20190218-2054")

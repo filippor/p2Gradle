@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
 	// This dependency is exported to consumers, that is to say found on their compile classpath.
-	compileOnly(project(":p2api"))
+	api(project(":p2api"))
 	compileOnly("org.osgi:osgi.annotation:7.0.0")
 	compileOnly("org.osgi:osgi.cmpn:7.0.0")
 	compileOnly("org.osgi:osgi.core:7.0.0")
@@ -187,7 +187,7 @@ dependencies {
 	
 	/** added to target project configuration to start it **/
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.apache.felix.scr_2.0.14.v20180117-1452.jar"))
-	//runtime("org.apache.felix:org.apache.felix.scr:2.1.16")
+	runtime("org.apache.felix:org.apache.felix.scr:2.1.16")
 
 	/** removed **/
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.osgi_3.13.0.v20180409-1500.jar"))

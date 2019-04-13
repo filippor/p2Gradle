@@ -27,5 +27,5 @@ dependencies{
 //	compile(kotlin("gradle-plugin", version = "1.3.21"))
 	compile ("org.eclipse.xtend:org.eclipse.xtend.lib:2.17.0")
 	compile("org.osgi:osgi.core:7.0.0")
-	runtime("org.eclipse.platform:org.eclipse.osgi:3.13.300")
+	compile("org.eclipse.platform:org.eclipse.osgi:3.13.300")
 }
