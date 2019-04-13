@@ -22,6 +22,8 @@ dependencies {
 	compileOnly("org.osgi:osgi.cmpn:7.0.0")
 	compileOnly("org.osgi:osgi.core:7.0.0")
 	
+	implementation("org.eclipse.platform:org.eclipse.equinox.p2.operations:2.5.0")
+	
 	implementation("org.eclipse.platform:org.eclipse.equinox.p2.core:2.5.0")
 	//implementation(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.core_2.5.0.v20180512-1128.jar"))
 	/**imported by ^^^^**/

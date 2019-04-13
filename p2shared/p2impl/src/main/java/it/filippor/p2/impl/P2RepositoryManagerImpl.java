@@ -1,15 +1,24 @@
 package it.filippor.p2.impl;
 
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.IProvisioningAgentProvider;
 import org.eclipse.equinox.p2.core.ProvisionException;
+import org.eclipse.equinox.p2.metadata.IArtifactKey;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
+import org.eclipse.equinox.p2.query.IQuery;
+import org.eclipse.equinox.p2.query.IQueryResult;
 import org.eclipse.equinox.p2.query.QueryUtil;
+import org.eclipse.equinox.p2.repository.artifact.ArtifactKeyQuery;
+import org.eclipse.equinox.p2.repository.artifact.IArtifactDescriptor;
+import org.eclipse.equinox.p2.repository.artifact.IArtifactRepository;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
+import org.eclipse.equinox.p2.repository.artifact.IArtifactRequest;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.osgi.framework.BundleContext;
@@ -43,15 +52,44 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
         .getService(IArtifactRepositoryManager.SERVICE_NAME);
 
       // define our repositories
-//      manager.createRepository(repo.getRepoUri(), "localRepo", "simpleRepository", null);
-//      manager.addRepository(repo.getRepoUri());
-//      artifactManager.addRepository(repo.getRepoUri());
+      // manager.createRepository(repo.getRepoUri(), "localRepo", "simpleRepository", null);
+//      manager.addRepository(URI.create(site));
+      artifactManager.addRepository(URI.create(site));
+      IArtifactRepository artifactRepo = artifactManager.loadRepository(URI.create(site), new NullProgressMonitor());
 
       // Load and query the metadata
-      IMetadataRepository   metadataRepo = manager.loadRepository(URI.create(site) , new NullProgressMonitor());
-      Set<IInstallableUnit> toInstall    = metadataRepo
-        .query(QueryUtil.createIUQuery(artifactId), new NullProgressMonitor())
+      IMetadataRepository   metadataRepo = manager.loadRepository(URI.create(site), new NullProgressMonitor());
+      Set<IInstallableUnit> toInstall    = metadataRepo.query(QueryUtil.createIUQuery(artifactId), new NullProgressMonitor())
         .toUnmodifiableSet();
+      
+      
+      
+      // Creating an operation
+      // InstallOperation installOperation = new InstallOperation(new ProvisioningSession(agent), toInstall);
+      // if (installOperation.resolveModal(new NullProgressMonitor()).isOK()) {
+      // Job job = installOperation.getProvisioningJob(new NullProgressMonitor());
+      // job.addJobChangeListener(new JobChangeAdapter() {
+      // public void done(IJobChangeEvent event) {agent.stop();}});
+      // job.schedule();
+      // }
+      toInstall.forEach(iu -> {
+        System.out.println(iu);
+        iu.getArtifacts().forEach(ar -> {
+          IArtifactDescriptor[] artifactDescriptors = artifactRepo.getArtifactDescriptors(ar);
+          for (IArtifactDescriptor ad : artifactDescriptors) {
+            System.out.println(ad.getProperties());
+            System.out.println(ad);
+//            OutputStream destination = System.out;
+//            IStatus status = artifactRepo.getArtifact(ad, destination, new NullProgressMonitor());
+//            System.out.println("Status " + status);
+          }
+//          IQuery<IArtifactKey>       query  = new ArtifactKeyQuery(ar);
+//          IQueryResult<IArtifactKey> result = artifactManager.query(query, new NullProgressMonitor());
+//          result.forEach(res -> {
+//            System.out.println("\t"+res);
+//          });
+        });
+      });
 
       return toInstall;
     } catch (ProvisionException e) {
