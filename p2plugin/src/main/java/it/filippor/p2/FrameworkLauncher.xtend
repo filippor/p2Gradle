@@ -12,28 +12,26 @@ import org.osgi.framework.BundleException
 import org.osgi.framework.Constants
 import org.osgi.framework.wiring.BundleRevision
 import org.slf4j.LoggerFactory
+import org.eclipse.osgi.internal.framework.EquinoxConfiguration
 
 @Data
 class FrameworkLauncher implements Serializable {
 	val static logger = LoggerFactory.getLogger(FrameworkLauncher)
 	val File frameworkStorage
 	val Iterable<String> extraSystemPackage
+	val Iterable<String> startBundlesSymbolicNames
 
 	transient File tempSecureStorage
 
-	def void createFramework(Iterable<File> bundles, Iterable<File> bundlesToRun) {
-		instantiateFramework(bundles)
-
+	def void createFramework(Iterable<File> bundles) {
+		initializeFramework(bundles)
 		try {
-			start()
-			val it = EclipseStarter.systemBundleContext
-//				installBundles(bundles)
-			if(logger.isWarnEnabled) checkAllBundles()
-			activateBundlesInWorkingOrder
-			startBundles(bundlesToRun)
+			startFramework()
+			val ctx = EclipseStarter.systemBundleContext
+			ctx.checkAllBundles()
 
 		} finally {
-			stop()
+			stopFramework()
 		}
 
 	}
@@ -45,57 +43,60 @@ class FrameworkLauncher implements Serializable {
 	}
 
 	def void executeWithServiceProvider(Iterable<File> bundles, Consumer<ServiceProvider> action) {
-		instantiateFramework(bundles)
+		initializeFramework(bundles)
 		try {
-			start()
+			startFramework()
 			var ServiceProvider serviceProvider = new ServiceProvider(EclipseStarter.systemBundleContext)
 			action.accept(serviceProvider)
 			serviceProvider.ungetAll()
 		} finally {
-			stop()
+			stopFramework()
 		}
 
 	}
 
-	def void stop() {
+	def void stopFramework() {
 		EclipseStarter.shutdown();
 		this.tempSecureStorage?.delete();
 	}
 
-	def start() {
+	def startFramework() {
 		if (!EclipseStarter.isRunning)
 			EclipseStarter.startup(getNonFrameworkArgs(), null);
+		val ctx = EclipseStarter.systemBundleContext
+		if (ctx === null)
+			logger.error("systemBundleContext is null")
+
+		startBundlesSymbolicNames.forEach [ sn |
+			ctx.tryActivateBundle(sn)
+		]
 	}
 
-	def private instantiateFramework(Iterable<File> bundles) {
+	def private initializeFramework(Iterable<File> bundles) {
 		var props = newHashMap(
-			EclipseStarter.PROP_INSTALL_AREA -> frameworkStorage.toURI.toURL.toString,
-			EclipseStarter.PROP_SYSPATH -> frameworkStorage.toPath.resolve("plugin").toUri.toURL.toString,
-			// "osgi.configuration.area"->frameworkStorage.toPath.resolve("configuration").toUri.toURL.toString
+			EquinoxConfiguration.PROP_USE_SYSTEM_PROPERTIES -> "false",
+//			EquinoxConfiguration.PROP_COMPATIBILITY_BOOTDELEGATION -> "false",
+			EquinoxConfiguration.PROP_CONTEXTCLASSLOADER_PARENT -> EquinoxConfiguration.CONTEXTCLASSLOADER_PARENT_FWK,
+			EclipseStarter.PROP_INSTALL_AREA -> frameworkStorage.toPath.resolve("install").toUri.toURL.toString,
+			EclipseStarter.PROP_SYSPATH -> frameworkStorage.toPath.resolve("syspath").toUri.toURL.toString,
+			Constants.FRAMEWORK_STORAGE -> frameworkStorage.toPath.resolve("storage").toUri.toURL.toString,
 			EclipseStarter.PROP_BUNDLES -> bundles.map[toBundleId].join(","),
 			Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA -> extraSystemPackage.join(";")
 		)
 		EclipseStarter.setInitialProperties(props);
-	}
 
-	def private activateBundlesInWorkingOrder(BundleContext it) {
-		// activate bundles which need to do work in their respective activator; stick to a working
-		// order (cf. bug 359787)
-		// TODO this order should come from the EquinoxRuntimeLocator
-		tryActivateBundle("org.eclipse.equinox.ds");
-		tryActivateBundle("org.eclipse.equinox.registry");
-		tryActivateBundle("org.eclipse.core.net");
 	}
 
 	def private tryActivateBundle(BundleContext ctx, String symbolicName) {
 		ctx.bundles.forEach [ bundle |
 			if (symbolicName.equals(bundle.getSymbolicName())) {
 				try {
+					logger.info("start {}", bundle)
 					bundle.start(Bundle.START_TRANSIENT); // don't have OSGi remember the autostart
 					// setting; want to start these bundles
 					// manually to control the start order
 				} catch (BundleException e) {
-					logger.warn("Could not start bundle " + bundle.getSymbolicName(), e);
+					logger.warn("Could not start bundle {} {}" , bundle.getSymbolicName(), e.message);
 				}
 			}
 		]
@@ -103,13 +104,12 @@ class FrameworkLauncher implements Serializable {
 
 	def String toBundleId(File file) {
 		"reference:" + file.toURI.toURL
-//		//TODO: resd from manifest
 //		file.name.replaceAll("[-|_][0-9]*\\.[0-9]*(?:\\.[0-9]*)?.*\\.jar$","")
 	}
 
 	def private String[] getNonFrameworkArgs() {
 		try {
-			val tmp = File.createTempFile("tycho", "secure_storage")
+			val tmp = File.createTempFile("p2store", "secure_storage")
 			this.tempSecureStorage = tmp;
 			tmp.deleteOnExit();
 
@@ -125,34 +125,16 @@ class FrameworkLauncher implements Serializable {
 			}
 			return nonFrameworkArgs
 		} catch (IOException e) {
-			throw new RuntimeException("Could not create Tycho secure store file in temp dir " +
+			throw new RuntimeException("Could not create P2 secure store file in temp dir " +
 				System.getProperty("java.io.tmpdir"), e);
 		}
-	}
-
-	def private void startBundles(BundleContext ctx, Iterable<File> startBundlesFile) {
-		startBundlesFile.map [ bf |
-			ctx.getBundle(bf.toURI.toURL.toString) ?: ctx.bundles.findFirst[location.endsWith(bf.name)] ?:
-				ctx.installBundle(bf.toURI.toURL.toString)
-		].filter [
-			!isFragment
-		].forEach [ b |
-			try {
-				b.start()
-				if (logger.isInfoEnabled) {
-					logger.info("started {} {} {}", b, b.formatState, b.formatServices)
-				}
-			} catch (Exception e) {
-				logger.warn("failed to start {} , {}", b, e.message)
-			}
-		]
 	}
 
 	def private void checkAllBundles(BundleContext ctx) {
 		ctx.bundles.filter [
 			!isFragment
 		].filter [ b |
-			// println(b.formatState+ b.bundleId + b.location)
+			logger.info("[{}]{} {}", b.bundleId, b.formatState, b.symbolicName)
 			! #[Bundle.RESOLVED, Bundle.STARTING, Bundle.ACTIVE].contains(b.state)
 		].forEach [ b |
 			try {

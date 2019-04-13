@@ -12,7 +12,6 @@ class CreateFramework extends DefaultTask {
 	var public FrameworkLauncher frameworkLauncher 
 	
 	var public Iterable<File> bundles = newArrayList
-	var public Iterable<File> bundlesToStart = newArrayList
 
 	@OutputDirectory
 	def getStoragePath() { frameworkLauncher.frameworkStorage }
@@ -23,13 +22,11 @@ class CreateFramework extends DefaultTask {
 	@InputFiles
 	def getBundles() { bundles }
 
-	@InputFiles
-	def getBundlesToStart() { bundlesToStart }
 
 	@TaskAction
 	def reCreateFramework() {
 		project.rootProject.delete(storagePath)
-		frameworkLauncher.createFramework(bundles, bundlesToStart)
+		frameworkLauncher.createFramework(bundles)
 	}
 
 }

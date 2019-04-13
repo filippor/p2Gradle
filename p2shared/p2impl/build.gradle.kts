@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
 	// This dependency is exported to consumers, that is to say found on their compile classpath.
-	api(project(":p2api"))
+	compileOnly(project(":p2api"))
 	compileOnly("org.osgi:osgi.annotation:7.0.0")
 	compileOnly("org.osgi:osgi.cmpn:7.0.0")
 	compileOnly("org.osgi:osgi.core:7.0.0")
@@ -36,6 +36,9 @@ dependencies {
 	implementation("org.eclipse.platform:org.eclipse.equinox.p2.metadata:2.4.0")
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.metadata_2.4.0.v20180320-1220.jar"))
 	
+	runtime("org.apache.felix:org.apache.felix.scr:2.1.16")
+	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.apache.felix.scr_2.0.14.v20180117-1452.jar"))
+
 	
 	runtime("org.eclipse.ecf:org.apache.commons.codec:1.9.0.v20170208-1614")
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.apache.commons.codec_1.9.0.v20170208-1614.jar"))
@@ -185,10 +188,8 @@ dependencies {
 	runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.ssl_1.2.100.v20180301-0132.jar"))
 	
 	
-	/** added to target project configuration to start it **/
-	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.apache.felix.scr_2.0.14.v20180117-1452.jar"))
-	runtime("org.apache.felix:org.apache.felix.scr:2.1.16")
-
+	
+	
 	/** removed **/
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.osgi_3.13.0.v20180409-1500.jar"))
 }

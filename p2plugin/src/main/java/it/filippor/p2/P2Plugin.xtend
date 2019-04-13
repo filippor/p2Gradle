@@ -13,13 +13,13 @@ class P2Plugin implements Plugin<Project> {
 	override void apply(Project prj) {
 
 		val frameworkBundles = prj.configurations.create(P2_FRAMEWORK_BUNDLES_CONFIG)
-		prj.dependencies.add(P2_FRAMEWORK_BUNDLES_CONFIG, "org.apache.felix:org.apache.felix.scr:2.1.16")
 		prj.dependencies.add(P2_FRAMEWORK_BUNDLES_CONFIG, "it.filippor.p2:p2impl:0.0.1")
 
 		val frameworkStoragePath = prj.rootProject.buildDir.toPath.resolve("tmp").resolve("p2Framework").toFile
 		val p2ApiPackage = #{"it.filippor.p2.api"}
-		val p2FrameworkLauncher = new FrameworkLauncher(frameworkStoragePath, p2ApiPackage)
-
+		val startBundlesSymbolicNames = #["org.eclipse.equinox.ds", "org.eclipse.equinox.registry",
+			"org.eclipse.core.net", "org.apache.felix.scr", "p2impl"]
+		val p2FrameworkLauncher = new FrameworkLauncher(frameworkStoragePath, p2ApiPackage, startBundlesSymbolicNames)
 
 		var tasks = prj.rootProject.tasks
 		val createFrameworkTask = if (tasks.exists[name.equals("createFramework")])
@@ -28,14 +28,13 @@ class P2Plugin implements Plugin<Project> {
 				tasks.register("createFramework", CreateFramework) [
 					frameworkLauncher = p2FrameworkLauncher
 					bundles = frameworkBundles
-					bundlesToStart = frameworkBundles.explictDeclaredDependencies
 				]
 
 		prj.getTasks().register("run") [ t |
 			t.group = "p2"
 			t.dependsOn += createFrameworkTask
 			t.doLast [
-				p2FrameworkLauncher.executeWithService(frameworkBundles,P2RepositoryManager) [
+				p2FrameworkLauncher.executeWithService(frameworkBundles, P2RepositoryManager) [
 					val Object result = resolve(new DefaultRepo(prj.buildDir),
 						"http://download.eclipse.org/releases/2019-03", "org.eclipse.core.resources",
 						"3.13.300.v20190218-2054")

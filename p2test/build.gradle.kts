@@ -24,7 +24,6 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("com.google.guava:guava:27.0.1-jre")
-    implementation("it.filippor.p2:p2impl:0.0.1")
 
     // Use JUnit test framework
     testImplementation("junit:junit:4.12")
