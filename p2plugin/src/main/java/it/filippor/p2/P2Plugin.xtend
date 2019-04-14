@@ -6,6 +6,9 @@ import it.filippor.p2.task.CreateFramework
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import java.net.URI
+import it.filippor.p2.api.Artifact
+import it.filippor.p2.api.Version
 
 class P2Plugin implements Plugin<Project> {
 	val public static P2_FRAMEWORK_BUNDLES_CONFIG = "p2frameworkBundles"
@@ -35,9 +38,14 @@ class P2Plugin implements Plugin<Project> {
 			t.dependsOn += createFrameworkTask
 			t.doLast [
 				p2FrameworkLauncher.executeWithService(frameworkBundles, P2RepositoryManager) [
-					val Object result = resolve(new DefaultRepo(prj.buildDir),
-						"http://download.eclipse.org/releases/2019-03", "org.eclipse.core.resources",
-						"3.13.300.v20190218-2054")
+
+					val result = it.resolve(
+						new DefaultRepo(prj.buildDir),
+						#{URI.create("http://download.eclipse.org/releases/2019-03")},
+						//"v20190218-2054"
+						#{new Artifact("org.eclipse.core.resources", new Version(3, 13, 300, "v20190218-2054"))},
+						null
+					)
 					t.logger.error("" + result)
 				]
 			]
