@@ -1,4 +1,4 @@
-package it.filippor.p2
+package it.filippor.p2.framework
 
 import java.util.List
 import org.osgi.framework.BundleContext

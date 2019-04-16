@@ -11,31 +11,27 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.equinox.internal.p2.metadata.OSGiVersion;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.IProvisioningAgentProvider;
 import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
 import org.eclipse.equinox.p2.metadata.IArtifactKey;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
-import org.eclipse.equinox.p2.metadata.Version;
 import org.eclipse.equinox.p2.operations.InstallOperation;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
 import org.eclipse.equinox.p2.query.IQuery;
-import org.eclipse.equinox.p2.query.IQueryResult;
 import org.eclipse.equinox.p2.query.QueryUtil;
 import org.eclipse.equinox.p2.repository.IRepositoryManager;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactDescriptor;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepository;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.artifact.IFileArtifactRepository;
-import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.VersionRange;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
@@ -70,7 +66,7 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
         .getService(IArtifactRepositoryManager.SERVICE_NAME);
       IMetadataRepositoryManager manager         = (IMetadataRepositoryManager) agent
         .getService(IMetadataRepositoryManager.SERVICE_NAME);
-    
+
       for (URI site : sites) {
         manager.addRepository(site);
         manager.loadRepository(site, mon.split(250));
@@ -79,16 +75,17 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
         artifactManager.loadRepository(site, mon.split(250));
       }
 
-      List<IQuery<IInstallableUnit>> queries = StreamSupport.stream(artifacts.spliterator(), false).map(artifact -> {
-        return QueryUtil.createIUQuery(artifact.getId()
-                                                         /*, toOsgiVersion(artifact.getVersion())*/
-                                                        );
+      List<IQuery<IInstallableUnit>> queries = StreamSupport.stream(artifacts.spliterator(), false).flatMap(artifact -> {
+        return Arrays
+          .asList(QueryUtil.createIUQuery(artifact.getId(), toVersion(artifact.getVersion())),
+                  QueryUtil.createIUQuery(artifact.getId(), toVersion(artifact.getVersion())))
+          .stream();
       }).collect(Collectors.toList());
 
       IQuery<IInstallableUnit> iuQuery = QueryUtil.createCompoundQuery(queries, false);
 
       Set<IInstallableUnit> toInstall = manager.query(iuQuery, mon.split(100)).toUnmodifiableSet();
-     
+
       Set<IInstallableUnit> notFoundIU = new HashSet<>();
       Set<File>             files      = getOrInstallFile(agent, mon.split(400), artifactManager, toInstall, notFoundIU);
 
@@ -103,6 +100,11 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
       if (agent != null)
         agent.stop();
     }
+  }
+
+  private org.eclipse.equinox.p2.metadata.VersionRange toVersion(VersionRange version) {
+
+    return org.eclipse.equinox.p2.metadata.VersionRange.create(version.toString());
   }
 
   private Set<File> getOrInstallFile(IProvisioningAgent agent, SubMonitor monitor, IArtifactRepositoryManager artifactManager,
@@ -130,6 +132,7 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
 
     Set<File> files = new HashSet<>();
     for (IInstallableUnit iu : toInstall) {
+
       for (IArtifactKey a : iu.getArtifacts()) {
         Set<File> foundInRepo = findInRepo(localRepos, a);
         if (monitor.isCanceled())
@@ -161,20 +164,21 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
     SubMonitor monitor           = SubMonitor.convert(parentMonitor, "get local repo", 100);
     URI[]      knownRepositories = artifactManager.getKnownRepositories(IRepositoryManager.REPOSITORIES_LOCAL);
     int        work4repo         = 100 / knownRepositories.length;
-    var        localRepos        = Arrays.asList(knownRepositories).stream().map(uri -> {
-                                   try {
-                                     IArtifactRepository loadRepository;
-                                     loadRepository = artifactManager.loadRepository(uri, monitor.split(work4repo));
-                                     if (loadRepository instanceof IFileArtifactRepository) {
-                                       return (IFileArtifactRepository) loadRepository;
-                                     }
-                                   } catch (ProvisionException e) {
-                                     sneakyThrow(e);
-                                   }
-                                   return null;
-                                 }).filter(r -> {
-                                   return r != null;
-                                 }).collect(Collectors.toList());
+
+    var localRepos = Arrays.asList(knownRepositories).stream().map(uri -> {
+      try {
+        IArtifactRepository loadRepository;
+        loadRepository = artifactManager.loadRepository(uri, monitor.split(work4repo));
+        if (loadRepository instanceof IFileArtifactRepository) {
+          return (IFileArtifactRepository) loadRepository;
+        }
+      } catch (ProvisionException e) {
+        sneakyThrow(e);
+      }
+      return null;
+    }).filter(r -> {
+      return r != null;
+    }).collect(Collectors.toList());
     return localRepos;
   }
 
@@ -230,24 +234,24 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
   }
 
   private Artifact toArtifact(IInstallableUnit iu) {
-    return new Artifact(iu.getId(), toVersion(iu.getVersion()));
+    return new Artifact(iu.getId(), new VersionRange(iu.getVersion().getOriginal()));
   }
 
-  private it.filippor.p2.api.Version toVersion(Version v) {
-    Comparable<?>[] seg = new Comparable<?>[] { null, null, null };
-    for (int i = 0; i < v.getSegmentCount() && i < seg.length; i++) {
-      seg[i] = v.getSegment(i);
-    }
-    return new it.filippor.p2.api.Version(toInt(seg[0]), toInt(seg[1]), toInt(seg[2]), seg[3]);
-  }
+  // private it.filippor.p2.api.Version toVersion(Version v) {
+  // Comparable<?>[] seg = new Comparable<?>[] { null, null, null };
+  // for (int i = 0; i < v.getSegmentCount() && i < seg.length; i++) {
+  // seg[i] = v.getSegment(i);
+  // }
+  // return new it.filippor.p2.api.Version(toInt(seg[0]), toInt(seg[1]), toInt(seg[2]), seg[3]);
+  // }
 
-  private int toInt(Comparable<?> seg) {
-    if (seg == null)
-      return 0;
-    return Integer.valueOf((String) seg);
-  }
+  // private int toInt(Comparable<?> seg) {
+  // if (seg == null)
+  // return 0;
+  // return Integer.valueOf((String) seg);
+  // }
 
-  private static Version toOsgiVersion(it.filippor.p2.api.Version v) {
-    return new OSGiVersion(v.major, v.minor, v.minor, v.qualifier);
-  }
+  // private static Version toOsgiVersion(it.filippor.p2.api.Version v) {
+  // return new OSGiVersion(v.major, v.minor, v.minor, v.qualifier);
+  // }
 }

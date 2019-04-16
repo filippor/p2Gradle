@@ -1,4 +1,4 @@
-package it.filippor.p2.impl;
+package it.filippor.p2.impl.samples;
 
 import org.eclipse.equinox.p2.metadata.IArtifactKey;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;

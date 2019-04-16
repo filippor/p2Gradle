@@ -16,5 +16,6 @@ repositories {
 }
 
 dependencies {
+	api("org.osgi:osgi.core:7.0.0")
 	compileOnly("org.osgi:osgi.annotation:7.0.0")
 }

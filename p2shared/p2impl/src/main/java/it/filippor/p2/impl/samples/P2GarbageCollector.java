@@ -1,3 +1,4 @@
+package it.filippor.p2.impl.samples;
 //package it.filippor.p2.impl;
 //
 //import org.eclipse.equinox.internal.p2.garbagecollector.GarbageCollector;

@@ -1,9 +1,10 @@
-package it.filippor.p2
+package it.filippor.p2.util
 
 import it.filippor.p2.api.ProgressMonitor
 import it.filippor.p2.task.TaskWithProgress
 import org.gradle.internal.logging.progress.ProgressLogger
 import org.gradle.internal.logging.progress.ProgressLoggerFactory
+import org.gradle.api.logging.Logger
 
 class ProgressMonitorWrapper implements ProgressMonitor {
 	int totalWork = 0
@@ -15,9 +16,11 @@ class ProgressMonitorWrapper implements ProgressMonitor {
 	boolean cancelled
 
 	ProgressLogger progress
-	
+
+	Logger log
 
 	new(TaskWithProgress task) {
+		this.log = task.logger
 		progressFactory = task.progressLoggerFactory
 	}
 
@@ -27,7 +30,7 @@ class ProgressMonitorWrapper implements ProgressMonitor {
 
 		this.totalWork = totalWork;
 		subName = "init"
-		progress.start(name,subName)
+		progress.start(name, subName)
 	}
 
 	override done() {
@@ -53,13 +56,14 @@ class ProgressMonitorWrapper implements ProgressMonitor {
 
 	override subTask(String name) {
 		subName = name
+		log.info(name)
 //		progress.start(taskName,subName)
 	}
 
 	override worked(int work) {
 		this.worked += work
 		var msg = '''«taskName»:«subName» «100*worked/totalWork»%'''
-			progress.progress(msg)
+		progress.progress(msg)
 	}
 
 }

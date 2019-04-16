@@ -1,4 +1,4 @@
-package it.filippor.p2.impl;
+package it.filippor.p2.impl.samples;
 
 import java.io.File;
 import java.net.URI;

@@ -1,10 +1,14 @@
 package it.filippor.p2.api;
 
-public class Artifact {
-  String id;
-  Version version;
+import org.osgi.framework.VersionRange;
 
-  public Artifact(String id, Version version) {
+public class Artifact {
+
+  String       id;
+  VersionRange version;
+
+  public Artifact(String id, VersionRange version) {
+    super();
     this.id      = id;
     this.version = version;
   }
@@ -17,11 +21,11 @@ public class Artifact {
     this.id = id;
   }
 
-  public Version getVersion() {
+  public VersionRange getVersion() {
     return version;
   }
 
-  public void setVersion(Version version) {
+  public void setVersion(VersionRange version) {
     this.version = version;
   }
 

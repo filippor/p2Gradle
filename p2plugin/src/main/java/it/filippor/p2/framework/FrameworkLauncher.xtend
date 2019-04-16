@@ -1,10 +1,11 @@
-package it.filippor.p2
+package it.filippor.p2.framework
 
 import java.io.File
 import java.io.IOException
 import java.io.Serializable
 import java.util.function.Consumer
 import org.eclipse.core.runtime.adaptor.EclipseStarter
+import org.eclipse.osgi.internal.framework.EquinoxConfiguration
 import org.eclipse.xtend.lib.annotations.Data
 import org.osgi.framework.Bundle
 import org.osgi.framework.BundleContext
@@ -12,7 +13,6 @@ import org.osgi.framework.BundleException
 import org.osgi.framework.Constants
 import org.osgi.framework.wiring.BundleRevision
 import org.slf4j.LoggerFactory
-import org.eclipse.osgi.internal.framework.EquinoxConfiguration
 
 @Data
 class FrameworkLauncher implements Serializable {
@@ -20,24 +20,28 @@ class FrameworkLauncher implements Serializable {
 	val File frameworkStorage
 	val Iterable<String> extraSystemPackage
 	val Iterable<String> startBundlesSymbolicNames
+	val Iterable<File> bundles
 
 	transient File tempSecureStorage
 
-	def void createFramework(Iterable<File> bundles) {
-		initializeFramework(bundles)
+	def void startFramework() {
+		setInitialProperty()
+		
+		if (!EclipseStarter.isRunning)
+			EclipseStarter.startup(getNonFrameworkArgs(), null);
+		val ctx = EclipseStarter.systemBundleContext
+		if (ctx === null)
+			logger.error("systemBundleContext is null")
 
-		startFramework()
+		startBundlesSymbolicNames.forEach [ sn |
+			ctx.tryActivateBundle(sn)
+		]
 		EclipseStarter.systemBundleContext.checkAllBundles()
 
 	}
 
-	def <T> void executeWithService( Class<T> clazz, Consumer<T> action) {
-		executeWithServiceProvider() [
-			action.accept(getService(clazz))
-		]
-	}
 
-	def void executeWithServiceProvider( Consumer<ServiceProvider> action) {
+	def void executeWithServiceProvider(Consumer<ServiceProvider> action) {
 		var ServiceProvider serviceProvider = new ServiceProvider(EclipseStarter.systemBundleContext)
 		action.accept(serviceProvider)
 		serviceProvider.ungetAll()
@@ -49,19 +53,9 @@ class FrameworkLauncher implements Serializable {
 		this.tempSecureStorage?.delete();
 	}
 
-	def startFramework() {
-		if (!EclipseStarter.isRunning)
-			EclipseStarter.startup(getNonFrameworkArgs(), null);
-		val ctx = EclipseStarter.systemBundleContext
-		if (ctx === null)
-			logger.error("systemBundleContext is null")
+	
 
-		startBundlesSymbolicNames.forEach [ sn |
-			ctx.tryActivateBundle(sn)
-		]
-	}
-
-	def private initializeFramework(Iterable<File> bundles) {
+	def private setInitialProperty() {
 		var props = newHashMap(
 			EquinoxConfiguration.PROP_USE_SYSTEM_PROPERTIES -> "false",
 //			EquinoxConfiguration.PROP_COMPATIBILITY_BOOTDELEGATION -> "false",
@@ -77,7 +71,7 @@ class FrameworkLauncher implements Serializable {
 	}
 
 	def private tryActivateBundle(BundleContext ctx, String symbolicName) {
-		ctx.bundles.forEach [ bundle |
+		ctx.bundles.filter[!isFragment].forEach [ bundle |
 			if (symbolicName.equals(bundle.getSymbolicName())) {
 				try {
 					logger.info("start {}", bundle)
@@ -152,6 +146,10 @@ class FrameworkLauncher implements Serializable {
 
 	def static isFragment(Bundle bundle) {
 		return (bundle.adapt(BundleRevision).getTypes().bitwiseAnd(BundleRevision.TYPE_FRAGMENT)) != 0
+	}
+	
+	def isStarted() {
+		return EclipseStarter.isRunning
 	}
 
 }
