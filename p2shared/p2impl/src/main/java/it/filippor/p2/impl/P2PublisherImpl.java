@@ -40,12 +40,12 @@ public class P2PublisherImpl {
     // Create the metadata repository. This will fail if a repository already exists here
     IMetadataRepository metadataRepository = new SimpleMetadataRepositoryFactory()
       .create(new URI("file:/location to/repository"), "Sample Metadata Repository",
-              MetadataRepositoryManager.TYPE_SIMPLE_REPOSITORY, Collections.EMPTY_MAP);
+              MetadataRepositoryManager.TYPE_SIMPLE_REPOSITORY, Collections.emptyMap());
 
     // Create the artifact repository. This will fail if a repository already exists here
     IArtifactRepository artifactRepository = new SimpleArtifactRepositoryFactory()
       .create(new URI("file:/location to/repository"), "Sample Artifact Repository",
-              ArtifactRepositoryManager.TYPE_SIMPLE_REPOSITORY, Collections.EMPTY_MAP);
+              ArtifactRepositoryManager.TYPE_SIMPLE_REPOSITORY, Collections.emptyMap());
 
     result.setMetadataRepository(metadataRepository);
     result.setArtifactRepository(artifactRepository);

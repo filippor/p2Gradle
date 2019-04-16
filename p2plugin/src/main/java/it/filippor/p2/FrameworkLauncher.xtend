@@ -25,37 +25,26 @@ class FrameworkLauncher implements Serializable {
 
 	def void createFramework(Iterable<File> bundles) {
 		initializeFramework(bundles)
-		try {
-			startFramework()
-			val ctx = EclipseStarter.systemBundleContext
-			ctx.checkAllBundles()
 
-		} finally {
-			stopFramework()
-		}
+		startFramework()
+		EclipseStarter.systemBundleContext.checkAllBundles()
 
 	}
 
-	def <T> void executeWithService(Iterable<File> bundles, Class<T> clazz, Consumer<T> action) {
-		executeWithServiceProvider(bundles) [
+	def <T> void executeWithService( Class<T> clazz, Consumer<T> action) {
+		executeWithServiceProvider() [
 			action.accept(getService(clazz))
 		]
 	}
 
-	def void executeWithServiceProvider(Iterable<File> bundles, Consumer<ServiceProvider> action) {
-		initializeFramework(bundles)
-		try {
-			startFramework()
-			var ServiceProvider serviceProvider = new ServiceProvider(EclipseStarter.systemBundleContext)
-			action.accept(serviceProvider)
-			serviceProvider.ungetAll()
-		} finally {
-			stopFramework()
-		}
-
+	def void executeWithServiceProvider( Consumer<ServiceProvider> action) {
+		var ServiceProvider serviceProvider = new ServiceProvider(EclipseStarter.systemBundleContext)
+		action.accept(serviceProvider)
+		serviceProvider.ungetAll()
 	}
 
 	def void stopFramework() {
+		println("stop framework")
 		EclipseStarter.shutdown();
 		this.tempSecureStorage?.delete();
 	}
@@ -96,7 +85,7 @@ class FrameworkLauncher implements Serializable {
 					// setting; want to start these bundles
 					// manually to control the start order
 				} catch (BundleException e) {
-					logger.warn("Could not start bundle {} {}" , bundle.getSymbolicName(), e.message);
+					logger.warn("Could not start bundle {} {}", bundle.getSymbolicName(), e.message);
 				}
 			}
 		]

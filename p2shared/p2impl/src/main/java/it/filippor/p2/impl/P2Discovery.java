@@ -1,6 +1,5 @@
 package it.filippor.p2.impl;
 
-import org.eclipse.equinox.internal.provisional.p2.director.IDirector;
 import org.eclipse.equinox.p2.metadata.IArtifactKey;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
 import org.eclipse.equinox.p2.metadata.IInstallableUnitPatch;
@@ -69,7 +68,7 @@ public class P2Discovery {
       // Query for all IU's affected by a patch:
 
       IQuery<IInstallableUnit> query = QueryUtil.createMatchQuery("$0.exists(rcs | rcs.all(rc | this ~= rc))",
-                                                                  patch.getApplicabilityScope());
+                                                                  (Object)patch.getApplicabilityScope());
     }
   }
 
@@ -92,7 +91,6 @@ public class P2Discovery {
     IQuery<IInstallableUnit> query = QueryUtil.createQuery(latest, "test.bundle", "org.eclipse.equinox.p2.type.group",
                                                            Boolean.TRUE);
 
-    IDirector director = null;
   }
   // private void test() {
   // Catalog catalog = new Catalog();
