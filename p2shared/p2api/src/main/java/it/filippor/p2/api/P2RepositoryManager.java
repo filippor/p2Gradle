@@ -8,7 +8,7 @@ import it.filippor.p2.api.DefaultRepo;
 public interface P2RepositoryManager {
 
 
-  public ResolveResult resolve(DefaultRepo repo, Iterable<URI> sites, Iterable<Artifact> artifacts, ProgressMonitor monitor);
+  public ResolveResult resolve(DefaultRepo repo, Iterable<URI> sites, Iterable<Artifact> artifacts,boolean transitive ,ProgressMonitor monitor);
 
 
 }

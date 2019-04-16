@@ -24,10 +24,11 @@ class P2Plugin implements Plugin<Project> {
 			doLastOnFramework[ it,serviceProvider|
 				var repoManager = serviceProvider.getService(P2RepositoryManager)
 				val result = repoManager.resolve(
-					new DefaultRepo(prj.buildDir),
+					new DefaultRepo(prj.rootProject.buildDir),
 					#{URI.create("http://download.eclipse.org/releases/2019-03")},
 					// "v20190218-2054"
 					#{new Artifact("org.eclipse.core.resources",new VersionRange("3.13.300.v20190218-2054"))},
+					true,
 					monitor
 				)
 				logger.error("" + result)

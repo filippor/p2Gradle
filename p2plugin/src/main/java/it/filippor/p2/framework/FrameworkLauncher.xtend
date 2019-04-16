@@ -2,7 +2,7 @@ package it.filippor.p2.framework
 
 import java.io.File
 import java.io.IOException
-import java.io.Serializable
+import java.util.Arrays
 import java.util.function.Consumer
 import org.eclipse.core.runtime.adaptor.EclipseStarter
 import org.eclipse.osgi.internal.framework.EquinoxConfiguration
@@ -14,8 +14,10 @@ import org.osgi.framework.Constants
 import org.osgi.framework.wiring.BundleRevision
 import org.slf4j.LoggerFactory
 
-@Data
-class FrameworkLauncher implements Serializable {
+@Data( )
+
+ class FrameworkLauncher {
+	
 	val static logger = LoggerFactory.getLogger(FrameworkLauncher)
 	val File frameworkStorage
 	val Iterable<String> extraSystemPackage
@@ -71,7 +73,7 @@ class FrameworkLauncher implements Serializable {
 	}
 
 	def private tryActivateBundle(BundleContext ctx, String symbolicName) {
-		ctx.bundles.filter[!isFragment].forEach [ bundle |
+		Arrays.asList(ctx.bundles).filter[!isFragment].forEach [ bundle |
 			if (symbolicName.equals(bundle.getSymbolicName())) {
 				try {
 					logger.info("start {}", bundle)
@@ -114,7 +116,7 @@ class FrameworkLauncher implements Serializable {
 	}
 
 	def private void checkAllBundles(BundleContext ctx) {
-		ctx.bundles.filter [
+		Arrays.asList(ctx.bundles).filter [
 			!isFragment
 		].filter [ b |
 			logger.info("[{}]{} {}", b.bundleId, b.formatState, b.symbolicName)
