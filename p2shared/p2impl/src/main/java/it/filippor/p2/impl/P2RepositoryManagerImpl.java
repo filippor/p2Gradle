@@ -3,6 +3,7 @@ package it.filippor.p2.impl;
 import java.io.File;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -48,7 +49,8 @@ import it.filippor.p2.api.ResolveResult;
 @Component()
 public class P2RepositoryManagerImpl implements P2RepositoryManager {
 
-  private static final String PROFILE = "my_install1";
+  private static final String PROFILE = "my_install";
+  private static int run = 0;
   BundleContext               ctx;
 
   @Activate
@@ -57,7 +59,7 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
   }
 
   @Override
-  public ResolveResult resolve(DefaultRepo repo, Iterable<URI> sites, Iterable<Artifact> artifacts, boolean transitive,
+  public ResolveResult resolve(DefaultRepo repo, Iterable<URI> sites, Collection<Artifact> artifacts, boolean transitive,
                                ProgressMonitor monitor) {
 
     IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
@@ -89,6 +91,8 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
       IQuery<IInstallableUnit> iuQuery = QueryUtil.createCompoundQuery(queries, false);
 
       Set<IInstallableUnit> toInstall = manager.query(iuQuery, mon.split(100)).toSet();
+      if(artifacts.size() != toInstall.size())
+        throw new RuntimeException("cannot find some element");
       if (transitive) {
         IExpression matchesRequirementsExpression = ExpressionUtil.parse("$0.exists(r | this ~= r)");
 
@@ -198,13 +202,14 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
     // Creating an operation
     InstallOperation installOperation = new InstallOperation(new ProvisioningSession(agent), toInstall);
     IProfileRegistry profileRegistry  = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
-    if (profileRegistry.getProfile(PROFILE) == null) {
+    String profile = PROFILE + ++run;
+    if (profileRegistry.getProfile(profile) == null) {
       Map<String, String> props = new HashMap<>();
       props.put("org.eclipse.equinox.p2.roaming", "true");
-      profileRegistry.addProfile(PROFILE, props);
+      profileRegistry.addProfile(profile, props);
 
     }
-    installOperation.setProfileId(PROFILE);
+    installOperation.setProfileId(profile);
 
     Set<File> files = new HashSet<File>();
     monitor.checkCanceled();

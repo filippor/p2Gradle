@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory
 	}
 
 	def void stopFramework() {
-		println("stop framework")
 		EclipseStarter.shutdown();
 		this.tempSecureStorage?.delete();
 	}
