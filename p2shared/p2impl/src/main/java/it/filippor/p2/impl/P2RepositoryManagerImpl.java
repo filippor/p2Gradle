@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
@@ -40,7 +39,7 @@ import org.osgi.framework.VersionRange;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
-import it.filippor.p2.api.Artifact;
+import it.filippor.p2.api.Bundle;
 import it.filippor.p2.api.DefaultRepo;
 import it.filippor.p2.api.P2RepositoryManager;
 import it.filippor.p2.api.ProgressMonitor;
@@ -50,7 +49,7 @@ import it.filippor.p2.api.ResolveResult;
 public class P2RepositoryManagerImpl implements P2RepositoryManager {
 
   private static final String PROFILE = "my_install";
-  private static int run = 0;
+  private static int          run     = 0;
   BundleContext               ctx;
 
   @Activate
@@ -59,8 +58,8 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
   }
 
   @Override
-  public ResolveResult resolve(DefaultRepo repo, Iterable<URI> sites, Collection<Artifact> artifacts, boolean transitive,
-                               ProgressMonitor monitor) {
+  public ResolveResult resolve(DefaultRepo repo, Iterable<URI> sites, Collection<Bundle> bundles, boolean transitive,
+                               boolean offLine, ProgressMonitor monitor) {
 
     IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
 
@@ -76,23 +75,24 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
       IMetadataRepositoryManager manager         = (IMetadataRepositoryManager) agent
         .getService(IMetadataRepositoryManager.SERVICE_NAME);
 
-      for (URI site : sites) {
-        manager.addRepository(site);
-        manager.loadRepository(site, mon.split(200));
+      if (!offLine) {
+        for (URI site : sites) {
+          manager.addRepository(site);
+          manager.loadRepository(site, mon.split(200));
 
-        artifactManager.addRepository(site);
-        artifactManager.loadRepository(site, mon.split(200));
+          artifactManager.addRepository(site);
+          artifactManager.loadRepository(site, mon.split(200));
+        }
       }
 
-      List<IQuery<IInstallableUnit>> queries = StreamSupport.stream(artifacts.spliterator(), false).map(artifact -> {
-        return QueryUtil.createIUQuery(artifact.getId(), toVersion(artifact.getVersion()));
-      }).collect(Collectors.toList());
+      Set<IInstallableUnit> toInstall = bundles.stream().flatMap(bundle -> {
+        IQuery<IInstallableUnit> iuQuery = QueryUtil.createIUQuery(bundle.getId(), toVersion(bundle.getVersion()));
+        Set<IInstallableUnit>    set     = manager.query(iuQuery, mon.split(100 / bundles.size())).toUnmodifiableSet();
+        if (set.isEmpty())
+          throw new IllegalArgumentException(bundle + " not found");
+        return set.stream();
+      }).collect(Collectors.toSet());
 
-      IQuery<IInstallableUnit> iuQuery = QueryUtil.createCompoundQuery(queries, false);
-
-      Set<IInstallableUnit> toInstall = manager.query(iuQuery, mon.split(100)).toSet();
-      if(artifacts.size() != toInstall.size())
-        throw new RuntimeException("cannot find some element");
       if (transitive) {
         IExpression matchesRequirementsExpression = ExpressionUtil.parse("$0.exists(r | this ~= r)");
 
@@ -107,9 +107,9 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
 
       mon.done();
 
-      return new ResolveResult(files, toArtifact(notFoundIU));
+      return new ResolveResult(files, toBundle(notFoundIU));
     } catch (Exception e) {
-      e.printStackTrace();
+      // e.printStackTrace();
       sneakyThrow(e);
       return null;
     } finally {
@@ -202,7 +202,7 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
     // Creating an operation
     InstallOperation installOperation = new InstallOperation(new ProvisioningSession(agent), toInstall);
     IProfileRegistry profileRegistry  = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
-    String profile = PROFILE + ++run;
+    String           profile          = PROFILE + ++run;
     if (profileRegistry.getProfile(profile) == null) {
       Map<String, String> props = new HashMap<>();
       props.put("org.eclipse.equinox.p2.roaming", "true");
@@ -246,12 +246,12 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
     throw (E) e;
   }
 
-  private Iterable<Artifact> toArtifact(Set<IInstallableUnit> notFoundIU) {
-    return notFoundIU.stream().map(this::toArtifact).collect(Collectors.toSet());
+  private Iterable<Bundle> toBundle(Set<IInstallableUnit> notFoundIU) {
+    return notFoundIU.stream().map(this::toBundle).collect(Collectors.toSet());
   }
 
-  private Artifact toArtifact(IInstallableUnit iu) {
-    return new Artifact(iu.getId(), new VersionRange(iu.getVersion().getOriginal()));
+  private Bundle toBundle(IInstallableUnit iu) {
+    return new Bundle(iu.getId(), new VersionRange(iu.getVersion().getOriginal()));
   }
 
 }

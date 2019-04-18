@@ -2,12 +2,12 @@ package it.filippor.p2.api;
 
 import org.osgi.framework.VersionRange;
 
-public class Artifact {
+public class Bundle {
 
   String       id;
   VersionRange version;
 
-  public Artifact(String id, VersionRange version) {
+  public Bundle(String id, VersionRange version) {
     super();
     this.id      = id;
     this.version = version;
@@ -46,7 +46,7 @@ public class Artifact {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    Artifact other = (Artifact) obj;
+    Bundle other = (Bundle) obj;
     if (id == null) {
       if (other.id != null)
         return false;
@@ -58,6 +58,11 @@ public class Artifact {
     } else if (!version.equals(other.version))
       return false;
     return true;
+  }
+
+  @Override
+  public String toString() {
+    return "Bundle [id=" + id + ", version=" + version + "]";
   }
 
 }
