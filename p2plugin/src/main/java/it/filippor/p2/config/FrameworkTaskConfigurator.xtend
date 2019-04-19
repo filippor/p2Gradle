@@ -1,5 +1,6 @@
 package it.filippor.p2.config
 
+import it.filippor.p2.api.Bundle
 import it.filippor.p2.api.DefaultRepo
 import it.filippor.p2.api.P2RepositoryManager
 import it.filippor.p2.framework.FrameworkLauncher
@@ -8,11 +9,10 @@ import it.filippor.p2.task.FileProviderTask
 import it.filippor.p2.util.ProgressMonitorWrapper
 import java.io.File
 import java.net.URI
+import java.util.Arrays
 import java.util.function.BiConsumer
 import org.gradle.api.Project
 import org.gradle.api.Task
-import java.util.Arrays
-import it.filippor.p2.api.Bundle
 
 class FrameworkTaskConfigurator {
 	val public static P2_FRAMEWORK_BUNDLES_CONFIG = "p2frameworkBundles"
@@ -60,8 +60,11 @@ class FrameworkTaskConfigurator {
 		new DefaultRepo(project.rootProject.buildDir)
 	}
 	//#{new Artifact("org.eclipse.core.resources", new VersionRange("3.13.300.v20190218-2054"))}
-	def p2Bundles(Bundle... artifacts){
-		var resolve = project.tasks.register("resolveP2"+artifacts, FileProviderTask) [
+	def p2Bundles( Bundle... bundles){
+		p2Bundles(true,bundles)
+	}
+	def p2Bundles(boolean transitive, Bundle... bundles){
+		var resolve = project.tasks.register("resolveP2"+bundles, FileProviderTask) [
 			p2FrameworkLauncher = this.p2FrameworkLauncher
 			outputFileProvider = [ it, serviceProvider |
 				val monitor = new ProgressMonitorWrapper(it)
@@ -69,13 +72,12 @@ class FrameworkTaskConfigurator {
 				val result = repoManager.resolve(
 					defaultRepo,
 					updateSites,
-					Arrays.asList(artifacts),
-					true,
-					false,
+					Arrays.asList(bundles),
+					transitive,
 					monitor
 				)
 				logger.info("" + result)
-				return result.files
+				return result
 			]
 		]
 		resolve.configure[ dependsOn += startFrameworkTask]

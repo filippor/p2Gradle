@@ -14,7 +14,9 @@ class P2Plugin implements Plugin<Project> {
 		prj.repositories.add(prj.repositories.mavenCentral)
 
 		val extension taskConfigurator = new FrameworkTaskConfigurator(prj,
-			#{URI.create("http://download.eclipse.org/releases/2019-03")})
+			#{URI.create("http://download.eclipse.org/releases/2019-03")
+				,URI.create("http://download.eclipse.org/releases/2019-06")
+			})
 
 		if(prj.configurations.findByName("api")===null)prj.configurations.create("api")
 		prj.dependencies.add("api", p2Bundles(
