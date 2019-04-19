@@ -18,3 +18,7 @@ tasks.register("build") {
       dependsOn(gradle.includedBuild("p2plugin").task(":build"))
       dependsOn(gradle.includedBuild("p2test").task(":build"))
 }
+tasks.register("publish") {
+  group = "build"
+      dependsOn(gradle.includedBuild("p2test").task(":publish"))
+}

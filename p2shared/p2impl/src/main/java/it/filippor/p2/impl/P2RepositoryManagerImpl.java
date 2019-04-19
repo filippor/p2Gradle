@@ -23,47 +23,77 @@ import it.filippor.p2.api.Bundle;
 import it.filippor.p2.api.DefaultRepo;
 import it.filippor.p2.api.P2RepositoryManager;
 import it.filippor.p2.api.ProgressMonitor;
+import it.filippor.p2.impl.samples.P2PublisherImpl;
 import it.filippor.p2.impl.util.Result;
 import it.filippor.p2.impl.util.Utils;
 
 @Component()
 public class P2RepositoryManagerImpl implements P2RepositoryManager {
 
-  BundleContext ctx;
+  BundleContext                    ctx;
+  private IProvisioningAgent       agent;
+  private MetadataRepositoryFacade repoContext;
+  private ArtifactRepositoryFacade artifactRepo;
 
   @Activate
   public void activate(BundleContext ctx) {
     this.ctx = ctx;
   }
 
+  public void init(DefaultRepo repo, Iterable<URI> sites, ProgressMonitor monitor) {
+    IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
+    try {
+      SubMonitor mon = SubMonitor.convert(wrappedMonitor, "init", 1000);
+      agent        = getAgent(repo);
+      repoContext  = new MetadataRepositoryFacade(agent, sites, mon.split(700));
+      artifactRepo = new ArtifactRepositoryFacade(agent, sites, mon.split(300));
+      mon.done();
+    } catch (Exception e) {
+      Utils.sneakyThrow(e);
+      // } finally {
+      // if (agent != null)
+      // agent.stop();
+    }
+  }
+  
+  public void tearDown() {
+    repoContext  = null;
+    artifactRepo = null;
+    if (agent != null)
+       agent.stop();
+  }
+  
   @Override
-  public Set<File> resolve(DefaultRepo repo, Iterable<URI> sites, Collection<Bundle> bundles, boolean transitive,
+  public Set<File> resolve(Collection<Bundle> bundles, boolean transitive,
                            ProgressMonitor monitor) {
 
     IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
 
-    IProvisioningAgent agent = null;
     try {
       SubMonitor mon = SubMonitor.convert(wrappedMonitor, "resolve", 1000);
+      mon.worked(1);
+      Set<IInstallableUnit> toInstall = repoContext.findMetadata(bundles, transitive, mon.split(400));
 
-      agent = getAgent(repo);
-      MetadataRepositoryFacade repoContext = new MetadataRepositoryFacade(agent, sites, mon.split(100));
-      Set<IInstallableUnit>    toInstall   = repoContext.findMetadata(bundles, transitive, mon.split(400));
-
-      ArtifactRepositoryFacade artifactRepo = new ArtifactRepositoryFacade(agent, sites, mon.split(100));
-      Set<File>                files        = artifactRepo.getFiles(toInstall, mon.split(400));
-
+      Set<File> files = artifactRepo.getFiles(toInstall, mon.split(400));
+      mon.done();
       return files;
     } catch (Exception e) {
-      // e.printStackTrace();
       Utils.sneakyThrow(e);
       return null;
-    } finally {
-      if (agent != null)
-        agent.stop();
     }
   }
-
+  
+  @Override
+  public void publish(URI repo,File[] bundleLocations, ProgressMonitor monitor) {
+    IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
+    try {
+      SubMonitor mon = SubMonitor.convert(wrappedMonitor, "init", 1000);
+      new P2PublisherImpl().publish(repo, bundleLocations, mon);
+    } catch (Exception e) {
+      Utils.sneakyThrow(e);
+    }
+  }
+  
   private IProvisioningAgent getAgent(DefaultRepo repo) throws ProvisionException {
     ServiceReference<?> sr = ctx.getServiceReference(IProvisioningAgentProvider.SERVICE_NAME);
     if (sr == null)

@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.equinox.internal.p2.artifact.repository.ArtifactRepositoryManager;
@@ -22,29 +23,28 @@ import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
 
 public class P2PublisherImpl {
 
-  public Object start(IApplicationContext context) throws Exception {
-    IPublisherInfo     info      = createPublisherInfo();
-    IPublisherAction[] actions   = createActions();
+  public void publish(URI repo, File[] bundleLocations, IProgressMonitor monitor) throws Exception {
+    IPublisherInfo     info      = createPublisherInfo(repo);
+    IPublisherAction[] actions   = createActions(bundleLocations);
     Publisher          publisher = new Publisher(info);
-    publisher.publish(actions, new NullProgressMonitor());
-    return null;
+    publisher.publish(actions, monitor);
   }
 
   public void stop() {
 
   }
 
-  public static IPublisherInfo createPublisherInfo() throws ProvisionException, URISyntaxException {
+  public static IPublisherInfo createPublisherInfo(URI repo) throws ProvisionException, URISyntaxException {
     PublisherInfo result = new PublisherInfo();
 
     // Create the metadata repository. This will fail if a repository already exists here
     IMetadataRepository metadataRepository = new SimpleMetadataRepositoryFactory()
-      .create(new URI("file:/location to/repository"), "Sample Metadata Repository",
+      .create(repo, "Sample Metadata Repository",
               MetadataRepositoryManager.TYPE_SIMPLE_REPOSITORY, Collections.emptyMap());
 
     // Create the artifact repository. This will fail if a repository already exists here
     IArtifactRepository artifactRepository = new SimpleArtifactRepositoryFactory()
-      .create(new URI("file:/location to/repository"), "Sample Artifact Repository",
+      .create(repo, "Sample Artifact Repository",
               ArtifactRepositoryManager.TYPE_SIMPLE_REPOSITORY, Collections.emptyMap());
 
     result.setMetadataRepository(metadataRepository);
@@ -53,10 +53,8 @@ public class P2PublisherImpl {
     return result;
   }
 
-  public static IPublisherAction[] createActions() {
+  public static IPublisherAction[] createActions(File[] bundleLocations ) {
     IPublisherAction[] result          = new IPublisherAction[1];
-    File[]             bundleLocations = new File[1];
-    bundleLocations[0] = new File("/location to bundles/");
     BundlesAction bundlesAction = new BundlesAction(bundleLocations);
     result[0] = bundlesAction;
     return result;

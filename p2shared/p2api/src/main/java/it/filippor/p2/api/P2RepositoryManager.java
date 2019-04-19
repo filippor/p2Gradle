@@ -6,8 +6,12 @@ import java.util.Collection;
 import java.util.Set;
 
 public interface P2RepositoryManager {
+  public void init(DefaultRepo repo, Iterable<URI> sites, ProgressMonitor monitor);
 
-  public Set<File> resolve(DefaultRepo repo, Iterable<URI> sites, Collection<Bundle> artifacts, boolean transitive,
-                               ProgressMonitor monitor);
+  public void tearDown();
+
+  public Set<File> resolve(Collection<Bundle> artifacts, boolean transitive, ProgressMonitor monitor);
+
+  void publish(URI repo, File[] bundleLocations, ProgressMonitor monitor);
 
 }

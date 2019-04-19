@@ -13,6 +13,10 @@ import java.util.Arrays
 import java.util.function.BiConsumer
 import org.gradle.api.Project
 import org.gradle.api.Task
+import it.filippor.p2.task.TaskWithProgress
+import org.gradle.api.tasks.TaskProvider
+import it.filippor.p2.task.PublishTask
+import org.gradle.api.Action
 
 class FrameworkTaskConfigurator {
 	val public static P2_FRAMEWORK_BUNDLES_CONFIG = "p2frameworkBundles"
@@ -24,15 +28,14 @@ class FrameworkTaskConfigurator {
 	val Task startFrameworkTask
 
 	val FrameworkLauncher p2FrameworkLauncher
-	
-	val Project project
-	
-	val Iterable<URI> updateSites
 
-	new(Project project,Iterable<URI> updateSites ) {
+	val Project project
+
+//	val Iterable<URI> updateSites
+	new(Project project, Iterable<URI> updateSites) {
 		val prj = project.rootProject
 		this.project = project
-		this.updateSites = updateSites 
+//		this.updateSites = updateSites
 		val frameworkBundles = prj.configurations.findByName(P2_FRAMEWORK_BUNDLES_CONFIG) ?: {
 			val config = prj.configurations.create(P2_FRAMEWORK_BUNDLES_CONFIG)
 			prj.dependencies.add(P2_FRAMEWORK_BUNDLES_CONFIG, "it.filippor.p2:p2impl:0.0.1")
@@ -41,50 +44,71 @@ class FrameworkTaskConfigurator {
 
 		p2FrameworkLauncher = createFrameworkLauncher(prj, frameworkBundles)
 
-		stopFrameworkTask = prj.tasks.findByName(P2_STOP_FRAMEWORK_TASK) ?: prj.tasks.register(P2_STOP_FRAMEWORK_TASK) [
-			doLast([
-				p2FrameworkLauncher.stopFramework()
-			])
-		].get
+		stopFrameworkTask = prj.tasks.findByName(P2_STOP_FRAMEWORK_TASK) ?:
+			prj.tasks.register(P2_STOP_FRAMEWORK_TASK, TaskWithProgress) [
+				doLast([
+					p2FrameworkLauncher.executeWithServiceProvider [
+						getService(P2RepositoryManager).tearDown()
+					]
+					p2FrameworkLauncher.stopFramework()
+				])
+			].get
 
 		startFrameworkTask = prj.tasks.findByName(P2_START_FRAMEWORK_TASK) ?:
-			prj.tasks.register(P2_START_FRAMEWORK_TASK) [
-				finalizedBy(stopFrameworkTask)
-				doLast[
+			prj.tasks.register(P2_START_FRAMEWORK_TASK, TaskWithProgress) [ t |
+				t.finalizedBy(stopFrameworkTask)
+				t.doLast [
 					p2FrameworkLauncher.startFramework()
+					p2FrameworkLauncher.executeWithServiceProvider [
+						getService(P2RepositoryManager).init(
+							defaultRepo,
+							updateSites,
+							new ProgressMonitorWrapper(t)
+						)
+					]
 				]
+
 			].get
 	}
-	
-	def getDefaultRepo(){
+
+	def getDefaultRepo() {
 		new DefaultRepo(project.rootProject.buildDir)
 	}
-	//#{new Artifact("org.eclipse.core.resources", new VersionRange("3.13.300.v20190218-2054"))}
-	def p2Bundles( Bundle... bundles){
-		p2Bundles(true,bundles)
+
+	// #{new Artifact("org.eclipse.core.resources", new VersionRange("3.13.300.v20190218-2054"))}
+	def p2Bundles(Bundle... bundles) {
+		p2Bundles(true, bundles)
 	}
-	def p2Bundles(boolean transitive, Bundle... bundles){
-		var resolve = project.tasks.register("resolveP2"+bundles, FileProviderTask) [
+
+	def p2Bundles(boolean transitive, Bundle... bundles) {
+		var resolve = project.tasks.register("resolveP2" + bundles, FileProviderTask) [
 			p2FrameworkLauncher = this.p2FrameworkLauncher
 			outputFileProvider = [ it, serviceProvider |
-				val monitor = new ProgressMonitorWrapper(it)
 				var repoManager = serviceProvider.getService(P2RepositoryManager)
 				val result = repoManager.resolve(
-					defaultRepo,
-					updateSites,
 					Arrays.asList(bundles),
 					transitive,
-					monitor
+					new ProgressMonitorWrapper(it)
 				)
 				logger.info("" + result)
 				return result
 			]
 		]
-		resolve.configure[ dependsOn += startFrameworkTask]
+		resolve.configure[dependsOn += startFrameworkTask]
 		stopFrameworkTask.mustRunAfter(stopFrameworkTask.mustRunAfter, resolve)
 		return project.files(resolve)
 	}
-	
+
+	def TaskProvider<PublishTask> publishTask(String name,Action<PublishTask> action) {
+		var publishTask = project.tasks.register(name, PublishTask,action) 
+			
+		publishTask.configure[dependsOn += startFrameworkTask]
+		stopFrameworkTask.mustRunAfter(stopFrameworkTask.mustRunAfter, publishTask)
+//		project.tasks.getAt("build").dependsOn += publishTask
+		publishTask
+
+	}
+
 	def createFrameworkLauncher(Project project, Iterable<File> bundles) {
 		val frameworkStoragePath = project.buildDir.toPath.resolve("tmp").resolve("p2Framework").toFile
 		val p2ApiPackage = #{"it.filippor.p2.api"}
@@ -93,8 +117,6 @@ class FrameworkTaskConfigurator {
 		return new FrameworkLauncher(frameworkStoragePath, p2ApiPackage, startBundlesSymbolicNames, bundles)
 	}
 
-	
-	
 	def doLastOnFramework(Task task, BiConsumer<Task, ServiceProvider> action) {
 		task.dependsOn += startFrameworkTask
 		stopFrameworkTask.mustRunAfter(stopFrameworkTask.mustRunAfter, task)

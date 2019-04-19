@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
@@ -29,7 +30,7 @@ public class MetadataRepositoryFacade {
 
   IProvisioningAgent                 agent;
   private IMetadataRepositoryManager manager;
-  Set<Supplier<IMetadataRepository>> repos;
+  Set<LazyProvider<IMetadataRepository>> repos;
 
   public static final IExpression matchesRequirementsExpression = ExpressionUtil.parse("$0.exists(r | this ~= r)");
 
@@ -43,14 +44,14 @@ public class MetadataRepositoryFacade {
     repos = new HashSet<>();
     for (URI site : sites) {
       manager.addRepository(site);
-      Supplier<IMetadataRepository> metadataRepo = new LazyProvider<IMetadataRepository>((Provider<IMetadataRepository>) () -> manager
-        .loadRepository(site, mon.split(200)));
+      LazyProvider<IMetadataRepository> metadataRepo = new LazyProvider<IMetadataRepository>((Provider<IMetadataRepository>) monitor -> manager
+        .loadRepository(site, monitor));
       repos.add(metadataRepo);
     }
   }
 
-  public String getReposAsString() {
-    return toString(repos.stream().map(r -> r.get()));
+  public String getReposAsString(IProgressMonitor mon) {
+    return toString(repos.stream().map(r -> r.get(mon)));
   }
   
   
@@ -59,24 +60,25 @@ public class MetadataRepositoryFacade {
     return QueryUtil.createMatchQuery(MetadataRepositoryFacade.matchesRequirementsExpression, iu.getRequirements());
   }
 
-  public Set<IInstallableUnit> findMetadata(Collection<Bundle> bundles, boolean transitive, SubMonitor mon) {
+  public Set<IInstallableUnit> findMetadata(Collection<Bundle> bundles, boolean transitive, IProgressMonitor monitor) {
+    SubMonitor mon = SubMonitor.convert(monitor,"find metadata",1000*bundles.size());
+    
     Set<IInstallableUnit> toInstall = bundles.stream().flatMap(bundle -> {
       IQuery<IInstallableUnit>              iuQuery = QueryUtil.createIUQuery(bundle.getId(), toVersion(bundle.getVersion()));
-      Stream<Supplier<IMetadataRepository>> test    = repos.parallelStream();
 
-      Optional<Set<IInstallableUnit>> ius = test.map(r -> {
-        Set<IInstallableUnit> found = r.get().query(iuQuery, mon.split(50)).toSet();
+      Optional<Set<IInstallableUnit>> ius = repos.parallelStream().map(r -> {
+        Set<IInstallableUnit> found = r.get(mon.split(500)).query(iuQuery, mon.split(250)).toSet();
         if (transitive && !found.isEmpty()) {
           List<IQuery<IInstallableUnit>> queries = found.parallelStream()
             .map(iu -> getRequirementsQuery(iu))
             .collect(Collectors.toList());
-          found.addAll(r.get().query(QueryUtil.createCompoundQuery(queries, false), mon.split(50)).toSet());
+          found.addAll(r.get(mon.split(50)).query(QueryUtil.createCompoundQuery(queries, false), mon.split(200)).toSet());
         }
         return found;
       }).filter(set -> !set.isEmpty()).findAny();
 
       if (ius.isEmpty())
-        throw new IllegalArgumentException(bundle + " not found serching in p2 repositories :" + getReposAsString());
+        throw new IllegalArgumentException(bundle + " not found serching in p2 repositories :" + getReposAsString(mon.split(10)));
 
       return ius.get().stream();
     }).collect(Collectors.toSet());

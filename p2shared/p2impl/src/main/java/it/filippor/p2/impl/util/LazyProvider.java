@@ -1,8 +1,8 @@
 package it.filippor.p2.impl.util;
 
-import java.util.function.Supplier;
+import org.eclipse.core.runtime.IProgressMonitor;
 
-public   class LazyProvider<T> implements Supplier<T>{
+public   class LazyProvider<T> {
     T data;
     final Provider<T> supplier;
     
@@ -11,13 +11,12 @@ public   class LazyProvider<T> implements Supplier<T>{
     }
 
 
-    @Override
-    public  T get() {
+    public  T get(IProgressMonitor monitor) {
       try {
         if(data == null) {
           synchronized (this) {
             if(data == null)
-              data = supplier.get(); 
+              data = supplier.get(monitor); 
           }
         }
         return data;
@@ -28,7 +27,7 @@ public   class LazyProvider<T> implements Supplier<T>{
     }
     @FunctionalInterface
     public static interface Provider<T>{
-      T get() throws Exception;
+      T get(IProgressMonitor monitor) throws Exception;
     }
 
   }
