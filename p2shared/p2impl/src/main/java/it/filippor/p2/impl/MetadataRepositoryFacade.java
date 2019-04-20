@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,10 +36,10 @@ public class MetadataRepositoryFacade {
   public MetadataRepositoryFacade(IProvisioningAgent agent,Iterable<URI> sites, SubMonitor mon) {
     this.agent      = agent;
     manager         = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
-    setUpdateSite(sites, mon);
+    setUpdateSite(sites);
   }
 
-  private void setUpdateSite(Iterable<URI> sites, SubMonitor mon) {
+  private void setUpdateSite(Iterable<URI> sites) {
     repos = new HashSet<>();
     for (URI site : sites) {
       manager.addRepository(site);

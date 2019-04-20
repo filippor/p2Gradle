@@ -44,7 +44,7 @@ public class Result<A,B> {
   }
   @Override
   public String toString() {
-    return "Pair [hit=" + hit + ", miss=" + miss + "]";
+    return "Result [hit=" + hit + ", miss=" + miss + "]";
   }
 
 }

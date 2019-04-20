@@ -13,6 +13,12 @@ apply(plugin = "biz.aQute.bnd.builder")
 
 repositories {
 	mavenCentral()
+	ivy{
+			url=uri("http://www.mirrorservice.org/sites/download.eclipse.org/eclipseMirror/oomph/products/repository/plugins/")
+			patternLayout {
+	            artifact("/[artifact]_[revision].[ext]")
+       		}
+	}
 }
 
 dependencies {
@@ -188,12 +194,21 @@ dependencies {
 	runtime("org.eclipse.ecf:org.eclipse.ecf.identity:3.9.0")
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.identity_3.9.0.v20180426-1936.jar"))
 		
-	runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.filetransfer_5.0.100.v20180301-0132.jar"))
-	runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.provider.filetransfer_3.2.400.v20180306-0429.jar"))
-	runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.provider.filetransfer.httpclient4_1.1.300.v20180301-0132.jar"))
-	runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.provider.filetransfer.httpclient4.ssl_1.1.100.v20180301-0132.jar"))
-	runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.provider.filetransfer.ssl_1.0.100.v20180301-0132.jar"))
-	runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.ssl_1.2.100.v20180301-0132.jar"))
+	
+	
+	
+	runtime("not_in_maven_central:org.eclipse.ecf.filetransfer:5.0.100.v20180301-0132")
+	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.filetransfer_5.0.100.v20180301-0132.jar"))
+	runtime("not_in_maven_central:org.eclipse.ecf.provider.filetransfer:3.2.400.v20180306-0429")
+	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.provider.filetransfer_3.2.400.v20180306-0429.jar"))
+	runtime("not_in_maven_central:org.eclipse.ecf.provider.filetransfer.httpclient4:1.1.300.v20180301-0132")
+	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.provider.filetransfer.httpclient4_1.1.300.v20180301-0132.jar"))
+	runtime("not_in_maven_central:org.eclipse.ecf.provider.filetransfer.httpclient4.ssl:1.1.100.v20180301-0132")
+	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.provider.filetransfer.httpclient4.ssl_1.1.100.v20180301-0132.jar"))
+	runtime("not_in_maven_central:org.eclipse.ecf.provider.filetransfer.ssl:1.0.100.v20180301-0132")
+	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.provider.filetransfer.ssl_1.0.100.v20180301-0132.jar"))
+	runtime("not_in_maven_central:org.eclipse.ecf.ssl:1.2.100.v20180301-0132")
+	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.ecf.ssl_1.2.100.v20180301-0132.jar"))
 	
 	
 	

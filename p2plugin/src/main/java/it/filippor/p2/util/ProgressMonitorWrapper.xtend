@@ -34,6 +34,7 @@ class ProgressMonitorWrapper implements ProgressMonitor {
 	}
 
 	override done() {
+		progress.progress("")
 		progress.completed
 	}
 
@@ -51,12 +52,13 @@ class ProgressMonitorWrapper implements ProgressMonitor {
 
 	override setTaskName(String name) {
 		taskName = name
-
 	}
 
 	override subTask(String name) {
 		subName = name
-		log.info(name)
+		log.debug(name)
+		var msg = '''«taskName»:«subName» «100*worked/totalWork»%'''
+		progress.progress(msg)
 //		progress.start(taskName,subName)
 	}
 

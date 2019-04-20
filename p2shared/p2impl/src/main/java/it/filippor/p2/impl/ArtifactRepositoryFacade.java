@@ -51,30 +51,33 @@ public class ArtifactRepositoryFacade {
       artifactManager.addRepository(site);
     }
   }
-
+  
+  
+  
   public Set<File> getFiles( Set<IInstallableUnit> toInstall,
                                      SubMonitor monitor) throws ProvisionException, InterruptedException, ExecutionException {
-    int totalWork = toInstall.size() * 200;
+    int totalWork = 100 +(toInstall.size() * 200);
     monitor = SubMonitor.convert(monitor, totalWork);
     if (toInstall.isEmpty())
       return new HashSet<>();
 
     Result<Set<File>, Set<IInstallableUnit>> result = getFromLocalRepo(toInstall, monitor.split(totalWork));
-    Set<File>                                hit    = result.getHit();
     if (!result.getMiss().isEmpty()) {
-      monitor.setWorkRemaining(result.getMiss().size() * 100);
-      install(result.getMiss(), monitor.split(result.getMiss().size() * 50));
+      monitor.setWorkRemaining(result.getMiss().size() * 200);
+      install(result.getMiss(), monitor.split(result.getMiss().size() * 150));
+      reloadLocalRepo(monitor.split(100));
       Result<Set<File>, Set<IInstallableUnit>> result2 = getFromLocalRepo(result.getMiss(),
                                                                                   monitor.split(result.getMiss().size() * 50));
-      if (result2.getMiss().isEmpty()) {
+      result2.getHit().addAll(result.getHit());
+      result = result2;
+    }
+    if (!result.getMiss().isEmpty()) {
 
-        throw new RuntimeException("can not find artifacts: "
-                                   + result2.getMiss().stream().map(m -> m.toString()).collect(Collectors.joining(",")));
-      }
-      hit.addAll(result2.getHit());
+      throw new RuntimeException("can not find artifacts: "
+                                 + result.getMiss().stream().map(m -> m.toString()).collect(Collectors.joining(",")));
     }
     monitor.done();
-    return hit;
+    return result.getHit();
   }
   
   private List<IFileArtifactRepository> getLocalFileRepoInternal(IProgressMonitor parentMonitor) {
@@ -127,7 +130,9 @@ public class ArtifactRepositoryFacade {
     }
     return files;
   }
-
+  public void reloadLocalRepo(IProgressMonitor monitor) throws ProvisionException {
+    localFileRepo = getLocalFileRepoInternal(monitor);
+  }
   public void install( Set<IInstallableUnit> toInstall, IProgressMonitor mon) throws ProvisionException {
     // see org.eclipse.equinox.internal.p2.director.app.DirectorApplication.performProvisioningActions()
     SubMonitor monitor = SubMonitor.convert(mon, "install", 1000);

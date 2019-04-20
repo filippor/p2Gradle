@@ -22,3 +22,7 @@ tasks.register("publish") {
   group = "build"
       dependsOn(gradle.includedBuild("p2test").task(":publish"))
 }
+tasks.register("model1") {
+  group = "build"
+      dependsOn(gradle.includedBuild("p2test").task(":model"))
+}

@@ -7,11 +7,12 @@ import java.io.File
 import java.net.URI
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.TaskAction
 
 class PublishTask extends TaskWithProgress {
 	URI repo
 	Iterable<File> bundles
-	FrameworkLauncher p2FrameworkLauncher
+	public FrameworkLauncher p2FrameworkLauncher
 
 	@Input
 	def getRepo() { repo }
@@ -20,7 +21,8 @@ class PublishTask extends TaskWithProgress {
 	@InputFiles
 	def getBundles() { bundles }
 	def setBundles(Iterable<File> bundles){this.bundles = bundles}
-
+	
+	@TaskAction
 	def publish() {
 		p2FrameworkLauncher.executeWithServiceProvider [ sp |
 			var rm = sp.getService(P2RepositoryManager)

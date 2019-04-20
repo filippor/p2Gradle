@@ -3,10 +3,7 @@ package it.filippor.p2.impl;
 import java.io.File;
 import java.net.URI;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
@@ -24,7 +21,6 @@ import it.filippor.p2.api.DefaultRepo;
 import it.filippor.p2.api.P2RepositoryManager;
 import it.filippor.p2.api.ProgressMonitor;
 import it.filippor.p2.impl.samples.P2PublisherImpl;
-import it.filippor.p2.impl.util.Result;
 import it.filippor.p2.impl.util.Utils;
 
 @Component()
@@ -45,8 +41,8 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
     try {
       SubMonitor mon = SubMonitor.convert(wrappedMonitor, "init", 1000);
       agent        = getAgent(repo);
-      repoContext  = new MetadataRepositoryFacade(agent, sites, mon.split(700));
-      artifactRepo = new ArtifactRepositoryFacade(agent, sites, mon.split(300));
+      repoContext  = new MetadataRepositoryFacade(agent, sites, mon.split(500));
+      artifactRepo = new ArtifactRepositoryFacade(agent, sites, mon.split(500));
       mon.done();
     } catch (Exception e) {
       Utils.sneakyThrow(e);

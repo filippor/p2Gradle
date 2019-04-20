@@ -1,11 +1,17 @@
 package it.filippor.p2.api;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 import org.osgi.framework.VersionRange;
 
-public class Bundle {
+public class Bundle implements Serializable {
 
-  String       id;
-  VersionRange version;
+  private static final long serialVersionUID = 1396517416983719233L;
+  String                    id;
+  VersionRange              version;
 
   public Bundle(String id, VersionRange version) {
     super();
@@ -63,6 +69,23 @@ public class Bundle {
   @Override
   public String toString() {
     return "Bundle [id=" + id + ", version=" + version + "]";
+  }
+
+  private void writeObject(ObjectOutputStream out) throws IOException {
+    out.writeObject(id);
+    if(version != null)
+      out.writeObject(version.toString());
+    else
+      out.writeObject(null);
+  }
+
+  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    id = (String) in.readObject();
+    String v = (String) in.readObject();
+    if (v != null)
+      version = new VersionRange(v);
+    else
+      version = null;
   }
 
 }
