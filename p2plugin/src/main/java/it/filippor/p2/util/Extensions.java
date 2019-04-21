@@ -43,6 +43,8 @@ public class Extensions {
    * @throws NullPointerException
    *           if {@code t} is <code>null</code>.
    */
+
+  @SuppressWarnings("SameReturnValue")
   public static RuntimeException sneakyThrow(Throwable t) {
     if (t == null)
       throw new NullPointerException("t");

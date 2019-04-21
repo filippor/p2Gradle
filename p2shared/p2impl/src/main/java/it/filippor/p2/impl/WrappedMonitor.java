@@ -6,9 +6,9 @@ import it.filippor.p2.api.ProgressMonitor;
 
 public class WrappedMonitor implements IProgressMonitor {
 
-  private ProgressMonitor monitor;
+  private final ProgressMonitor monitor;
 
-  public WrappedMonitor(ProgressMonitor monitor) {
+  private WrappedMonitor(ProgressMonitor monitor) {
     this.monitor = monitor;
   }
 

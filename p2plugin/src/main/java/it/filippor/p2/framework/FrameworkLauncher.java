@@ -1,5 +1,13 @@
 package it.filippor.p2.framework;
 
+import it.filippor.p2.util.Extensions;
+import org.eclipse.core.runtime.adaptor.EclipseStarter;
+import org.eclipse.osgi.internal.framework.EquinoxConfiguration;
+import org.osgi.framework.*;
+import org.osgi.framework.wiring.BundleRevision;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -11,19 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import org.eclipse.core.runtime.adaptor.EclipseStarter;
-import org.eclipse.osgi.internal.framework.EquinoxConfiguration;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.wiring.BundleRevision;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import it.filippor.p2.util.Extensions;
 
 public class FrameworkLauncher {
   private static final Logger logger = LoggerFactory.getLogger(FrameworkLauncher.class);
@@ -48,7 +43,7 @@ public class FrameworkLauncher {
 
       BundleContext ctx = EclipseStarter.getSystemBundleContext();
       if ((ctx == null)) {
-        logger.error("systemBundleContext is null");
+        throw new RuntimeException("systemBundleContext is null");
       }
       for (String sn : startBundlesSymbolicNames) {
         tryActivateBundle(ctx, sn);
@@ -82,11 +77,11 @@ public class FrameworkLauncher {
     props.put(EquinoxConfiguration.PROP_USE_SYSTEM_PROPERTIES, "false");
     props.put(EquinoxConfiguration.PROP_CONTEXTCLASSLOADER_PARENT, EquinoxConfiguration.CONTEXTCLASSLOADER_PARENT_FWK);
     props.put(EclipseStarter.PROP_INSTALL_AREA, frameworkStorage.toPath().resolve("install").toUri().toURL().toString());
-    props.put(EclipseStarter.PROP_SYSPATH, frameworkStorage.toPath().resolve("syspath").toUri().toURL().toString());
+    props.put(EclipseStarter.PROP_SYSPATH, frameworkStorage.toPath().resolve("sysPath").toUri().toURL().toString());
     props.put(Constants.FRAMEWORK_STORAGE, frameworkStorage.toPath().resolve("storage").toUri().toURL().toString());
     props.put(EclipseStarter.PROP_BUNDLES,
               StreamSupport.stream(bundles.spliterator(), false).map(this::toBundleId).collect(Collectors.joining(",")));
-    props.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA, this.extraSystemPackage.stream().collect(Collectors.joining(";")));
+    props.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA, String.join(";", this.extraSystemPackage));
     EclipseStarter.setInitialProperties(props);
 
   }
@@ -94,7 +89,7 @@ public class FrameworkLauncher {
   private void tryActivateBundle(final BundleContext ctx, final String symbolicName) {
     AtomicBoolean found = new AtomicBoolean(false);
     for (Bundle bundle : ctx.getBundles()) {
-      if (!isFragment(bundle)) {
+      if (isNotFragment(bundle)) {
         if (symbolicName.equals(bundle.getSymbolicName())) {
           try {
             logger.info("start {}", bundle);
@@ -112,7 +107,7 @@ public class FrameworkLauncher {
     }
   }
 
-  public String toBundleId(final File file) {
+  private String toBundleId(final File file) {
     try {
       return ("reference:" + file.toURI().toURL());
     } catch (MalformedURLException e) {
@@ -139,10 +134,10 @@ public class FrameworkLauncher {
   }
 
   private void checkAllBundles(final BundleContext ctx) {
-    Arrays.asList(ctx.getBundles()).stream().filter(it -> !FrameworkLauncher.isFragment(it)).filter(b -> {
-      logger.info("[{}]{} {}", Long.valueOf(b.getBundleId()), FrameworkLauncher.formatState(b), b.getSymbolicName());
+    Arrays.stream(ctx.getBundles()).filter(FrameworkLauncher::isNotFragment).filter(b -> {
+      logger.info("[{}]{} {}", b.getBundleId(), FrameworkLauncher.formatState(b), b.getSymbolicName());
       return !Arrays.asList(Bundle.RESOLVED, Bundle.STARTING, Bundle.ACTIVE).contains(b.getState());
-    }).forEach((Consumer<Bundle>) (Bundle b) -> {
+    }).forEach((Bundle b) -> {
       try {
         b.start(Bundle.START_TRANSIENT);
       } catch (final BundleException e) {
@@ -155,8 +150,8 @@ public class FrameworkLauncher {
     return bundle.getRegisteredServices();
   }
 
-  public static String formatState(final Bundle it) {
-    String _switchResult = null;
+  private static String formatState(final Bundle it) {
+    final String _switchResult;
     switch (it.getState()) {
       case Bundle.UNINSTALLED:
         _switchResult = "UNINSTALLED";
@@ -182,8 +177,8 @@ public class FrameworkLauncher {
     return _switchResult;
   }
 
-  public static boolean isFragment(final Bundle bundle) {
-    return (bundle.adapt(BundleRevision.class).getTypes() & BundleRevision.TYPE_FRAGMENT) != 0;
+  public static boolean isNotFragment(final Bundle bundle) {
+    return (bundle.adapt(BundleRevision.class).getTypes() & BundleRevision.TYPE_FRAGMENT) == 0;
   }
 
   public boolean isStarted() {

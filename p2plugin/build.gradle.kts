@@ -1,5 +1,3 @@
-import org.gradle.api.tasks.compile.JavaCompile
-
 plugins {
     id("java-gradle-plugin")
 //    `kotlin-dsl`

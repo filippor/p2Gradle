@@ -13,6 +13,7 @@ public class Utils {
   public static <E extends Throwable> void sneakyThrow(Throwable e) throws E {
     throw (E) e;
   }
+
   public static Iterable<Bundle> toBundles(Set<IInstallableUnit> ius) {
     return ius.stream().map(Utils::toBundle).collect(Collectors.toSet());
   }

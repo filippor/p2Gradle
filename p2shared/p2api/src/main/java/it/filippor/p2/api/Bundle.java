@@ -9,9 +9,9 @@ import org.osgi.framework.VersionRange;
 
 public class Bundle implements Serializable {
 
-  private static final long serialVersionUID = 1396517416983719233L;
-  String                    id;
-  VersionRange              version;
+  private static final long serialVersionUID = -5642357738474934782L;
+  private String            id;
+  private VersionRange      version;
 
   public Bundle(String id, VersionRange version) {
     super();
@@ -59,8 +59,9 @@ public class Bundle implements Serializable {
     } else if (!id.equals(other.id))
       return false;
     if (version == null) {
-        return other.version == null;
-    } else return version.equals(other.version);
+      return other.version == null;
+    } else
+      return version.equals(other.version);
   }
 
   @Override
@@ -70,7 +71,7 @@ public class Bundle implements Serializable {
 
   private void writeObject(ObjectOutputStream out) throws IOException {
     out.writeObject(id);
-    if(version != null)
+    if (version != null)
       out.writeObject(version.toString());
     else
       out.writeObject(null);

@@ -23,15 +23,13 @@ import it.filippor.p2.impl.util.LazyProvider;
 
 public class MetadataRepositoryFacade {
 
-  IProvisioningAgent                 agent;
-  private IMetadataRepositoryManager manager;
-  Set<LazyProvider<IMetadataRepository>> repos;
+  private final IMetadataRepositoryManager       manager;
+  private Set<LazyProvider<IMetadataRepository>> repos;
 
-//  public static final IExpression matchesRequirementsExpression = ExpressionUtil.parse("$0.exists(r | this ~= r)");
+  // public static final IExpression matchesRequirementsExpression = ExpressionUtil.parse("$0.exists(r | this ~= r)");
 
-  public MetadataRepositoryFacade(IProvisioningAgent agent,Iterable<URI> sites, SubMonitor mon) {
-    this.agent      = agent;
-    manager         = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
+  public MetadataRepositoryFacade(IProvisioningAgent agent, Iterable<URI> sites, SubMonitor mon) {
+    manager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
     setUpdateSite(sites);
   }
 
@@ -39,38 +37,33 @@ public class MetadataRepositoryFacade {
     repos = new HashSet<>();
     for (URI site : sites) {
       manager.addRepository(site);
-      LazyProvider<IMetadataRepository> metadataRepo = new LazyProvider<IMetadataRepository>(monitor -> manager
-        .loadRepository(site, monitor));
+      LazyProvider<IMetadataRepository> metadataRepo = new LazyProvider<>(monitor -> manager.loadRepository(site, monitor));
       repos.add(metadataRepo);
     }
   }
 
-  public String getReposAsString(IProgressMonitor mon) {
+  private String getReposAsString(IProgressMonitor mon) {
     return toString(repos.stream().map(r -> r.get(mon)));
   }
-  
-  
 
-  public Set<IInstallableUnit> findMetadata(Collection<Bundle> bundles/*, boolean transitive*/, IProgressMonitor monitor) {
-    SubMonitor mon = SubMonitor.convert(monitor,"find metadata",1000*bundles.size());
-    
-    Set<IInstallableUnit> toInstall = bundles.stream().flatMap(bundle -> {
-      IQuery<IInstallableUnit>              iuQuery = QueryUtil.createIUQuery(bundle.getId(), toVersion(bundle.getVersion()));
+  public Set<IInstallableUnit> findMetadata(Collection<Bundle> bundles/* , boolean transitive */, IProgressMonitor monitor) {
+    SubMonitor mon = SubMonitor.convert(monitor, "find metadata", 1000 * bundles.size());
 
-      Optional<Set<IInstallableUnit>> ius = repos.parallelStream().map(r -> {
-        return r.get(mon.split(500)).query(iuQuery, mon.split(250)).toSet();
-      }).filter(set -> 
-        !set.isEmpty()
-      ).findAny();
+    return bundles.stream().flatMap(bundle -> {
+      IQuery<IInstallableUnit> iuQuery = QueryUtil.createIUQuery(bundle.getId(), toVersion(bundle.getVersion()));
+
+      Optional<Set<IInstallableUnit>> ius = repos.parallelStream()
+        .map(r -> r.get(mon.split(500)).query(iuQuery, mon.split(250)).toSet())
+        .filter(set -> !set.isEmpty())
+        .findAny();
 
       if (!ius.isPresent())
         throw new IllegalArgumentException(bundle + " not found serching in p2 repositories :" + getReposAsString(mon.split(10)));
 
       return ius.get().stream();
     }).collect(Collectors.toSet());
-    return toInstall;
   }
-  
+
   private org.eclipse.equinox.p2.metadata.VersionRange toVersion(VersionRange version) {
     return org.eclipse.equinox.p2.metadata.VersionRange.create(version.toString());
   }
@@ -78,5 +71,5 @@ public class MetadataRepositoryFacade {
   private String toString(Stream<IMetadataRepository> repos) {
     return "\n\t" + repos.map(r -> r.getLocation().toString()).collect(Collectors.joining("\n\t"));
   }
-  
+
 }

@@ -58,8 +58,8 @@ public class FrameworkTaskConfigurator {
     if (stopFrameworkTask == null) {
       stopFrameworkTask = prj.getTasks()
         .<TaskWithProgress> register(FrameworkTaskConfigurator.P2_STOP_FRAMEWORK_TASK, TaskWithProgress.class,
-                                     (Action<TaskWithProgress>) (TaskWithProgress it) -> {
-                                       it.doLast((Action<Task>) (Task task) -> {
+                                      it -> {
+                                       it.doLast(task -> {
                                          if (this.p2FrameworkLauncher.isStarted()) {
                                            this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> {
                                              P2RepositoryManager repositoryManager = sp.getService(P2RepositoryManager.class);
@@ -78,9 +78,9 @@ public class FrameworkTaskConfigurator {
     if (startFrameworkTask == null) {
       startFrameworkTask = prj.getTasks()
         .<TaskWithProgress> register(FrameworkTaskConfigurator.P2_START_FRAMEWORK_TASK, TaskWithProgress.class,
-                                     (Action<TaskWithProgress>) (TaskWithProgress t) -> {
+                                      t -> {
                                        t.finalizedBy(this.stopFrameworkTask);
-                                       t.doLast((Action<Task>) (Task it) -> {
+                                       t.doLast(it-> {
                                          this.p2FrameworkLauncher.startFramework();
                                          this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> {
                                            sp.getService(P2RepositoryManager.class)
@@ -121,21 +121,21 @@ public class FrameworkTaskConfigurator {
 
     Task tmpResolve = this.project.getTasks().findByName(name);
     if (tmpResolve == null) {
-      tmpResolve = this.project.getTasks().<ResolveTask> register(name, ResolveTask.class, it -> {
+      tmpResolve = this.project.getTasks().register(name, ResolveTask.class, it -> {
         it.p2FrameworkLauncher = this.p2FrameworkLauncher;
-        it.bundles             = Arrays.<Bundle> asList(bundles);
+        it.bundles             = Arrays.asList(bundles);
         it.transitive          = transitive;
       }).get();
     }
     tmpResolve.getDependsOn().add(startFrameworkTask);
     final Task resolve = tmpResolve;
 
-    this.stopFrameworkTask.mustRunAfter((Object) stopFrameworkTask.getMustRunAfter(), (Object) resolve);
+    this.stopFrameworkTask.mustRunAfter(stopFrameworkTask.getMustRunAfter(), (Object) resolve);
 
     Task filesTask = this.project.getTasks().findByName(filesTaskName);
     if (filesTask == null) {
       filesTask = project.getTasks().register(filesTaskName, FileProviderTask.class, it -> {
-        it.setResolver(((ResolveTask) resolve));
+        it.setResolver((ResolveTask) resolve);
       }).get();
     }
     return this.project.files(filesTask);
@@ -148,7 +148,7 @@ public class FrameworkTaskConfigurator {
       it.p2FrameworkLauncher = this.p2FrameworkLauncher;
     });
 
-    this.stopFrameworkTask.mustRunAfter((Object) this.stopFrameworkTask.getMustRunAfter(), publishTask);
+    this.stopFrameworkTask.mustRunAfter(this.stopFrameworkTask.getMustRunAfter(), publishTask);
 
     return publishTask;
   }
@@ -170,7 +170,7 @@ public class FrameworkTaskConfigurator {
         t.getLogger().warn("framework is not running");
         this.p2FrameworkLauncher.startFramework();
       }
-      this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider it) -> {
+      this.p2FrameworkLauncher.executeWithServiceProvider(it-> {
         action.accept(t, it);
       });
     });

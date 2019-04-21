@@ -9,8 +9,10 @@ import org.eclipse.equinox.p2.metadata.expression.IExpressionFactory;
 import org.eclipse.equinox.p2.query.IQuery;
 import org.eclipse.equinox.p2.query.QueryUtil;
 
+@SuppressWarnings("all")
 public class P2Discovery {
 
+  @SuppressWarnings("unused")
   public void testQuery() {
     String                id    = null, classifier = null, range = null, key = null, value = null, v1 = null, v2 = null,
         v3 = null;
@@ -68,7 +70,7 @@ public class P2Discovery {
       // Query for all IU's affected by a patch:
 
       IQuery<IInstallableUnit> query = QueryUtil.createMatchQuery("$0.exists(rcs | rcs.all(rc | this ~= rc))",
-                                                                  (Object)patch.getApplicabilityScope());
+                                                                  (Object) patch.getApplicabilityScope());
     }
   }
 

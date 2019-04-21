@@ -24,9 +24,11 @@ import it.filippor.p2.impl.util.Utils;
 @Component()
 public class P2RepositoryManagerImpl implements P2RepositoryManager {
 
-  BundleContext                    ctx;
-  private IProvisioningAgent       agent;
+  private BundleContext      ctx;
+  private IProvisioningAgent agent;
+
   private MetadataRepositoryFacade repoContext;
+
   private ArtifactRepositoryFacade artifactRepo;
 
   @Activate
@@ -34,7 +36,7 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
     this.ctx = ctx;
   }
 
-  public void init(URI  repo, Collection<URI> sites, ProgressMonitor monitor) {
+  public void init(URI repo, Collection<URI> sites, ProgressMonitor monitor) {
     IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
     try {
       SubMonitor mon = SubMonitor.convert(wrappedMonitor, "init", 1000);
@@ -89,9 +91,8 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
     if (sr == null)
       throw new IllegalStateException("cannot find agent provider");
     IProvisioningAgentProvider agentProvider = (IProvisioningAgentProvider) ctx.getService(sr);
-    IProvisioningAgent         agent         = agentProvider.createAgent(repo);
     // IProvisioningAgent agent = agentProvider.createAgent(new File("/home/filippor/.p2/").toURI());
-    return agent;
+    return agentProvider.createAgent(repo);
   }
 
 }

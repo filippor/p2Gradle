@@ -24,8 +24,8 @@ public class PublishTask extends TaskWithProgress {
     return this.repo;
   }
 
-  public URI setRepo(final URI repo) {
-    return this.repo = repo;
+  public void setRepo(final URI repo) {
+    this.repo = repo;
   }
 
   @InputFiles
@@ -39,8 +39,7 @@ public class PublishTask extends TaskWithProgress {
 
   @TaskAction
   public void publish() {
-    this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> {
-      sp.getService(P2RepositoryManager.class).publish(repo, bundles, ProgressMonitorWrapper.wrap(this));
-    });
+    this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> sp.getService(P2RepositoryManager.class)
+      .publish(repo, bundles, ProgressMonitorWrapper.wrap(this)));
   }
 }

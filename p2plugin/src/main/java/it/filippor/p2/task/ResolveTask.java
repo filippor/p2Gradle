@@ -42,7 +42,7 @@ public class ResolveTask extends TaskWithProgress {
   }
 
   @TaskAction
-  public void resolve() throws Exception {
+  public void resolve() {
     if ((!this.p2FrameworkLauncher.isStarted())) {
       this.getLogger().warn("framework is not running");
       this.p2FrameworkLauncher.startFramework();

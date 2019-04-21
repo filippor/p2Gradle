@@ -17,16 +17,14 @@ public class FileProviderTask extends TaskWithProgress {
     this.getDependsOn().add(resolver);
   }
 
-  private ConfigurableFileCollection output;
-
   @OutputFiles
   public ConfigurableFileCollection getOutput() throws IOException {
-      this.output = this.getProject().files();
-      this.output.builtBy(this);
-      if (this.getInputFile().exists()) {
-        this.output.setFrom(Files.lines(this.getInputFile().toPath()).collect(Collectors.toSet()));
-      }
-      return this.output;
+    ConfigurableFileCollection output = this.getProject().files();
+    output.builtBy(this);
+    if (getInputFile().exists()) {
+      output.setFrom(Files.lines(this.getInputFile().toPath()).collect(Collectors.toSet()));
+    }
+    return output;
   }
 
   @InputFile

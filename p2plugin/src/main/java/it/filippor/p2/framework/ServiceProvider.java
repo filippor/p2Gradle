@@ -19,7 +19,7 @@ public class ServiceProvider {
     this.ctx = bctx;
   }
 
-  public <T extends Object> T getService(final Class<T> clazz) {
+  public <T> T getService(final Class<T> clazz) {
     ServiceReference<T> ref = this.ctx.getServiceReference(clazz);
     if ((ref != null)) {
       this.refs.add(ref);
@@ -50,6 +50,6 @@ public class ServiceProvider {
   }
 
   public void ungetAll() {
-    this.refs.forEach(it -> ctx.ungetService(it));
+    this.refs.forEach(ctx::ungetService);
   }
 }

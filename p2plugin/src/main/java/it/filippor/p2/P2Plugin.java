@@ -4,13 +4,11 @@ import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
-import org.gradle.api.artifacts.repositories.IvyArtifactRepository;
 
 import it.filippor.p2.config.FrameworkTaskConfigurator;
 import it.filippor.p2.task.PublishTask;
@@ -21,7 +19,7 @@ public class P2Plugin implements Plugin<Project> {
   public void apply(final Project prj) {
     Extensions.repositories(prj, (RepositoryHandler it) -> {
       it.mavenCentral();
-      it.ivy((Action<IvyArtifactRepository>) (IvyArtifactRepository ivy) -> {
+      it.ivy( ivy -> {
         ivy.setUrl(URI
           .create("http://www.mirrorservice.org/sites/download.eclipse.org/eclipseMirror/oomph/products/repository/plugins/"));
         ivy.patternLayout(l -> {

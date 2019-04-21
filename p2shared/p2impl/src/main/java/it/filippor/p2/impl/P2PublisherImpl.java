@@ -2,9 +2,7 @@ package it.filippor.p2.impl;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -12,7 +10,6 @@ import org.eclipse.equinox.internal.p2.artifact.repository.ArtifactRepositoryMan
 import org.eclipse.equinox.internal.p2.artifact.repository.simple.SimpleArtifactRepositoryFactory;
 import org.eclipse.equinox.internal.p2.metadata.repository.MetadataRepositoryManager;
 import org.eclipse.equinox.internal.p2.metadata.repository.SimpleMetadataRepositoryFactory;
-import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.publisher.IPublisherAction;
 import org.eclipse.equinox.p2.publisher.IPublisherInfo;
 import org.eclipse.equinox.p2.publisher.Publisher;
@@ -23,18 +20,14 @@ import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
 
 public class P2PublisherImpl {
 
-  public void publish(URI repo, Iterable<File> bundleLocations, IProgressMonitor monitor) throws Exception {
+  public void publish(URI repo, Iterable<File> bundleLocations, IProgressMonitor monitor) {
     IPublisherInfo     info      = createPublisherInfo(repo);
     IPublisherAction[] actions   = createActions(bundleLocations);
     Publisher          publisher = new Publisher(info);
     publisher.publish(actions, monitor);
   }
 
-  public void stop() {
-
-  }
-
-  public static IPublisherInfo createPublisherInfo(URI repo) throws ProvisionException, URISyntaxException {
+  private static IPublisherInfo createPublisherInfo(URI repo) {
     PublisherInfo result = new PublisherInfo();
 
     // Create the metadata repository. This will fail if a repository already exists here
@@ -51,7 +44,7 @@ public class P2PublisherImpl {
     return result;
   }
 
-  public static IPublisherAction[] createActions(Iterable<File> bundleLocations) {
+  private static IPublisherAction[] createActions(Iterable<File> bundleLocations) {
     IPublisherAction[] result  = new IPublisherAction[1];
     ArrayList<File>    bundles = new ArrayList<>();
     bundleLocations.forEach(bundles::add);
