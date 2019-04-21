@@ -1,13 +1,10 @@
 package it.filippor.p2.task;
 
-import it.filippor.p2.task.ResolveTask;
-import it.filippor.p2.task.TaskWithProgress;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Set;
 import java.util.stream.Collectors;
-import org.eclipse.xtext.xbase.lib.Exceptions;
+
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFiles;

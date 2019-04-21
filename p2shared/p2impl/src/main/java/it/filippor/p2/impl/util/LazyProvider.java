@@ -26,7 +26,7 @@ public   class LazyProvider<T> {
       }
     }
     @FunctionalInterface
-    public static interface Provider<T>{
+    public interface Provider<T>{
       T get(IProgressMonitor monitor) throws Exception;
     }
 

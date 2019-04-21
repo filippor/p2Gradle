@@ -13,18 +13,14 @@ import java.util.stream.StreamSupport;
 
 import org.eclipse.core.runtime.adaptor.EclipseStarter;
 import org.eclipse.osgi.internal.framework.EquinoxConfiguration;
-import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
-import org.eclipse.xtext.xbase.lib.Pair;
 import org.eclipse.xtext.xbase.lib.Pure;
 import org.eclipse.xtext.xbase.lib.util.ToStringBuilder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.wiring.BundleRevision;
 import org.slf4j.Logger;
@@ -242,11 +238,8 @@ public class FrameworkLauncher {
     } else if (!this.startBundlesSymbolicNames.equals(other.startBundlesSymbolicNames))
       return false;
     if (this.bundles == null) {
-      if (other.bundles != null)
-        return false;
-    } else if (!this.bundles.equals(other.bundles))
-      return false;
-    return true;
+        return other.bundles == null;
+    } else return this.bundles.equals(other.bundles);
   }
 
   @Override

@@ -59,7 +59,7 @@ public class ArtifactRepositoryFacade {
 //    }
 //  }
   private URI[] getArtifactRepositories() {
-    return sites.toArray(URI[]::new);
+    return sites.toArray(new URI[sites.size()]);
   }
 
   public Set<File> getFiles(Set<IInstallableUnit> toResolve, boolean transitive,
@@ -102,7 +102,7 @@ public class ArtifactRepositoryFacade {
     URI[]      knownRepositories = artifactManager.getKnownRepositories(IRepositoryManager.REPOSITORIES_LOCAL);
     SubMonitor monitor           = SubMonitor.convert(parentMonitor, "get local repo", 100 * knownRepositories.length);
 
-    var localRepos = Arrays.asList(knownRepositories).stream().map(uri -> {
+    List<IFileArtifactRepository> localRepos = Arrays.asList(knownRepositories).stream().map(uri -> {
       try {
         IArtifactRepository loadRepository = artifactManager
           .loadRepository(uri/* ,IRepositoryManager.REPOSITORY_HINT_MODIFIABLE */ , monitor.split(100));

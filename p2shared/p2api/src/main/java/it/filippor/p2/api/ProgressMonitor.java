@@ -83,7 +83,7 @@ public interface ProgressMonitor {
 
     /** Constant indicating an unknown amount of work.
      */
-    public final static int UNKNOWN = -1;
+    int UNKNOWN = -1;
 
     /**
      * Notifies that the main task is beginning.  This must only be called once
@@ -95,14 +95,14 @@ public interface ProgressMonitor {
      *  the implementation is free to indicate progress in a way which 
      *  doesn't require the total number of work units in advance.
      */
-    public void beginTask(String name, int totalWork);
+    void beginTask(String name, int totalWork);
 
     /**
      * Notifies that the work is done; that is, either the main task is completed 
      * or the user canceled it. This method may be called more than once 
      * (implementations should be prepared to handle this case).
      */
-    public void done();
+    void done();
 
     /**
      * Internal method to handle scaling correctly. This method
@@ -111,7 +111,7 @@ public interface ProgressMonitor {
      * 
      * @param work the amount of work done
      */
-    public void internalWorked(double work);
+    void internalWorked(double work);
 
     /**
      * Returns whether cancelation of current operation has been requested.
@@ -122,7 +122,7 @@ public interface ProgressMonitor {
      *    and <code>false</code> otherwise
      * @see #setCanceled(boolean)
      */
-    public boolean isCanceled();
+    boolean isCanceled();
 
     /**
      * Sets the cancel state to the given value.
@@ -132,7 +132,7 @@ public interface ProgressMonitor {
      *     <code>false</code> clears this flag
      * @see #isCanceled()
      */
-    public void setCanceled(boolean value);
+    void setCanceled(boolean value);
 
     /**
      * Sets the task name to the given value. This method is used to 
@@ -142,7 +142,7 @@ public interface ProgressMonitor {
      * @param name the name (or description) of the main task
      * @see #beginTask(java.lang.String, int)
      */
-    public void setTaskName(String name);
+    void setTaskName(String name);
 
     /**
      * Notifies that a subtask of the main task is beginning.
@@ -150,7 +150,7 @@ public interface ProgressMonitor {
      *
      * @param name the name (or description) of the subtask
      */
-    public void subTask(String name);
+    void subTask(String name);
 
     /**
      * Notifies that a given number of work unit of the main task
@@ -160,5 +160,5 @@ public interface ProgressMonitor {
      *
      * @param work a non-negative number of work units just completed
      */
-    public void worked(int work);
+    void worked(int work);
 }

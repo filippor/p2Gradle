@@ -1,12 +1,9 @@
 package it.filippor.p2;
 
-import it.filippor.p2.config.FrameworkTaskConfigurator;
-import it.filippor.p2.task.PublishTask;
-import it.filippor.p2.util.Extensions;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.function.Consumer;
+
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Extension;
 import org.gradle.api.Action;
@@ -17,6 +14,10 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.IvyArtifactRepository;
 import org.gradle.api.artifacts.repositories.IvyPatternRepositoryLayout;
+
+import it.filippor.p2.config.FrameworkTaskConfigurator;
+import it.filippor.p2.task.PublishTask;
+import it.filippor.p2.util.Extensions;
 
 public class P2Plugin implements Plugin<Project> {
   @Override

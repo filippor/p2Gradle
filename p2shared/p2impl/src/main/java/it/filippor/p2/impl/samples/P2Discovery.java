@@ -84,7 +84,7 @@ public class P2Discovery {
                                       factory.indexedParameter(2));
 
     IExpression everything = factory.variable("everything");
-    IExpression lambda     = factory.lambda(item, factory.and(new IExpression[] { cmp1, cmp2 }));
+    IExpression lambda     = factory.lambda(item, factory.and(cmp1, cmp2));
     IExpression latest     = factory.latest(factory.select(everything, lambda));
 
     // Create the query

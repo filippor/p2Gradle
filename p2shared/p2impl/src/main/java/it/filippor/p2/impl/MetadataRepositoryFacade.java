@@ -40,7 +40,7 @@ public class MetadataRepositoryFacade {
     repos = new HashSet<>();
     for (URI site : sites) {
       manager.addRepository(site);
-      LazyProvider<IMetadataRepository> metadataRepo = new LazyProvider<IMetadataRepository>((Provider<IMetadataRepository>) monitor -> manager
+      LazyProvider<IMetadataRepository> metadataRepo = new LazyProvider<IMetadataRepository>(monitor -> manager
         .loadRepository(site, monitor));
       repos.add(metadataRepo);
     }
@@ -73,7 +73,7 @@ public class MetadataRepositoryFacade {
         return found;
       }).filter(set -> !set.isEmpty()).findAny();
 
-      if (ius.isEmpty())
+      if (ius.isPresent())
         throw new IllegalArgumentException(bundle + " not found serching in p2 repositories :" + getReposAsString(mon.split(10)));
 
       return ius.get().stream();

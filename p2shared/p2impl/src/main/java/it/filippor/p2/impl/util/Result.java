@@ -36,11 +36,8 @@ public class Result<A,B> {
     } else if (!hit.equals(other.hit))
       return false;
     if (miss == null) {
-      if (other.miss != null)
-        return false;
-    } else if (!miss.equals(other.miss))
-      return false;
-    return true;
+        return other.miss == null;
+    } else return miss.equals(other.miss);
   }
   @Override
   public String toString() {

@@ -123,45 +123,39 @@ public class FrameworkTaskConfigurator {
       nameQual = "transitive";
     }
     String       nameBundle    = Arrays.toString(bundles);
-    final String filesTaskName = (nameQual + nameBundle);
+    final String filesTaskName = nameQual + nameBundle;
     final String name          = ("resolveP2" + filesTaskName);
 
     Task tmpResolve = this.project.getTasks().findByName(name);
     if (tmpResolve == null) {
-      tmpResolve = this.project.getTasks()
-        .<ResolveTask> register(name, ResolveTask.class, (Action<ResolveTask>) (ResolveTask it) -> {
-          it.p2FrameworkLauncher = this.p2FrameworkLauncher;
-          it.bundles           = Arrays.<Bundle> asList(bundles);
-          it.transitive        = transitive;
-        })
-        .get();
+      tmpResolve = this.project.getTasks().<ResolveTask> register(name, ResolveTask.class, it -> {
+        it.p2FrameworkLauncher = this.p2FrameworkLauncher;
+        it.bundles             = Arrays.<Bundle> asList(bundles);
+        it.transitive          = transitive;
+      }).get();
     }
-    tmpResolve.getDependsOn().add(this.startFrameworkTask);
+    tmpResolve.getDependsOn().add(startFrameworkTask);
     final Task resolve = tmpResolve;
 
-    this.stopFrameworkTask.mustRunAfter(this.stopFrameworkTask.getMustRunAfter(), resolve);
+    this.stopFrameworkTask.mustRunAfter((Object) stopFrameworkTask.getMustRunAfter(), (Object) resolve);
 
     Task filesTask = this.project.getTasks().findByName(filesTaskName);
     if (filesTask == null) {
-      final Action<FileProviderTask> _function_1 = (FileProviderTask it) -> {
-                                                   it.setResolver(((ResolveTask) resolve));
-                                                 };
-      FileProviderTask               _get_1      = this.project.getTasks()
-        .<FileProviderTask> register(filesTaskName, FileProviderTask.class, _function_1)
-        .get();
-      filesTask = _get_1;
+      filesTask = project.getTasks().register(filesTaskName, FileProviderTask.class, it -> {
+        it.setResolver(((ResolveTask) resolve));
+      }).get();
     }
     return this.project.files(filesTask);
   }
 
   public TaskProvider<PublishTask> publishTask(final String name, final Action<PublishTask> action) {
     TaskProvider<PublishTask> publishTask = this.project.getTasks().<PublishTask> register(name, PublishTask.class, action);
-    publishTask.configure((Action<PublishTask>) (PublishTask it) -> {
+    publishTask.configure(it -> {
       it.getDependsOn().add(this.startFrameworkTask);
       it.p2FrameworkLauncher = this.p2FrameworkLauncher;
     });
 
-    this.stopFrameworkTask.mustRunAfter(this.stopFrameworkTask.getMustRunAfter(), publishTask);
+    this.stopFrameworkTask.mustRunAfter((Object) this.stopFrameworkTask.getMustRunAfter(), publishTask);
 
     return publishTask;
   }
