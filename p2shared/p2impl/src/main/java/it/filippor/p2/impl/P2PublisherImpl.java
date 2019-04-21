@@ -1,4 +1,4 @@
-package it.filippor.p2.impl.samples;
+package it.filippor.p2.impl;
 
 import java.io.File;
 import java.net.URI;
@@ -6,8 +6,6 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.equinox.internal.p2.artifact.repository.ArtifactRepositoryManager;
 import org.eclipse.equinox.internal.p2.artifact.repository.simple.SimpleArtifactRepositoryFactory;
 import org.eclipse.equinox.internal.p2.metadata.repository.MetadataRepositoryManager;
@@ -40,12 +38,12 @@ public class P2PublisherImpl {
     // Create the metadata repository. This will fail if a repository already exists here
     IMetadataRepository metadataRepository = new SimpleMetadataRepositoryFactory()
       .create(repo, "Sample Metadata Repository",
-              MetadataRepositoryManager.TYPE_SIMPLE_REPOSITORY, Collections.emptyMap());
+              MetadataRepositoryManager.TYPE_COMPOSITE_REPOSITORY, Collections.emptyMap());
 
     // Create the artifact repository. This will fail if a repository already exists here
     IArtifactRepository artifactRepository = new SimpleArtifactRepositoryFactory()
       .create(repo, "Sample Artifact Repository",
-              ArtifactRepositoryManager.TYPE_SIMPLE_REPOSITORY, Collections.emptyMap());
+              ArtifactRepositoryManager.TYPE_COMPOSITE_REPOSITORY, Collections.emptyMap());
 
     result.setMetadataRepository(metadataRepository);
     result.setArtifactRepository(artifactRepository);

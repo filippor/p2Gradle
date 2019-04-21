@@ -2,11 +2,12 @@ package it.filippor.p2.api;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Set;
 
 public interface P2RepositoryManager {
-  public void init(DefaultRepo repo, Iterable<URI> sites, ProgressMonitor monitor);
+  public void init(URI agent, Collection<URI> sites, ProgressMonitor monitor);
 
   public void tearDown();
 

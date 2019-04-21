@@ -17,10 +17,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 import it.filippor.p2.api.Bundle;
-import it.filippor.p2.api.DefaultRepo;
 import it.filippor.p2.api.P2RepositoryManager;
 import it.filippor.p2.api.ProgressMonitor;
-import it.filippor.p2.impl.samples.P2PublisherImpl;
 import it.filippor.p2.impl.util.Utils;
 
 @Component()
@@ -36,7 +34,7 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
     this.ctx = ctx;
   }
 
-  public void init(DefaultRepo repo, Iterable<URI> sites, ProgressMonitor monitor) {
+  public void init(URI  repo, Collection<URI> sites, ProgressMonitor monitor) {
     IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
     try {
       SubMonitor mon = SubMonitor.convert(wrappedMonitor, "init", 1000);
@@ -51,26 +49,25 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
       // agent.stop();
     }
   }
-  
+
   public void tearDown() {
     repoContext  = null;
     artifactRepo = null;
     if (agent != null)
-       agent.stop();
+      agent.stop();
   }
-  
+
   @Override
-  public Set<File> resolve(Collection<Bundle> bundles, boolean transitive,
-                           ProgressMonitor monitor) {
+  public Set<File> resolve(Collection<Bundle> bundles, boolean transitive, ProgressMonitor monitor) {
 
     IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
 
     try {
       SubMonitor mon = SubMonitor.convert(wrappedMonitor, "resolve", 1000);
       mon.worked(1);
-      Set<IInstallableUnit> toInstall = repoContext.findMetadata(bundles, transitive, mon.split(400));
+      Set<IInstallableUnit> toInstall = repoContext.findMetadata(bundles, mon.split(400));
 
-      Set<File> files = artifactRepo.getFiles(toInstall, mon.split(400));
+      Set<File> files = artifactRepo.getFiles(toInstall, transitive, mon.split(400));
       mon.done();
       return files;
     } catch (Exception e) {
@@ -78,9 +75,9 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
       return null;
     }
   }
-  
+
   @Override
-  public void publish(URI repo,File[] bundleLocations, ProgressMonitor monitor) {
+  public void publish(URI repo, File[] bundleLocations, ProgressMonitor monitor) {
     IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
     try {
       SubMonitor mon = SubMonitor.convert(wrappedMonitor, "init", 1000);
@@ -89,13 +86,13 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
       Utils.sneakyThrow(e);
     }
   }
-  
-  private IProvisioningAgent getAgent(DefaultRepo repo) throws ProvisionException {
+
+  private IProvisioningAgent getAgent(URI repo) throws ProvisionException {
     ServiceReference<?> sr = ctx.getServiceReference(IProvisioningAgentProvider.SERVICE_NAME);
     if (sr == null)
       throw new IllegalStateException("cannot find agent provider");
     IProvisioningAgentProvider agentProvider = (IProvisioningAgentProvider) ctx.getService(sr);
-    IProvisioningAgent         agent         = agentProvider.createAgent(repo.getAgentURI());
+    IProvisioningAgent         agent         = agentProvider.createAgent(repo);
     // IProvisioningAgent agent = agentProvider.createAgent(new File("/home/filippor/.p2/").toURI());
     return agent;
   }

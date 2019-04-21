@@ -3,7 +3,6 @@ package it.filippor.p2.impl;
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,8 +12,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
-import org.eclipse.equinox.p2.metadata.expression.ExpressionUtil;
-import org.eclipse.equinox.p2.metadata.expression.IExpression;
 import org.eclipse.equinox.p2.query.IQuery;
 import org.eclipse.equinox.p2.query.QueryUtil;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
@@ -31,7 +28,7 @@ public class MetadataRepositoryFacade {
   private IMetadataRepositoryManager manager;
   Set<LazyProvider<IMetadataRepository>> repos;
 
-  public static final IExpression matchesRequirementsExpression = ExpressionUtil.parse("$0.exists(r | this ~= r)");
+//  public static final IExpression matchesRequirementsExpression = ExpressionUtil.parse("$0.exists(r | this ~= r)");
 
   public MetadataRepositoryFacade(IProvisioningAgent agent,Iterable<URI> sites, SubMonitor mon) {
     this.agent      = agent;
@@ -55,11 +52,11 @@ public class MetadataRepositoryFacade {
   
   
   
-  private IQuery<IInstallableUnit> getRequirementsQuery(IInstallableUnit iu) {
-    return QueryUtil.createMatchQuery(MetadataRepositoryFacade.matchesRequirementsExpression, iu.getRequirements());
-  }
+//  private IQuery<IInstallableUnit> getRequirementsQuery(IInstallableUnit iu) {
+//    return QueryUtil.createMatchQuery(MetadataRepositoryFacade.matchesRequirementsExpression, iu.getRequirements());
+//  }
 
-  public Set<IInstallableUnit> findMetadata(Collection<Bundle> bundles, boolean transitive, IProgressMonitor monitor) {
+  public Set<IInstallableUnit> findMetadata(Collection<Bundle> bundles/*, boolean transitive*/, IProgressMonitor monitor) {
     SubMonitor mon = SubMonitor.convert(monitor,"find metadata",1000*bundles.size());
     
     Set<IInstallableUnit> toInstall = bundles.stream().flatMap(bundle -> {
@@ -67,12 +64,12 @@ public class MetadataRepositoryFacade {
 
       Optional<Set<IInstallableUnit>> ius = repos.parallelStream().map(r -> {
         Set<IInstallableUnit> found = r.get(mon.split(500)).query(iuQuery, mon.split(250)).toSet();
-        if (transitive && !found.isEmpty()) {
-          List<IQuery<IInstallableUnit>> queries = found.parallelStream()
-            .map(iu -> getRequirementsQuery(iu))
-            .collect(Collectors.toList());
-          found.addAll(r.get(mon.split(50)).query(QueryUtil.createCompoundQuery(queries, false), mon.split(200)).toSet());
-        }
+//        if (transitive && !found.isEmpty()) {
+//          List<IQuery<IInstallableUnit>> queries = found.parallelStream()
+//            .map(iu -> getRequirementsQuery(iu))
+//            .collect(Collectors.toList());
+//          found.addAll(r.get(mon.split(50)).query(QueryUtil.createCompoundQuery(queries, false), mon.split(200)).toSet());
+//        }
         return found;
       }).filter(set -> !set.isEmpty()).findAny();
 

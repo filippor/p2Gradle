@@ -1,23 +1,24 @@
 package it.filippor.p2.config
 
 import it.filippor.p2.api.Bundle
-import it.filippor.p2.api.DefaultRepo
 import it.filippor.p2.api.P2RepositoryManager
 import it.filippor.p2.framework.FrameworkLauncher
 import it.filippor.p2.framework.ServiceProvider
 import it.filippor.p2.task.FileProviderTask
 import it.filippor.p2.task.PublishTask
+import it.filippor.p2.task.ResolveTask
 import it.filippor.p2.task.TaskWithProgress
 import it.filippor.p2.util.ProgressMonitorWrapper
 import java.io.File
 import java.net.URI
 import java.util.Arrays
+import java.util.Collection
 import java.util.function.BiConsumer
+import org.eclipse.osgi.service.resolver.VersionRange
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.TaskProvider
-import it.filippor.p2.task.ResolveTask
 
 class FrameworkTaskConfigurator {
 	val public static P2_FRAMEWORK_BUNDLES_CONFIG = "p2frameworkBundles"
@@ -31,9 +32,10 @@ class FrameworkTaskConfigurator {
 	val FrameworkLauncher p2FrameworkLauncher
 
 	val Project project
+	
 
 //	val Iterable<URI> updateSites
-	new(Project project, Iterable<URI> updateSites) {
+	new(Project project,URI agentUri, Collection<URI> updateSites) {
 		val prj = project.rootProject
 		this.project = project
 //		this.updateSites = updateSites
@@ -64,7 +66,7 @@ class FrameworkTaskConfigurator {
 					p2FrameworkLauncher.startFramework()
 					p2FrameworkLauncher.executeWithServiceProvider [
 						getService(P2RepositoryManager).init(
-							defaultRepo,
+							agentUri,
 							updateSites,
 							new ProgressMonitorWrapper(t)
 						)
@@ -74,26 +76,37 @@ class FrameworkTaskConfigurator {
 			].get
 	}
 
-	def getDefaultRepo() {
-		new DefaultRepo(project.rootProject.buildDir)
-	}
+	
 
+	// #{new Artifact("org.eclipse.core.resources", new VersionRange("3.13.300.v20190218-2054"))}
+	def p2Bundles(String... bundles) {
+		var tmp = bundles.map[it.split(":")].map[new Bundle(it.get(0),new VersionRange(it.get(1)))]
+		p2Bundles(true, tmp)
+	}
+	def p2Bundles(boolean transitive,String... bundles) {
+		var tmp = bundles.map[it.split(":")].map[new Bundle(it.get(0),new VersionRange(it.get(1)))]
+		p2Bundles(transitive, tmp)
+	}
 	// #{new Artifact("org.eclipse.core.resources", new VersionRange("3.13.300.v20190218-2054"))}
 	def p2Bundles(Bundle... bundles) {
 		p2Bundles(true, bundles)
 	}
 
 	def p2Bundles(boolean transitive, Bundle... bundles) {
-		val resolve = project.tasks.register("resolveP2" + Arrays.toString(bundles), ResolveTask) [
+		val filesTaskName =  (if(transitive)"transitive"else"" )+ Arrays.toString(bundles)
+		val name = "resolveP2" + filesTaskName
+		val resolve = project.tasks.findByName(name)?:  project.tasks.register(name, ResolveTask) [
 			p2FrameworkLauncher = this.p2FrameworkLauncher
 			bundles = Arrays.asList(bundles)
 			it.transitive = transitive
-		]
-		resolve.configure[dependsOn += startFrameworkTask]
+		].get
+		resolve.dependsOn += startFrameworkTask
 		stopFrameworkTask.mustRunAfter(stopFrameworkTask.mustRunAfter, resolve)
-		return project.files(project.tasks.register(Arrays.toString(bundles), FileProviderTask)[
-			resolver = resolve.get
-		])
+		
+		val filesTask = project.tasks.findByName(filesTaskName)?:project.tasks.register(filesTaskName, FileProviderTask)[
+			resolver = resolve as ResolveTask
+		].get
+		return project.files(filesTask)
 	}
 
 	def TaskProvider<PublishTask> publishTask(String name, Action<PublishTask> action) {

@@ -23,7 +23,7 @@ class ResolveTask  extends TaskWithProgress {
 	
 	@OutputFile
 	def getOutputFile() {
-		return project.buildDir.toPath.resolve(name).toFile
+		return project.buildDir.toPath.resolve("bundle-resolutions").resolve(name).toFile
 	}
 	@TaskAction
 	def resolve() {
