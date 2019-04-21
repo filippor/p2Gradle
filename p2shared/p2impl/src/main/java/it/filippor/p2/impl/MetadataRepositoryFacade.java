@@ -20,7 +20,6 @@ import org.osgi.framework.VersionRange;
 
 import it.filippor.p2.api.Bundle;
 import it.filippor.p2.impl.util.LazyProvider;
-import it.filippor.p2.impl.util.LazyProvider.Provider;
 
 public class MetadataRepositoryFacade {
 
@@ -51,10 +50,6 @@ public class MetadataRepositoryFacade {
   }
   
   
-  
-//  private IQuery<IInstallableUnit> getRequirementsQuery(IInstallableUnit iu) {
-//    return QueryUtil.createMatchQuery(MetadataRepositoryFacade.matchesRequirementsExpression, iu.getRequirements());
-//  }
 
   public Set<IInstallableUnit> findMetadata(Collection<Bundle> bundles/*, boolean transitive*/, IProgressMonitor monitor) {
     SubMonitor mon = SubMonitor.convert(monitor,"find metadata",1000*bundles.size());
@@ -63,17 +58,12 @@ public class MetadataRepositoryFacade {
       IQuery<IInstallableUnit>              iuQuery = QueryUtil.createIUQuery(bundle.getId(), toVersion(bundle.getVersion()));
 
       Optional<Set<IInstallableUnit>> ius = repos.parallelStream().map(r -> {
-        Set<IInstallableUnit> found = r.get(mon.split(500)).query(iuQuery, mon.split(250)).toSet();
-//        if (transitive && !found.isEmpty()) {
-//          List<IQuery<IInstallableUnit>> queries = found.parallelStream()
-//            .map(iu -> getRequirementsQuery(iu))
-//            .collect(Collectors.toList());
-//          found.addAll(r.get(mon.split(50)).query(QueryUtil.createCompoundQuery(queries, false), mon.split(200)).toSet());
-//        }
-        return found;
-      }).filter(set -> !set.isEmpty()).findAny();
+        return r.get(mon.split(500)).query(iuQuery, mon.split(250)).toSet();
+      }).filter(set -> 
+        !set.isEmpty()
+      ).findAny();
 
-      if (ius.isPresent())
+      if (!ius.isPresent())
         throw new IllegalArgumentException(bundle + " not found serching in p2 repositories :" + getReposAsString(mon.split(10)));
 
       return ius.get().stream();

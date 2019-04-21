@@ -1,8 +1,8 @@
 package it.filippor.p2.framework;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
@@ -13,7 +13,7 @@ public class ServiceProvider {
 
   private final BundleContext ctx;
 
-  private final List<ServiceReference<?>> refs = CollectionLiterals.<ServiceReference<?>> newArrayList();
+  private final List<ServiceReference<?>> refs = new ArrayList<>();
 
   public ServiceProvider(final BundleContext bctx) {
     this.ctx = bctx;

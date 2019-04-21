@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,10 +14,6 @@ import java.util.stream.StreamSupport;
 
 import org.eclipse.core.runtime.adaptor.EclipseStarter;
 import org.eclipse.osgi.internal.framework.EquinoxConfiguration;
-import org.eclipse.xtext.xbase.lib.Exceptions;
-import org.eclipse.xtext.xbase.lib.IterableExtensions;
-import org.eclipse.xtext.xbase.lib.Pure;
-import org.eclipse.xtext.xbase.lib.util.ToStringBuilder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -26,12 +23,14 @@ import org.osgi.framework.wiring.BundleRevision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.filippor.p2.util.Extensions;
+
 public class FrameworkLauncher {
   private static final Logger logger = LoggerFactory.getLogger(FrameworkLauncher.class);
 
   private final File frameworkStorage;
 
-  private final Iterable<String> extraSystemPackage;
+  private final Collection<String> extraSystemPackage;
 
   private final Iterable<String> startBundlesSymbolicNames;
 
@@ -47,16 +46,16 @@ public class FrameworkLauncher {
 
       }
 
-      if ((EclipseStarter.getSystemBundleContext() == null)) {
+      BundleContext ctx = EclipseStarter.getSystemBundleContext();
+      if ((ctx == null)) {
         logger.error("systemBundleContext is null");
       }
-      this.checkAllBundles(EclipseStarter.getSystemBundleContext());
       for (String sn : startBundlesSymbolicNames) {
-        this.tryActivateBundle(EclipseStarter.getSystemBundleContext(), sn);
+        tryActivateBundle(ctx, sn);
       }
-      this.checkAllBundles(EclipseStarter.getSystemBundleContext());
+      checkAllBundles(ctx);
     } catch (Exception e) {
-      Exceptions.sneakyThrow(e);
+      throw Extensions.sneakyThrow(e);
     }
 
   }
@@ -74,7 +73,7 @@ public class FrameworkLauncher {
         this.tempSecureStorage.delete();
       }
     } catch (Exception e) {
-      Exceptions.sneakyThrow(e);
+      throw Extensions.sneakyThrow(e);
     }
   }
 
@@ -87,7 +86,7 @@ public class FrameworkLauncher {
     props.put(Constants.FRAMEWORK_STORAGE, frameworkStorage.toPath().resolve("storage").toUri().toURL().toString());
     props.put(EclipseStarter.PROP_BUNDLES,
               StreamSupport.stream(bundles.spliterator(), false).map(this::toBundleId).collect(Collectors.joining(",")));
-    props.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA, IterableExtensions.join(this.extraSystemPackage, ";"));
+    props.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA, this.extraSystemPackage.stream().collect(Collectors.joining(";")));
     EclipseStarter.setInitialProperties(props);
 
   }
@@ -117,8 +116,7 @@ public class FrameworkLauncher {
     try {
       return ("reference:" + file.toURI().toURL());
     } catch (MalformedURLException e) {
-      Exceptions.sneakyThrow(e);
-      return null;
+      throw Extensions.sneakyThrow(e);
     }
   }
 
@@ -192,7 +190,7 @@ public class FrameworkLauncher {
     return EclipseStarter.isRunning();
   }
 
-  public FrameworkLauncher(final File frameworkStorage, final Iterable<String> extraSystemPackage,
+  public FrameworkLauncher(final File frameworkStorage, final Collection<String> extraSystemPackage,
                            final Iterable<String> startBundlesSymbolicNames, final Iterable<File> bundles) {
     super();
     this.frameworkStorage          = frameworkStorage;
@@ -202,7 +200,6 @@ public class FrameworkLauncher {
   }
 
   @Override
-  @Pure
   public int hashCode() {
     final int prime  = 31;
     int       result = 1;
@@ -213,7 +210,6 @@ public class FrameworkLauncher {
   }
 
   @Override
-  @Pure
   public boolean equals(final Object obj) {
     if (this == obj)
       return true;
@@ -238,37 +234,23 @@ public class FrameworkLauncher {
     } else if (!this.startBundlesSymbolicNames.equals(other.startBundlesSymbolicNames))
       return false;
     if (this.bundles == null) {
-        return other.bundles == null;
-    } else return this.bundles.equals(other.bundles);
+      return other.bundles == null;
+    } else
+      return this.bundles.equals(other.bundles);
   }
 
-  @Override
-  @Pure
-  public String toString() {
-    ToStringBuilder b = new ToStringBuilder(this);
-    b.add("frameworkStorage", this.frameworkStorage);
-    b.add("extraSystemPackage", this.extraSystemPackage);
-    b.add("startBundlesSymbolicNames", this.startBundlesSymbolicNames);
-    b.add("bundles", this.bundles);
-    return b.toString();
-  }
-
-  @Pure
   public File getFrameworkStorage() {
     return this.frameworkStorage;
   }
 
-  @Pure
   public Iterable<String> getExtraSystemPackage() {
     return this.extraSystemPackage;
   }
 
-  @Pure
   public Iterable<String> getStartBundlesSymbolicNames() {
     return this.startBundlesSymbolicNames;
   }
 
-  @Pure
   public Iterable<File> getBundles() {
     return this.bundles;
   }

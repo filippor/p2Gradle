@@ -44,9 +44,6 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
       mon.done();
     } catch (Exception e) {
       Utils.sneakyThrow(e);
-      // } finally {
-      // if (agent != null)
-      // agent.stop();
     }
   }
 

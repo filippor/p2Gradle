@@ -1,13 +1,13 @@
 package it.filippor.p2.task;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
@@ -16,6 +16,7 @@ import it.filippor.p2.api.Bundle;
 import it.filippor.p2.api.P2RepositoryManager;
 import it.filippor.p2.framework.FrameworkLauncher;
 import it.filippor.p2.framework.ServiceProvider;
+import it.filippor.p2.util.Extensions;
 import it.filippor.p2.util.ProgressMonitorWrapper;
 
 public class ResolveTask extends TaskWithProgress {
@@ -49,7 +50,7 @@ public class ResolveTask extends TaskWithProgress {
     this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider it) -> {
       try {
         final Set<String> paths = it.getService(P2RepositoryManager.class)
-          .resolve(this.bundles, this.transitive, new ProgressMonitorWrapper(this))
+          .resolve(bundles, transitive, ProgressMonitorWrapper.wrap(this))
           .stream()
           .map(File::toPath)
           .map(Path::toString)
@@ -59,8 +60,8 @@ public class ResolveTask extends TaskWithProgress {
 
         Files.deleteIfExists(outputPath);
         Files.write(outputPath, paths);
-      } catch (Throwable _e) {
-        throw Exceptions.sneakyThrow(_e);
+      } catch (IOException e) {
+        throw Extensions.sneakyThrow(e);
       }
     });
   }

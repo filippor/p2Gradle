@@ -40,7 +40,7 @@ public class PublishTask extends TaskWithProgress {
   @TaskAction
   public void publish() {
     this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> {
-      sp.getService(P2RepositoryManager.class).publish(this.repo, this.bundles, new ProgressMonitorWrapper(this));
+      sp.getService(P2RepositoryManager.class).publish(repo, bundles, ProgressMonitorWrapper.wrap(this));
     });
   }
 }

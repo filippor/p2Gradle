@@ -1,6 +1,5 @@
 package it.filippor.p2.util;
 
-import org.eclipse.xtend2.lib.StringConcatenation;
 import org.gradle.api.logging.Logger;
 import org.gradle.internal.logging.progress.ProgressLogger;
 import org.gradle.internal.logging.progress.ProgressLoggerFactory;
@@ -25,7 +24,11 @@ public class ProgressMonitorWrapper implements ProgressMonitor {
   
   private Logger log;
   
-  public ProgressMonitorWrapper(final TaskWithProgress task) {
+  public static ProgressMonitor wrap(final TaskWithProgress task) {
+    return new ProgressMonitorWrapper(task);
+  }
+  
+  private ProgressMonitorWrapper(final TaskWithProgress task) {
     this.log = task.getLogger();
     this.progressFactory = task.getProgressLoggerFactory();
   }
@@ -68,7 +71,7 @@ public class ProgressMonitorWrapper implements ProgressMonitor {
   public void subTask(final String name) {
     this.subName = name;
     this.log.debug(name);
-    StringConcatenation _builder = new StringConcatenation();
+    StringBuilder _builder = new StringBuilder();
     _builder.append(this.taskName);
     _builder.append(":");
     _builder.append(this.subName);
@@ -83,7 +86,7 @@ public class ProgressMonitorWrapper implements ProgressMonitor {
   public void worked(final int work) {
     int _worked = this.worked;
     this.worked = (_worked + work);
-    StringConcatenation _builder = new StringConcatenation();
+    StringBuilder _builder = new StringBuilder();
     _builder.append(this.taskName);
     _builder.append(":");
     _builder.append(this.subName);

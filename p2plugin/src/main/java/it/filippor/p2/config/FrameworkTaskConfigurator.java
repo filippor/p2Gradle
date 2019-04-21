@@ -4,16 +4,12 @@ import java.io.File;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
-import org.eclipse.osgi.service.resolver.VersionRange;
-import org.eclipse.xtext.xbase.lib.CollectionLiterals;
-import org.eclipse.xtext.xbase.lib.Conversions;
-import org.eclipse.xtext.xbase.lib.Functions.Function1;
-import org.eclipse.xtext.xbase.lib.ListExtensions;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -87,9 +83,8 @@ public class FrameworkTaskConfigurator {
                                        t.doLast((Action<Task>) (Task it) -> {
                                          this.p2FrameworkLauncher.startFramework();
                                          this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> {
-                                           P2RepositoryManager _service = sp.getService(P2RepositoryManager.class);
-                                           ProgressMonitorWrapper _progressMonitorWrapper = new ProgressMonitorWrapper(t);
-                                           _service.init(agentUri, updateSites, _progressMonitorWrapper);
+                                           sp.getService(P2RepositoryManager.class)
+                                             .init(agentUri, updateSites, ProgressMonitorWrapper.wrap(t));
                                          });
                                        });
                                      })
@@ -103,14 +98,12 @@ public class FrameworkTaskConfigurator {
   }
 
   public ConfigurableFileCollection p2Bundles(final boolean transitive, final String... bundles) {
-
-    return this.p2Bundles(transitive, ((Bundle[]) Conversions
-      .unwrapArray((List<Bundle>) ListExtensions.<String[], Bundle> map(ListExtensions
-        .<String, String[]> map(Arrays.<String> asList(bundles), (Function1<String, String[]>) (String it) -> it.split(":")),
-                                                                        (Function1<String[], Bundle>) (String[] it) -> {
-                                                                          return new Bundle(it[0], new VersionRange(it[1]));
-                                                                        }),
-                   Bundle.class)));
+    List<Bundle> list = Arrays.asList(bundles)
+      .stream()
+      .map(s -> s.split(":"))
+      .map(sa -> new Bundle(sa[0], new org.osgi.framework.VersionRange(sa[1])))
+      .collect(Collectors.toList());
+    return this.p2Bundles(transitive, list.toArray(new Bundle[list.size()]));
   }
 
   public ConfigurableFileCollection p2Bundles(final Bundle... bundles) {
@@ -162,8 +155,7 @@ public class FrameworkTaskConfigurator {
 
   public FrameworkLauncher createFrameworkLauncher(final Project project, final Iterable<File> bundles) {
     final File         frameworkStoragePath      = project.getBuildDir().toPath().resolve("tmp").resolve("p2Framework").toFile();
-    final Set<String>  p2ApiPackage              = Collections
-      .unmodifiableSet(CollectionLiterals.newHashSet("it.filippor.p2.api"));
+    final Set<String>  p2ApiPackage              = new HashSet<>(Arrays.asList("it.filippor.p2.api"));
     final List<String> startBundlesSymbolicNames = Arrays.asList("org.eclipse.equinox.ds", "org.eclipse.equinox.registry",
                                                                  "org.eclipse.core.net", "org.apache.felix.scr", "p2impl");
     return new FrameworkLauncher(frameworkStoragePath, p2ApiPackage, startBundlesSymbolicNames, bundles);

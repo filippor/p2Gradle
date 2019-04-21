@@ -2,7 +2,7 @@ import org.gradle.api.tasks.compile.JavaCompile
 
 plugins {
     id("java-gradle-plugin")
-    `kotlin-dsl`
+//    `kotlin-dsl`
 //	kotlin("jvm") version "1.3.21"
 //	id("org.xtext.xtend") version("2.0.4")
 }
@@ -25,7 +25,7 @@ gradlePlugin {
 dependencies{
 	compile("it.filippor.p2:p2api:0.0.1")
 //	compile(kotlin("gradle-plugin", version = "1.3.21"))
-	compile ("org.eclipse.xtend:org.eclipse.xtend.lib:2.17.0")
+//	compile ("org.eclipse.xtend:org.eclipse.xtend.lib:2.17.0")
 	compile("org.osgi:osgi.core:7.0.0")
 	compile("org.eclipse.platform:org.eclipse.osgi:3.13.300")
 }
