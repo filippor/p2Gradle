@@ -77,7 +77,7 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
   }
 
   @Override
-  public void publish(URI repo, File[] bundleLocations, ProgressMonitor monitor) {
+  public void publish(URI repo, Iterable<File> bundleLocations, ProgressMonitor monitor) {
     IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
     try {
       SubMonitor mon = SubMonitor.convert(wrappedMonitor, "init", 1000);

@@ -3,6 +3,8 @@ package it.filippor.p2.impl;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -21,7 +23,7 @@ import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
 
 public class P2PublisherImpl {
 
-  public void publish(URI repo, File[] bundleLocations, IProgressMonitor monitor) throws Exception {
+  public void publish(URI repo, Iterable<File> bundleLocations, IProgressMonitor monitor) throws Exception {
     IPublisherInfo     info      = createPublisherInfo(repo);
     IPublisherAction[] actions   = createActions(bundleLocations);
     Publisher          publisher = new Publisher(info);
@@ -37,13 +39,11 @@ public class P2PublisherImpl {
 
     // Create the metadata repository. This will fail if a repository already exists here
     IMetadataRepository metadataRepository = new SimpleMetadataRepositoryFactory()
-      .create(repo, "Sample Metadata Repository",
-              MetadataRepositoryManager.TYPE_COMPOSITE_REPOSITORY, Collections.emptyMap());
+      .create(repo, "Sample Metadata Repository", MetadataRepositoryManager.TYPE_COMPOSITE_REPOSITORY, Collections.emptyMap());
 
     // Create the artifact repository. This will fail if a repository already exists here
     IArtifactRepository artifactRepository = new SimpleArtifactRepositoryFactory()
-      .create(repo, "Sample Artifact Repository",
-              ArtifactRepositoryManager.TYPE_COMPOSITE_REPOSITORY, Collections.emptyMap());
+      .create(repo, "Sample Artifact Repository", ArtifactRepositoryManager.TYPE_COMPOSITE_REPOSITORY, Collections.emptyMap());
 
     result.setMetadataRepository(metadataRepository);
     result.setArtifactRepository(artifactRepository);
@@ -51,9 +51,11 @@ public class P2PublisherImpl {
     return result;
   }
 
-  public static IPublisherAction[] createActions(File[] bundleLocations ) {
-    IPublisherAction[] result          = new IPublisherAction[1];
-    BundlesAction bundlesAction = new BundlesAction(bundleLocations);
+  public static IPublisherAction[] createActions(Iterable<File> bundleLocations) {
+    IPublisherAction[] result  = new IPublisherAction[1];
+    ArrayList<File>    bundles = new ArrayList<>();
+    bundleLocations.forEach(bundles::add);
+    BundlesAction bundlesAction = new BundlesAction(bundles.toArray(new File[bundles.size()]));
     result[0] = bundlesAction;
     return result;
   }

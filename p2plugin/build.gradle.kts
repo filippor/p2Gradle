@@ -2,9 +2,9 @@ import org.gradle.api.tasks.compile.JavaCompile
 
 plugins {
     id("java-gradle-plugin")
-//    `kotlin-dsl`
+    `kotlin-dsl`
 //	kotlin("jvm") version "1.3.21"
-	id("org.xtext.xtend") version("2.0.4")
+//	id("org.xtext.xtend") version("2.0.4")
 }
 
 repositories {

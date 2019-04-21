@@ -12,6 +12,6 @@ public interface P2RepositoryManager {
 
   public Set<File> resolve(Collection<Bundle> artifacts, boolean transitive, ProgressMonitor monitor);
 
-  void publish(URI repo, File[] bundleLocations, ProgressMonitor monitor);
+  void publish(URI repo, Iterable<File> bundleLocations, ProgressMonitor monitor);
 
 }
