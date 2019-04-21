@@ -80,11 +80,10 @@ class FrameworkTaskConfigurator {
 
 	// #{new Artifact("org.eclipse.core.resources", new VersionRange("3.13.300.v20190218-2054"))}
 	def p2Bundles(String... bundles) {
-		var tmp = bundles.map[it.split(":")].map[new Bundle(it.get(0),new VersionRange(it.get(1)))]
-		p2Bundles(true, tmp)
+		p2Bundles(true, bundles)
 	}
 	def p2Bundles(boolean transitive,String... bundles) {
-		var tmp = bundles.map[it.split(":")].map[new Bundle(it.get(0),new VersionRange(it.get(1)))]
+		var tmp = Arrays.asList(bundles).map[it.split(":")].map[new Bundle(it.get(0),new VersionRange(it.get(1)))]
 		p2Bundles(transitive, tmp)
 	}
 	// #{new Artifact("org.eclipse.core.resources", new VersionRange("3.13.300.v20190218-2054"))}

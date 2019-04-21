@@ -2,7 +2,7 @@ package it.filippor.p2
 
 import it.filippor.p2.config.FrameworkTaskConfigurator
 import java.net.URI
-import java.nio.file.Path
+import java.nio.file.Paths
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -24,7 +24,7 @@ class P2Plugin implements Plugin<Project> {
 		]
 
 		val extension taskConfigurator = new FrameworkTaskConfigurator(prj,
-			Path.of(System.getProperty("user.home"), ".gradle", "caches", "p2").toUri
+			Paths.get(System.getProperty("user.home"), ".gradle", "caches", "p2").toUri
 			, #{
 				URI.create("http://download.eclipse.org/releases/2019-03"),
 				URI.create("http://download.eclipse.org/releases/2019-06")

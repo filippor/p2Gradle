@@ -2,7 +2,6 @@ package it.filippor.p2.api;
 
 import java.io.File;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Set;
 

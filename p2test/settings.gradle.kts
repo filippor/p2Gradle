@@ -8,4 +8,4 @@
  */
 
 rootProject.name = "p2test"
-include("p2testNested")
+//include("p2testNested")
