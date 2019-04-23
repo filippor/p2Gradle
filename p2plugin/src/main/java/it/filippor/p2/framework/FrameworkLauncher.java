@@ -1,13 +1,5 @@
 package it.filippor.p2.framework;
 
-import it.filippor.p2.util.Extensions;
-import org.eclipse.core.runtime.adaptor.EclipseStarter;
-import org.eclipse.osgi.internal.framework.EquinoxConfiguration;
-import org.osgi.framework.*;
-import org.osgi.framework.wiring.BundleRevision;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -19,6 +11,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import org.eclipse.core.runtime.adaptor.EclipseStarter;
+import org.eclipse.osgi.internal.framework.EquinoxConfiguration;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.wiring.BundleRevision;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import it.filippor.p2.util.Extensions;
 
 public class FrameworkLauncher {
   private static final Logger logger = LoggerFactory.getLogger(FrameworkLauncher.class);
@@ -65,7 +70,9 @@ public class FrameworkLauncher {
     try {
       EclipseStarter.shutdown();
       if (this.tempSecureStorage != null) {
-        this.tempSecureStorage.delete();
+        if (!this.tempSecureStorage.delete()) {
+          logger.warn("cannot delete {}", tempSecureStorage);
+        }
       }
     } catch (Exception e) {
       throw Extensions.sneakyThrow(e);
