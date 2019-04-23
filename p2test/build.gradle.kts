@@ -9,13 +9,21 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id ("java-library")
-    id ("it.filippor.p2")
+    id ("it.filippor.p2") version ( "0.0.1")
+}
+
+buildscript{
+    repositories{
+        jcenter()
+        mavenLocal()
+    }
 }
 
 repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    mavenLocal()
 }
 
 dependencies {

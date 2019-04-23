@@ -55,7 +55,7 @@ public class P2Plugin implements Plugin<Project> {
       it.add(testF.getName(), taskConfigurator.p2Bundles("org.eclipse.core.filesystem:[1.7,1.8)"));
     });
 
-    taskConfigurator.publishTask("publish", (PublishTask it) -> {
+    taskConfigurator.publishTask("p2Publish", (PublishTask it) -> {
       it.setRepo(prj.getBuildDir().toPath().resolve("targetSite").toUri());
       it.setBundles(testF);
     });
