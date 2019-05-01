@@ -123,7 +123,7 @@ dependencies {
 	runtime("org.eclipse.platform:org.eclipse.equinox.launcher:1.5.0")
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.launcher_1.5.0.v20180512-1130.jar"))
 	
-	runtime("org.eclipse.platform:org.eclipse.equinox.p2.director:2.4.0")
+	implementation("org.eclipse.platform:org.eclipse.equinox.p2.director:2.4.0")
 	//runtime(files("file:///home/filippor/.m2/repository/org/eclipse/tycho/tycho-bundles-external/1.3.0/eclipse/plugins/org.eclipse.equinox.p2.director_2.4.0.v20180302-1057.jar"))
 	
 	runtime("org.eclipse.platform:org.eclipse.equinox.p2.director.app:1.1.0"){
