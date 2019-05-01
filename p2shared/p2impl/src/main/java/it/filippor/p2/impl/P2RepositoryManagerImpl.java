@@ -19,6 +19,7 @@ import org.osgi.service.component.annotations.Component;
 import it.filippor.p2.api.Bundle;
 import it.filippor.p2.api.P2RepositoryManager;
 import it.filippor.p2.api.ProgressMonitor;
+import it.filippor.p2.impl.samples.P2Discovery;
 import it.filippor.p2.impl.util.Utils;
 
 @Component()
@@ -80,12 +81,23 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
     IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
     try {
       SubMonitor mon = SubMonitor.convert(wrappedMonitor, "init", 1000);
-      new P2PublisherImpl().publish(repo, bundleLocations, mon);
+      new P2PublisherImpl().publish(repo, bundleLocations, mon.split(1000));
+      mon.done();
     } catch (Exception e) {
       Utils.sneakyThrow(e);
     }
   }
-
+  
+  public void director(ProgressMonitor monitor) {
+    IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
+    try {
+      SubMonitor mon = SubMonitor.convert(wrappedMonitor, "init", 1000);
+      new P2Discovery().testDirector(agent,mon);
+    } catch (Exception e) {
+      Utils.sneakyThrow(e);
+    }
+  }
+  
   private IProvisioningAgent getAgent(URI repo) throws ProvisionException {
     ServiceReference<?> sr = ctx.getServiceReference(IProvisioningAgentProvider.SERVICE_NAME);
     if (sr == null)

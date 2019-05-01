@@ -31,7 +31,7 @@ tasks.register("publish") {
 
 tasks.register("p2publish") {
   group = "build"
-      dependsOn(gradle.includedBuild("p2test").task(":p2publish"))
+      dependsOn(gradle.includedBuild("p2test").task(":p2testNested:p2publish"))
 }
 tasks.register("model1") {
   group = "build"

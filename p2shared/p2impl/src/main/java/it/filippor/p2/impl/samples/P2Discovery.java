@@ -1,5 +1,8 @@
 package it.filippor.p2.impl.samples;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.equinox.internal.provisional.p2.director.IDirector;
+import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.metadata.IArtifactKey;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
 import org.eclipse.equinox.p2.metadata.IInstallableUnitPatch;
@@ -94,6 +97,12 @@ public class P2Discovery {
                                                            Boolean.TRUE);
 
   }
+
+  public void testDirector(IProvisioningAgent agent, IProgressMonitor monitor){
+    IDirector director = null;
+//    director.provision(profileChangeRequest, context, monitor)
+  }
+
   // private void test() {
   // Catalog catalog = new Catalog();
   // catalog.setEnvironment(DiscoveryCore.createEnvironment());

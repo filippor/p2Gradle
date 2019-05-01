@@ -17,7 +17,15 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
 }
+p2.setUpdateSites( mutableListOf(
+                uri("http://download.eclipse.org/releases/2019-03"),
+                uri("http://download.eclipse.org/releases/2019-06")))
+
+p2.publishTask("p2publish") {
+     setRepo(buildDir.toPath().resolve("targetSite").toUri())
+     setBundles(configurations.getByName("compileClasspath"))
+   }
 
 dependencies {
-  
+  api(p2.bundles(false, "org.eclipse.core.resources:[3.13,3.14)"))
 }

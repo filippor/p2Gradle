@@ -2,6 +2,7 @@ package it.filippor.p2.config;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,21 +43,23 @@ public class FrameworkTaskConfigurator {
 
   private final Project project;
 
-  public FrameworkTaskConfigurator(final Project project, final URI agentUri, final Collection<URI> updateSites) {
-    final Project prj = project.getRootProject();
+  private Collection<URI> updateSites;
+
+  private URI agentUri;
+
+  public FrameworkTaskConfigurator(final Project project, final URI agentUri) {
+    this.agentUri = agentUri;
+    this.updateSites = new ArrayList<>();
+    final Project rootPrj = project.getRootProject();
     this.project = project;
 
-    Configuration frameworkBundles = prj.getConfigurations().findByName(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
-    if (frameworkBundles == null) {
-      frameworkBundles = prj.getConfigurations().create(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
-      prj.getDependencies().add(frameworkBundles.getName(), "it.filippor.p2:p2impl:0.0.1");
-    }
+   
 
-    this.p2FrameworkLauncher = this.createFrameworkLauncher(prj, frameworkBundles);
+    this.p2FrameworkLauncher = this.createFrameworkLauncher(rootPrj.getRootProject());
 
-    Task stopFrameworkTask = prj.getTasks().findByName(FrameworkTaskConfigurator.P2_STOP_FRAMEWORK_TASK);
+    Task stopFrameworkTask = rootPrj.getTasks().findByName(FrameworkTaskConfigurator.P2_STOP_FRAMEWORK_TASK);
     if (stopFrameworkTask == null) {
-      stopFrameworkTask = prj.getTasks()
+      stopFrameworkTask = rootPrj.getTasks()
         .register(FrameworkTaskConfigurator.P2_STOP_FRAMEWORK_TASK, TaskWithProgress.class, it -> it.doLast(task -> {
           if (this.p2FrameworkLauncher.isStarted()) {
             this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> {
@@ -71,15 +74,15 @@ public class FrameworkTaskConfigurator {
     }
     this.stopFrameworkTask = stopFrameworkTask;
 
-    Task startFrameworkTask = prj.getTasks().findByName(FrameworkTaskConfigurator.P2_START_FRAMEWORK_TASK);
+    Task startFrameworkTask = rootPrj.getTasks().findByName(FrameworkTaskConfigurator.P2_START_FRAMEWORK_TASK);
     if (startFrameworkTask == null) {
-      startFrameworkTask = prj.getTasks()
+      startFrameworkTask = rootPrj.getTasks()
         .register(FrameworkTaskConfigurator.P2_START_FRAMEWORK_TASK, TaskWithProgress.class, t -> {
           t.finalizedBy(this.stopFrameworkTask);
           t.doLast(it -> {
             this.p2FrameworkLauncher.startFramework();
             this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> sp.getService(P2RepositoryManager.class)
-              .init(agentUri, updateSites, ProgressMonitorWrapper.wrap(t)));
+              .init(getAgentUri(), getUpdateSites(), ProgressMonitorWrapper.wrap(t)));
           });
         })
         .get();
@@ -87,23 +90,23 @@ public class FrameworkTaskConfigurator {
     this.startFrameworkTask = startFrameworkTask;
   }
 
-  public ConfigurableFileCollection p2Bundles(final String... bundles) {
-    return this.p2Bundles(true, bundles);
+  public ConfigurableFileCollection bundles(final String... bundles) {
+    return this.bundles(true, bundles);
   }
 
-  public ConfigurableFileCollection p2Bundles(final boolean transitive, final String... bundles) {
-    return this.p2Bundles(transitive,
+  public ConfigurableFileCollection bundles(final boolean transitive, final String... bundles) {
+    return this.bundles(transitive,
                           Arrays.stream(bundles)
                             .map(s -> s.split(":"))
                             .map(sa -> new Bundle(sa[0], new org.osgi.framework.VersionRange(sa[1])))
                             .toArray(Bundle[]::new));
   }
 
-  public ConfigurableFileCollection p2Bundles(final Bundle... bundles) {
-    return this.p2Bundles(true, bundles);
+  public ConfigurableFileCollection bundles(final Bundle... bundles) {
+    return this.bundles(true, bundles);
   }
 
-  public ConfigurableFileCollection p2Bundles(final boolean transitive, final Bundle... bundles) {
+  public ConfigurableFileCollection bundles(final boolean transitive, final Bundle... bundles) {
     String nameQual = "";
     if (transitive) {
       nameQual = "transitive";
@@ -146,7 +149,14 @@ public class FrameworkTaskConfigurator {
     return publishTask;
   }
 
-  public FrameworkLauncher createFrameworkLauncher(final Project project, final Iterable<File> bundles) {
+  public FrameworkLauncher createFrameworkLauncher(final Project project) {
+    Configuration bundles = project.getConfigurations().findByName(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
+    if (bundles == null) {
+      bundles = project.getConfigurations().create(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
+      project.getDependencies().add(bundles.getName(), "it.filippor.p2:p2impl:0.0.1");
+    }
+    
+    
     final File         frameworkStoragePath      = project.getBuildDir().toPath().resolve("tmp").resolve("p2Framework").toFile();
     final Set<String>  p2ApiPackage              = new HashSet<>(Collections.singletonList("it.filippor.p2.api"));
     final List<String> startBundlesSymbolicNames = Arrays.asList("org.eclipse.equinox.ds", "org.eclipse.equinox.registry",
@@ -165,5 +175,21 @@ public class FrameworkTaskConfigurator {
       }
       this.p2FrameworkLauncher.executeWithServiceProvider(it -> action.accept(t, it));
     });
+  }
+
+  public Collection<URI> getUpdateSites() {
+    return updateSites;
+  }
+
+  public void setUpdateSites(Collection<URI> updateSites) {
+    this.updateSites = updateSites;
+  }
+
+  public URI getAgentUri() {
+    return agentUri;
+  }
+
+  public void setAgentUri(URI agentUri) {
+    this.agentUri = agentUri;
   }
 }
