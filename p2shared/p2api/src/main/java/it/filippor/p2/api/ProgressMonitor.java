@@ -99,7 +99,6 @@ public interface ProgressMonitor {
    * @param work
    *          the amount of work done
    */
-  @SuppressWarnings("EmptyMethod")
   void internalWorked(double work);
 
   /**
