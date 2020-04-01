@@ -47,9 +47,9 @@ public class ResolveTask extends TaskWithProgress {
       this.getLogger().warn("framework is not running");
       this.p2FrameworkLauncher.startFramework();
     }
-    this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider it) -> {
+    this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> {
       try {
-        final Set<String> paths = it.getService(P2RepositoryManager.class)
+        final Set<String> paths = sp.getService(P2RepositoryManager.class)
           .resolve(bundles, transitive, ProgressMonitorWrapper.wrap(this))
           .stream()
           .map(File::toPath)

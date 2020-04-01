@@ -18,13 +18,10 @@ public class P2Plugin implements Plugin<Project> {
   public void apply(final Project prj) {
     Extensions.repositories(prj.getRootProject(), (RepositoryHandler it) -> {
       it.mavenCentral();
-      it.ivy(ivy -> {
-        ivy.setUrl(URI
-          .create("http://www.mirrorservice.org/sites/download.eclipse.org/eclipseMirror/oomph/products/repository/plugins/"));
-        ivy.patternLayout(l -> {
-          l.artifact("/[artifact]_[revision].[ext]");
-        });
+      it.maven(mvn->{
+    	 mvn.setUrl(URI.create("https://dist.wso2.org/maven2/")); 
       });
+      
     });
 
     final FrameworkTaskConfigurator taskConfigurator = new FrameworkTaskConfigurator(prj, 

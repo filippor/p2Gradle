@@ -37,3 +37,8 @@ tasks.register("model1") {
   group = "build"
       dependsOn(gradle.includedBuild("p2test").task(":model"))
 }
+
+tasks.register("dep") {
+  group = "build"
+      dependsOn(gradle.includedBuild("p2shared").task(":p2impl:dependencies"))
+}

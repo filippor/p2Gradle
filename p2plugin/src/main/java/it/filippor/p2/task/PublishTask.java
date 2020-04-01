@@ -13,33 +13,33 @@ import it.filippor.p2.framework.ServiceProvider;
 import it.filippor.p2.util.ProgressMonitorWrapper;
 
 public class PublishTask extends TaskWithProgress {
-  private URI repo;
+	private URI repo;
 
-  private Iterable<File> bundles;
+	private Iterable<File> bundles;
 
-  public FrameworkLauncher p2FrameworkLauncher;
+	public FrameworkLauncher p2FrameworkLauncher;
 
-  @Input
-  public URI getRepo() {
-    return this.repo;
-  }
+	@Input
+	public URI getRepo() {
+		return this.repo;
+	}
 
-  public void setRepo(final URI repo) {
-    this.repo = repo;
-  }
+	public void setRepo(final URI repo) {
+		this.repo = repo;
+	}
 
-  @InputFiles
-  public Iterable<File> getBundles() {
-    return this.bundles;
-  }
+	@InputFiles
+	public Iterable<File> getBundles() {
+		return this.bundles;
+	}
 
-  public void setBundles(final Iterable<File> test) {
-    this.bundles = test;
-  }
+	public void setBundles(final Iterable<File> test) {
+		this.bundles = test;
+	}
 
-  @TaskAction
-  public void publish() {
-    this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> sp.getService(P2RepositoryManager.class)
-      .publish(repo, bundles, ProgressMonitorWrapper.wrap(this)));
-  }
+	@TaskAction
+	public void publish() {
+		this.p2FrameworkLauncher.executeWithServiceProvider(sp -> sp.getService(P2RepositoryManager.class).publish(repo,
+				bundles, ProgressMonitorWrapper.wrap(this)));
+	}
 }

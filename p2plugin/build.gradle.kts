@@ -26,9 +26,7 @@ gradlePlugin {
 }
 
 dependencies{
-	compile("it.filippor.p2:p2api:0.0.1")
-//	compile(kotlin("gradle-plugin", version = "1.3.21"))
-//	compile ("org.eclipse.xtend:org.eclipse.xtend.lib:2.17.0")
-	compile("org.osgi:osgi.core:7.0.0")
-	compile("org.eclipse.platform:org.eclipse.osgi:3.13.300")
+	implementation("it.filippor.p2:p2api:0.0.1")
+	implementation("org.osgi:osgi.core:7.0.0")
+	implementation("org.eclipse.platform:org.eclipse.osgi:3.13.300")
 }
