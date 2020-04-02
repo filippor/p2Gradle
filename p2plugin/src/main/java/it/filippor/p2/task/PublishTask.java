@@ -9,7 +9,6 @@ import org.gradle.api.tasks.TaskAction;
 
 import it.filippor.p2.api.P2RepositoryManager;
 import it.filippor.p2.framework.FrameworkLauncher;
-import it.filippor.p2.framework.ServiceProvider;
 import it.filippor.p2.util.ProgressMonitorWrapper;
 
 public class PublishTask extends TaskWithProgress {

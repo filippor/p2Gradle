@@ -5,7 +5,7 @@ tasks.register("run") {
 }
 tasks.register("clean") {
   group = "build"
-//      dependsOn(gradle.includedBuild("p2test").task(":p2testNested:clean"))
+      dependsOn(gradle.includedBuild("p2test").task(":p2testNested:clean"))
       dependsOn(gradle.includedBuild("p2test").task(":clean"))
       dependsOn(gradle.includedBuild("p2shared").task(":p2api:clean"))
       dependsOn(gradle.includedBuild("p2shared").task(":p2impl:clean"))
@@ -31,11 +31,11 @@ tasks.register("publish") {
 
 tasks.register("p2publish") {
   group = "build"
-      dependsOn(gradle.includedBuild("p2test").task(":p2testNested:p2publish"))
+      dependsOn(gradle.includedBuild("p2test").task(":p2publish"))
 }
 tasks.register("model1") {
   group = "build"
-      dependsOn(gradle.includedBuild("p2test").task(":model"))
+      dependsOn(gradle.includedBuild("p2test:p2testNested").task(":model"))
 }
 
 tasks.register("dep") {

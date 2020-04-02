@@ -9,7 +9,7 @@ buildscript {
 	
 	}
 	dependencies {
-		classpath("biz.aQute.bnd:biz.aQute.bnd.gradle:4.2.0")
+		classpath("biz.aQute.bnd:biz.aQute.bnd.gradle:5.0.1")
 	}
 }
 apply(plugin = "biz.aQute.bnd.builder")
@@ -135,7 +135,7 @@ dependencies {
 
 	runtimeOnly("org.eclipse.tycho:org.eclipse.tycho.noopsecurity:1.3.0")
 
-//	runtimeOnly("org.tukaani:xz:1.8")
+	runtimeOnly("org.tukaani:xz:1.8")
 	
 	runtimeOnly("org.eclipse.ecf:org.eclipse.ecf.identity:3.9.0")
 	
@@ -146,7 +146,7 @@ dependencies {
 //	runtimeOnly("not_in_maven_central:org.eclipse.ecf.provider.filetransfer.ssl:1.0.100.v20180301-0132")
 //	runtimeOnly("not_in_maven_central:org.eclipse.ecf.ssl:1.2.100.v20180301-0132")
 	
-	
+	runtimeOnly("org.osgi:org.osgi.service.cm:1.6.0")
 	
 	
 	}

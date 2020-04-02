@@ -1,9 +1,6 @@
 plugins {
     id("java-gradle-plugin")
     id("maven-publish")
-//    `kotlin-dsl`
-//	kotlin("jvm") version "1.3.21"
-//	id("org.xtext.xtend") version("2.0.4")
 }
 
 group="it.filippor.p2"
@@ -28,5 +25,5 @@ gradlePlugin {
 dependencies{
 	implementation("it.filippor.p2:p2api:0.0.1")
 	implementation("org.osgi:osgi.core:7.0.0")
-	implementation("org.eclipse.platform:org.eclipse.osgi:3.13.300")
+	implementation("org.eclipse.platform:org.eclipse.osgi:3.15.200")
 }

@@ -1,13 +1,15 @@
 plugins {
 	id("java-library")
 	`maven-publish`
+	
+
 }
 buildscript {
 	repositories {
 		mavenCentral()
 	}
 	dependencies {
-		classpath("biz.aQute.bnd:biz.aQute.bnd.gradle:4.2.0")
+		classpath("biz.aQute.bnd:biz.aQute.bnd.gradle:5.0.1")
 	}
 }
 apply(plugin = "biz.aQute.bnd.builder")
