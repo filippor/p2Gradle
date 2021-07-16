@@ -13,20 +13,19 @@ plugins {
 }
 
 repositories {
-    // Use jcenter for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
-    jcenter()
+	mavenLocal()
+    mavenCentral()
 }
 p2.setUpdateSites( mutableListOf(
-                uri("http://download.eclipse.org/releases/2019-03"),
+                uri("http://download.eclipse.org/releases/2019-12"),
                 uri("http://download.eclipse.org/releases/2019-06")))
 
 p2.publishTask("p2publish") {
      setRepo(buildDir.toPath().resolve("targetSite").toUri())
-     setBundles(configurations.getByName("runtime"))
+     setBundles(configurations.getByName("runtimeClasspath"))
    }
 
 dependencies {
   api(p2.bundles(false, "org.eclipse.core.resources:[3.13,3.14)"))
-  compile(project(path = ":p2testNested"))
+  implementation(project(path = ":p2testNested"))
 }

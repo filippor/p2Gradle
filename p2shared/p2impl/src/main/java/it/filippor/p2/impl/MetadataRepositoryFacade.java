@@ -29,7 +29,7 @@ public class MetadataRepositoryFacade {
   // public static final IExpression matchesRequirementsExpression = ExpressionUtil.parse("$0.exists(r | this ~= r)");
 
   public MetadataRepositoryFacade(IProvisioningAgent agent, Iterable<URI> sites, SubMonitor mon) {
-    manager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
+    manager = agent.getService(IMetadataRepositoryManager.class);
     setUpdateSite(sites);
   }
 

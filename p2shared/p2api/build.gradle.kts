@@ -1,32 +1,24 @@
 plugins {
 	id("java-library")
 	`maven-publish`
-	
-
+	id("biz.aQute.bnd.builder")
 }
 buildscript {
 	repositories {
 		mavenCentral()
 	}
-	dependencies {
-		classpath("biz.aQute.bnd:biz.aQute.bnd.gradle:5.0.1")
-	}
 }
-apply(plugin = "biz.aQute.bnd.builder")
-
-
-
-
 
 repositories {
 	mavenCentral()
 }
 
-
-
+dependencyLocking {
+	    lockAllConfigurations()
+}
 dependencies {
-	api("org.osgi:osgi.core:7.0.0")
-	compileOnly("org.osgi:osgi.annotation:7.0.0")
+	api("org.osgi:osgi.core:8.0.0")
+	compileOnly("org.osgi:osgi.annotation:8.0.0")
 }
 
 tasks.register<Jar>("sourcesJar") {
@@ -37,7 +29,7 @@ tasks.register<Jar>("sourcesJar") {
 publishing {
 	publications {
 		create<MavenPublication>("mavenJava") {
-			artifactId = "p2impl"
+			artifactId = "p2api"
 			from(components["java"])
 			artifact(tasks["sourcesJar"])
 			versionMapping {
@@ -49,9 +41,9 @@ publishing {
 				}
 			}
 			pom {
-				name.set("p2impl")
-				description.set("A concise description of my library")
-				url.set("http://www.example.com/library")
+				name.set("p2api")
+				description.set("Api to resolve and publish p2 bundle")
+				//url.set("http://www.example.com/library")
 				licenses {
 					license {
 						name.set("The Apache License, Version 2.0")

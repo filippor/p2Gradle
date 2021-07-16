@@ -10,7 +10,7 @@ plugins {
     // Apply the java-library plugin to add support for Java Library
    id ("java-library")
    id ("it.filippor.p2")
-   id ("biz.aQute.bnd.builder") version("5.0.1")
+   id ("biz.aQute.bnd.builder") version("5.3.0")
 }
 
 buildscript {
@@ -29,15 +29,14 @@ buildscript {
 //                uri("https://download.eclipse.org/releases/2019-03"),
 //                uri("https://download.eclipse.org/releases/2019-06")))
 
-//p2.publishTask("p2publish") {
-//     setRepo(buildDir.toPath().resolve("targetSite").toUri())
-//     setBundles(configurations.getByName("compileClasspath"))
-//   }
+p2.publishTask("p2publish") {
+     setRepo(buildDir.toPath().resolve("targetSite").toUri())
+     setBundles(configurations.getByName("runtimeClasspath"))
+   }
 
 repositories {
-    // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    jcenter()
+    mavenCentral()
     mavenLocal()
 }
 
@@ -46,7 +45,7 @@ repositories {
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     implementation("org.apache.commons:commons-math3:3.6.1")
-    implementation(p2.bundles(false, "org.eclipse.core.resources:[3.13,3.14)"))
+    //implementation(p2.bundles(false, "org.eclipse.core.resources:[3.13,3.14)"))
     implementation(p2.bundles(true, "org.eclipse.core.resources:[3.13,3.14)"))
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("com.google.guava:guava:27.0.1-jre")

@@ -142,7 +142,7 @@ public class FrameworkLauncher {
 
   private void checkAllBundles(final BundleContext ctx) {
     Arrays.stream(ctx.getBundles()).filter(FrameworkLauncher::isNotFragment).filter(b -> {
-      logger.info("[{}]{} {}", b.getBundleId(), FrameworkLauncher.formatState(b), b.getSymbolicName());
+      logger.info("[{}]{} {} v:{}", b.getBundleId(), FrameworkLauncher.formatState(b), b.getSymbolicName(),b.getVersion());
       return !Arrays.asList(Bundle.RESOLVED, Bundle.STARTING, Bundle.ACTIVE).contains(b.getState());
     }).forEach((Bundle b) -> {
       try {

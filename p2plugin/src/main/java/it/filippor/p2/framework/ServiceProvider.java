@@ -25,11 +25,11 @@ public class ServiceProvider {
       this.refs.add(ref);
       final T ser = this.ctx.getService(ref);
       if ((ser == null)) {
-        ServiceProvider.logger.warn("service for reference {} is null", this.refs);
+        logger.warn("service for reference {} is null", this.refs);
       }
       return ser;
     } else {
-      ServiceProvider.logger.warn("service {} not found", clazz.getName());
+      logger.warn("service {} not found", clazz.getName());
       return null;
     }
   }

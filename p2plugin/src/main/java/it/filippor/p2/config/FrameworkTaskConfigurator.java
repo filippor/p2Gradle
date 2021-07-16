@@ -115,7 +115,7 @@ public class FrameworkTaskConfigurator {
     final String filesTaskName = nameQual + nameBundle;
     final String name          = ("resolveP2" + filesTaskName);
 
-    Task tmpResolve = this.project.getTasks().findByName(name);
+    ResolveTask tmpResolve = (ResolveTask) this.project.getTasks().findByName(name);
     if (tmpResolve == null) {
       tmpResolve = this.project.getTasks().register(name, ResolveTask.class, it -> {
         it.p2FrameworkLauncher = this.p2FrameworkLauncher;
@@ -124,14 +124,14 @@ public class FrameworkTaskConfigurator {
       }).get();
     }
     tmpResolve.getDependsOn().add(startFrameworkTask);
-    final Task resolve = tmpResolve;
+    final ResolveTask resolve = tmpResolve;
 
     this.stopFrameworkTask.mustRunAfter(stopFrameworkTask.getMustRunAfter(), resolve);
 
     Task filesTask = this.project.getTasks().findByName(filesTaskName);
     if (filesTask == null) {
       filesTask = project.getTasks()
-        .register(filesTaskName, FileProviderTask.class, it -> it.setResolver((ResolveTask) resolve))
+        .register(filesTaskName, FileProviderTask.class, it -> it.setResolver(resolve))
         .get();
     }
     return this.project.files(filesTask);
@@ -163,8 +163,15 @@ public class FrameworkTaskConfigurator {
                                                                  "org.eclipse.core.net", "org.apache.felix.scr", "p2impl");
     return new FrameworkLauncher(frameworkStoragePath, p2ApiPackage, startBundlesSymbolicNames, bundles);
   }
-
-  public Task doLastOnFramework(final Task task, final BiConsumer<Task, ServiceProvider> action) {
+  
+  
+  /**
+   * add doLast action that run with framework activated and serviceProvider
+ * @param task
+ * @param action
+ * @return
+ */
+public Task doLastOnFramework(final Task task, final BiConsumer<Task, ServiceProvider> action) {
     task.getDependsOn().add(this.startFrameworkTask);
     this.stopFrameworkTask.mustRunAfter(this.stopFrameworkTask.getMustRunAfter(), task);
 

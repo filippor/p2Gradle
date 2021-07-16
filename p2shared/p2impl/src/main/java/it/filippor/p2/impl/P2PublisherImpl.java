@@ -6,50 +6,75 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.equinox.internal.p2.artifact.repository.ArtifactRepositoryManager;
-import org.eclipse.equinox.internal.p2.artifact.repository.simple.SimpleArtifactRepositoryFactory;
-import org.eclipse.equinox.internal.p2.metadata.repository.MetadataRepositoryManager;
-import org.eclipse.equinox.internal.p2.metadata.repository.SimpleMetadataRepositoryFactory;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.equinox.p2.core.IProvisioningAgent;
+import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.publisher.IPublisherAction;
 import org.eclipse.equinox.p2.publisher.IPublisherInfo;
 import org.eclipse.equinox.p2.publisher.Publisher;
 import org.eclipse.equinox.p2.publisher.PublisherInfo;
 import org.eclipse.equinox.p2.publisher.eclipse.BundlesAction;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepository;
+import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
+import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 
 public class P2PublisherImpl {
 
-  public void publish(URI repo, Iterable<File> bundleLocations, IProgressMonitor monitor) {
-    IPublisherInfo     info      = createPublisherInfo(repo);
-    IPublisherAction[] actions   = createActions(bundleLocations);
-    Publisher          publisher = new Publisher(info);
-    publisher.publish(actions, monitor);
-  }
+	private IMetadataRepositoryManager metadataRepositoryManager;
+	private IArtifactRepositoryManager artifactRepositoryManager;
 
-  private static IPublisherInfo createPublisherInfo(URI repo) {
-    PublisherInfo result = new PublisherInfo();
+	public P2PublisherImpl(IMetadataRepositoryManager metadataRepositoryManager,
+			IArtifactRepositoryManager artifactRepositoryManager) {
+		super();
+		this.metadataRepositoryManager = metadataRepositoryManager;
+		this.artifactRepositoryManager = artifactRepositoryManager;
+	}
 
-    // Create the metadata repository. This will fail if a repository already exists here
-    IMetadataRepository metadataRepository = new SimpleMetadataRepositoryFactory()
-      .create(repo, "Sample Metadata Repository", MetadataRepositoryManager.TYPE_COMPOSITE_REPOSITORY, Collections.emptyMap());
+	public P2PublisherImpl(IProvisioningAgent agent) {
+		artifactRepositoryManager = agent.getService(IArtifactRepositoryManager.class);
+		metadataRepositoryManager = agent.getService(IMetadataRepositoryManager.class);
+	}
 
-    // Create the artifact repository. This will fail if a repository already exists here
-    IArtifactRepository artifactRepository = new SimpleArtifactRepositoryFactory()
-      .create(repo, "Sample Artifact Repository", ArtifactRepositoryManager.TYPE_COMPOSITE_REPOSITORY, Collections.emptyMap());
+	public void publish(URI repo, Iterable<File> bundleLocations, IProgressMonitor monitor)
+			throws ProvisionException, OperationCanceledException {
+		IPublisherInfo info = createPublisherInfo(repo, monitor);
+		IPublisherAction[] actions = createActions(bundleLocations);
 
-    result.setMetadataRepository(metadataRepository);
-    result.setArtifactRepository(artifactRepository);
-    result.setArtifactOptions(IPublisherInfo.A_PUBLISH | IPublisherInfo.A_INDEX);
-    return result;
-  }
+		Publisher publisher = new Publisher(info);
+		publisher.publish(actions, monitor);
+	}
 
-  private static IPublisherAction[] createActions(Iterable<File> bundleLocations) {
-    IPublisherAction[] result  = new IPublisherAction[1];
-    ArrayList<File>    bundles = new ArrayList<>();
-    bundleLocations.forEach(bundles::add);
-    BundlesAction bundlesAction = new BundlesAction(bundles.toArray(new File[bundles.size()]));
-    result[0] = bundlesAction;
-    return result;
-  }
+	private IPublisherInfo createPublisherInfo(URI repo, IProgressMonitor monitor)
+			throws ProvisionException, OperationCanceledException {
+		PublisherInfo result = new PublisherInfo();
+
+		IMetadataRepository metadataRepository;
+		try {
+			metadataRepository = metadataRepositoryManager.loadRepository(repo, monitor);
+		} catch (ProvisionException e) {
+			metadataRepository = metadataRepositoryManager.createRepository(repo, "Metadata Repository",
+					IMetadataRepositoryManager.TYPE_SIMPLE_REPOSITORY, Collections.emptyMap());
+		}
+		IArtifactRepository artifactRepository;
+		try {
+			artifactRepository = artifactRepositoryManager.loadRepository(repo, monitor);
+		} catch (ProvisionException e) {
+			artifactRepository = artifactRepositoryManager.createRepository(repo, "Artifact Repository",
+					IArtifactRepositoryManager.TYPE_SIMPLE_REPOSITORY, Collections.emptyMap());
+		}
+		result.setMetadataRepository(metadataRepository);
+		result.setArtifactRepository(artifactRepository);
+		result.setArtifactOptions(IPublisherInfo.A_PUBLISH | IPublisherInfo.A_INDEX);
+		return result;
+	}
+
+	private static IPublisherAction[] createActions(Iterable<File> bundleLocations) {
+		IPublisherAction[] result = new IPublisherAction[1];
+		ArrayList<File> bundles = new ArrayList<>();
+		bundleLocations.forEach(bundles::add);
+		BundlesAction bundlesAction = new BundlesAction(bundles.toArray(new File[bundles.size()]));
+		result[0] = bundlesAction;
+		return result;
+	}
 }
