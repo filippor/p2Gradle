@@ -153,8 +153,8 @@ public class FrameworkTaskConfigurator {
     Configuration bundles = project.getConfigurations().findByName(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
     if (bundles == null) {
       bundles = project.getConfigurations().create(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
-      project.getDependencies().add(bundles.getName(), "it.filippor.p2:p2impl:0.0.1");
     }
+    project.getDependencies().add(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG, "it.filippor.p2:p2impl:0.0.1");
     
     
     final File         frameworkStoragePath      = project.getBuildDir().toPath().resolve("tmp").resolve("p2Framework").toFile();

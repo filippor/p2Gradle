@@ -1,7 +1,19 @@
 package it.filippor.p2.impl;
 
-import it.filippor.p2.impl.util.Result;
-import it.filippor.p2.impl.util.Utils;
+import java.io.File;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.SubMonitor;
@@ -22,13 +34,12 @@ import org.eclipse.equinox.p2.repository.artifact.IArtifactRepository;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.artifact.IFileArtifactRepository;
 
-import java.io.File;
-import java.net.URI;
-import java.util.*;
-import java.util.stream.Collectors;
+import it.filippor.p2.impl.util.Result;
+import it.filippor.p2.impl.util.Utils;
 
 public class ArtifactRepositoryFacade {
-  private final IProvisioningAgent         agent;
+  private static final Logger LOGGER = Logger.getLogger(ArtifactRepositoryFacade.class.getCanonicalName());
+private final IProvisioningAgent         agent;
   private final IArtifactRepositoryManager artifactManager;
   private List<IFileArtifactRepository>    localFileRepo;
   private final IProfileRegistry           profileRegistry;
@@ -85,16 +96,17 @@ public class ArtifactRepositoryFacade {
   private List<IFileArtifactRepository> getLocalFileRepo(IProgressMonitor parentMonitor) {
     URI[]      knownRepositories = artifactManager.getKnownRepositories(IRepositoryManager.REPOSITORIES_LOCAL);
     SubMonitor monitor           = SubMonitor.convert(parentMonitor, "get local repo", 100 * knownRepositories.length);
-
+    
     return Arrays.stream(knownRepositories).map(uri -> {
-      try {
+    	LOGGER.info("Loading repository " + uri);
+    	try {
         IArtifactRepository loadRepository = artifactManager
           .loadRepository(uri/* ,IRepositoryManager.REPOSITORY_HINT_MODIFIABLE */ , monitor.split(100));
         if (loadRepository instanceof IFileArtifactRepository) {
           return (IFileArtifactRepository) loadRepository;
         }
       } catch (ProvisionException e) {
-        Utils.sneakyThrow(e);
+    	  LOGGER.warning(e.getMessage());
       }
       return null;
     }).filter(Objects::nonNull).collect(Collectors.toList());
