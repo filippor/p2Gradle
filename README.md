@@ -1,10 +1,10 @@
 # P2Gradle
 this launch an osgi framework with eclipse p2 bundle to perform the task
 
-##Example
+## Example
 gradle kotlin dsl see p2test/build.gradle.kts
 
-####Apply plugin
+#### Apply plugin
 
 ```kotlin
 plugins {
@@ -19,7 +19,7 @@ repositories {
 ```
 the plugin download the eclipse provided bundle from maven central so it requires maven central repository
 
-####Set the updateSite to get the bundle
+#### Set the updateSite to get the bundle
 ```kotlin
 p2.setUpdateSites( mutableListOf(
 	uri("http://download.eclipse.org/releases/2019-12"),
@@ -28,7 +28,7 @@ p2.setUpdateSites( mutableListOf(
 
 ```
 
-####define dependencies
+#### define dependencies
 ```kotlin
 dependencies {
   api(p2.bundles("org.eclipse.core.resources:[3.13,3.14)"))
@@ -54,7 +54,7 @@ dependencies {
   api(p2.bundles(false,"org.eclipse.core.resources:[3.13,3.14)"))
 }
 ```
-####publish to repository
+#### publish to repository
 ```kotlin
 p2.publishTask("p2publish") {
 	setRepo(buildDir.toPath().resolve("targetSite").toUri())
@@ -69,7 +69,7 @@ to select the target repository use setRepo with desidered uri
 setBundles accept any Iterable<File> and publish the file on repository
 
 
-###Notes
+### Notes
 The local cache for the p2 repository is located at <user.home>/.gradle/caches/p2 but can be configured with 
 p2.setAgentUri(URI)
 
