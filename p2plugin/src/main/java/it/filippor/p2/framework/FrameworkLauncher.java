@@ -18,7 +18,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.wiring.BundleRevision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +41,9 @@ public class FrameworkLauncher {
 
   private transient File tempSecureStorage;
 
+  /**
+   *  start the framework
+   */
   public void startFramework() {
     try {
       this.setInitialProperty();
@@ -64,12 +66,19 @@ public class FrameworkLauncher {
 
   }
 
+  /**
+   * execute action with a service provider
+   * @param action execute action
+   */
   public void executeWithServiceProvider(final Consumer<ServiceProvider> action) {
     ServiceProvider serviceProvider = new ServiceProvider(EclipseStarter.getSystemBundleContext());
     action.accept(serviceProvider);
     serviceProvider.ungetAll();
   }
 
+  /**
+   * terminate the framework
+   */
   public void stopFramework() {
     try {
       EclipseStarter.shutdown();
@@ -157,9 +166,9 @@ public class FrameworkLauncher {
     });
   }
 
-  public static ServiceReference<?>[] formatServices(final Bundle bundle) {
-    return bundle.getRegisteredServices();
-  }
+//  public static ServiceReference<?>[] formatServices(final Bundle bundle) {
+//    return bundle.getRegisteredServices();
+//  }
 
   private static String formatState(final Bundle it) {
     final String _switchResult;
@@ -188,14 +197,23 @@ public class FrameworkLauncher {
     return _switchResult;
   }
 
-  public static boolean isNotFragment(final Bundle bundle) {
+  private static boolean isNotFragment(final Bundle bundle) {
     return (bundle.adapt(BundleRevision.class).getTypes() & BundleRevision.TYPE_FRAGMENT) == 0;
   }
 
+  /**
+   * @return  framework is running
+   */
   public boolean isStarted() {
     return EclipseStarter.isRunning();
   }
 
+  /**
+   * @param frameworkStorage location of osgi framework storage
+   * @param extraSystemPackage package to share with gradle
+   * @param startBundlesSymbolicNames bundles to start
+   * @param bundles bundles to install in osgi framework
+   */
   public FrameworkLauncher(final File frameworkStorage, final Collection<String> extraSystemPackage,
                            final Iterable<String> startBundlesSymbolicNames, final Iterable<File> bundles) {
     super();
@@ -245,19 +263,5 @@ public class FrameworkLauncher {
       return this.bundles.equals(other.bundles);
   }
 
-  public File getFrameworkStorage() {
-    return this.frameworkStorage;
-  }
-
-  public Iterable<String> getExtraSystemPackage() {
-    return this.extraSystemPackage;
-  }
-
-  public Iterable<String> getStartBundlesSymbolicNames() {
-    return this.startBundlesSymbolicNames;
-  }
-
-  public Iterable<File> getBundles() {
-    return this.bundles;
-  }
+ 
 }

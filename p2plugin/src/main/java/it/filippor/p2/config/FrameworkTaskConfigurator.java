@@ -33,11 +33,11 @@ import it.filippor.p2.util.ProgressMonitorWrapper;
  * P2 Plugin Configuration
  */
 public class FrameworkTaskConfigurator {
-  public static final String P2_FRAMEWORK_BUNDLES_CONFIG = "p2frameworkBundles";
+  private static final String P2_FRAMEWORK_BUNDLES_CONFIG = "p2frameworkBundles";
 
-  public static final String P2_START_FRAMEWORK_TASK = "p2startFramework";
+  private static final String P2_START_FRAMEWORK_TASK = "p2startFramework";
 
-  public static final String P2_STOP_FRAMEWORK_TASK = "p2stopFramework";
+  private static final String P2_STOP_FRAMEWORK_TASK = "p2stopFramework";
 
   private final Task stopFrameworkTask;
 
@@ -51,6 +51,11 @@ public class FrameworkTaskConfigurator {
 
   private URI agentUri;
 
+  /**
+   * create configuration
+   * @param project project to configure
+   * @param agentUri p2 agent URI
+   */
   public FrameworkTaskConfigurator(final Project project, final URI agentUri) {
     this.agentUri = agentUri;
     this.updateSites = new ArrayList<>();
@@ -96,8 +101,8 @@ public class FrameworkTaskConfigurator {
    * create a file collection with bundles resolved from bundles specification
    * including transitive dependencies
    * 
-   * @param bundles
-   * @return
+   * @param bundles bundles to resolve
+   * @return resolved atifacts
    */
   public ConfigurableFileCollection bundles(final String... bundles) {
     return this.bundles(true, bundles);
@@ -107,9 +112,9 @@ public class FrameworkTaskConfigurator {
    * create a file collection with bundles resolved from bundles specification
    * including transitive dependencies if transitive is true
    * 
-   * @param transitive
-   * @param bundles
-   * @return
+   * @param transitive include transitive dependencies
+   * @param bundles bundles to resolve
+   * @return resolved atifacts
    */
   public ConfigurableFileCollection bundles(final boolean transitive, final String... bundles) {
     return this.bundles(transitive, Arrays.stream(bundles).map(s -> s.split(":"))
@@ -120,8 +125,8 @@ public class FrameworkTaskConfigurator {
    * create a file collection with bundles resolved from bundles specification
    * including transitive dependencies
    * 
-   * @param bundles
-   * @return
+   * @param bundles bundles bundles to resolve
+   * @return resolved atifacts
    */
   public ConfigurableFileCollection bundles(final Bundle... bundles) {
     return this.bundles(true, bundles);
@@ -131,9 +136,9 @@ public class FrameworkTaskConfigurator {
    * create a file collection with bundles resolved from bundles specification
    * including transitive dependencies if transitive is true
    * 
-   * @param transitive
-   * @param bundles
-   * @return
+   * @param transitive include transitive dependencies
+   * @param bundles bundles bundles to resolve
+   * @return resolved atifacts
    */
   public ConfigurableFileCollection bundles(final boolean transitive, final Bundle... bundles) {
     String nameQual = "";
@@ -168,9 +173,9 @@ public class FrameworkTaskConfigurator {
   /**
    * add task to publish a p2 repository
    * 
-   * @param name
-   * @param action
-   * @return
+   * @param name name of new task
+   * @param action action to configure task
+   * @return created task
    */
   public TaskProvider<PublishTask> publishTask(final String name, final Action<PublishTask> action) {
     TaskProvider<PublishTask> publishTask = this.project.getTasks().register(name, PublishTask.class, action);
@@ -184,7 +189,7 @@ public class FrameworkTaskConfigurator {
     return publishTask;
   }
 
-  public FrameworkLauncher createFrameworkLauncher(final Project project) {
+  private FrameworkLauncher createFrameworkLauncher(final Project project) {
     Configuration bundles = project.getConfigurations()
         .findByName(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
     if (bundles == null) {
@@ -202,9 +207,9 @@ public class FrameworkTaskConfigurator {
   /**
    * add doLast action that run with framework activated and serviceProvider
    * 
-   * @param task
-   * @param action
-   * @return
+   * @param task task to configure
+   * @param action task configuration
+   * @return task
    */
   public Task doLastOnFramework(final Task task, final BiConsumer<Task, ServiceProvider> action) {
     task.getDependsOn().add(this.startFrameworkTask);
@@ -219,18 +224,30 @@ public class FrameworkTaskConfigurator {
     });
   }
 
+  /**
+   * @return configured update site
+   */
   public Collection<URI> getUpdateSites() {
     return updateSites;
   }
 
+  /**
+   * @param updateSites update site to check when resolve
+   */
   public void setUpdateSites(Collection<URI> updateSites) {
     this.updateSites = updateSites;
   }
 
+  /**
+   * @return p2 agent uri
+   */
   public URI getAgentUri() {
     return agentUri;
   }
 
+  /**
+   * @param agentUri p2 agent uri
+   */
   public void setAgentUri(URI agentUri) {
     this.agentUri = agentUri;
   }

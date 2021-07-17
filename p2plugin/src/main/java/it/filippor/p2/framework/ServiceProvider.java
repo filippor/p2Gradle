@@ -8,6 +8,10 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author filippo.rossoni
+ *Utility class to retrieve a service from osgi framework
+ */
 public class ServiceProvider {
   private static final Logger logger = LoggerFactory.getLogger(ServiceProvider.class);
 
@@ -15,10 +19,19 @@ public class ServiceProvider {
 
   private final List<ServiceReference<?>> refs = new ArrayList<>();
 
+  /**
+   * @param bctx bundle context
+   */
   public ServiceProvider(final BundleContext bctx) {
     this.ctx = bctx;
   }
 
+  /**
+   * retrieve service from context
+   * @param <T> service type
+   * @param clazz service type
+   * @return service instance
+   */
   public <T> T getService(final Class<T> clazz) {
     ServiceReference<T> ref = this.ctx.getServiceReference(clazz);
     if ((ref != null)) {
@@ -34,6 +47,11 @@ public class ServiceProvider {
     }
   }
 
+  /**
+   * retrieve service from context
+   * @param service service id
+   * @return service instance
+   */
   public Object getService(final String service) {
     ServiceReference<?> ref = this.ctx.getServiceReference(service);
     if ((ref != null)) {
@@ -49,6 +67,9 @@ public class ServiceProvider {
     }
   }
 
+  /**
+   * release all service
+   */
   public void ungetAll() {
     this.refs.forEach(ctx::ungetService);
   }

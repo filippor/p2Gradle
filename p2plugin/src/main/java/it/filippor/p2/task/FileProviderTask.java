@@ -19,11 +19,18 @@ import org.gradle.api.tasks.OutputFiles;
 public class FileProviderTask extends TaskWithProgress {
   private ResolveTask resolver;
 
+  /**
+   * @param resolver task that execute the resolotion
+   */
   public void setResolver(final ResolveTask resolver) {
     this.resolver = resolver;
     this.getDependsOn().add(resolver);
   }
 
+  /**
+   * @return resolved artifacts
+   * @throws IOException if can't read file
+   */
   @OutputFiles
   public ConfigurableFileCollection getOutput() throws IOException {
     ConfigurableFileCollection output = this.getProject().files();
@@ -34,6 +41,9 @@ public class FileProviderTask extends TaskWithProgress {
     return output;
   }
 
+  /**
+   * @return input files
+   */
   @InputFile
   public File getInputFile() {
     return this.resolver.getOutputFile();

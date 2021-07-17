@@ -1,6 +1,5 @@
 package it.filippor.p2;
 
-import java.net.URI;
 import java.nio.file.Paths;
 
 import org.gradle.api.NonNullApi;
@@ -9,20 +8,28 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 
 import it.filippor.p2.config.FrameworkTaskConfigurator;
-import it.filippor.p2.util.Extensions;
 
+/**
+ * @author filippo.rossoni
+ * P2 plugin
+ */
 @NonNullApi
 public class P2Plugin implements Plugin<Project> {
+ 
+  /**
+   *apply plugin
+   */
   @Override
-
   public void apply(final Project prj) {
-    Extensions.repositories(prj.getRootProject(), (RepositoryHandler it) -> {
-      it.mavenCentral();
-      it.maven(mvn->{
-    	 mvn.setUrl(URI.create("https://dist.wso2.org/maven2/")); 
-      });
+    
+    RepositoryHandler rh = prj.getRootProject().getRepositories();
+    {
+      rh.mavenCentral();
+//      rh.maven(mvn->{
+//    	 mvn.setUrl(URI.create("https://dist.wso2.org/maven2/")); 
+//      });
       
-    });
+    };
 
     final FrameworkTaskConfigurator taskConfigurator = new FrameworkTaskConfigurator(prj, 
           Paths.get(System.getProperty("user.home"), ".gradle", "caches", "p2").toUri());

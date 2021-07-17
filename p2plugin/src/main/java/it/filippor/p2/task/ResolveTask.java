@@ -25,27 +25,48 @@ import it.filippor.p2.util.ProgressMonitorWrapper;
  *
  */
 public class ResolveTask extends TaskWithProgress {
+  /**
+   * FrameworkLauncher used to resolve bundles
+   */
   public FrameworkLauncher p2FrameworkLauncher;
 
+  /**
+   * resolve transitive dependencies
+   */
   public Collection<Bundle> bundles;
 
+  /**
+   * resolve transitive dependencies
+   */
   public boolean transitive;
 
+  /**
+   * @return bundles to resolve
+   */
   @Input
   public boolean getTransitive() {
     return this.transitive;
   }
 
+  /**
+   * @return resolve transitive dependencies
+   */
   @Input
   public Collection<Bundle> getBundles() {
     return this.bundles;
   }
 
+  /**
+   * @return file with dependencies
+   */
   @OutputFile
   public File getOutputFile() {
     return this.getProject().getBuildDir().toPath().resolve("bundle-resolutions").resolve(this.getName()).toFile();
   }
 
+  /**
+   * resolve bundles using osgi framework
+   */
   @TaskAction
   public void resolve() {
     if ((!this.p2FrameworkLauncher.isStarted())) {

@@ -11,13 +11,23 @@ import it.filippor.p2.api.P2RepositoryManager;
 import it.filippor.p2.framework.FrameworkLauncher;
 import it.filippor.p2.util.ProgressMonitorWrapper;
 
+/**
+ * @author filippo.rossoni
+ * Task to publish artifact to repository
+ */
 public class PublishTask extends TaskWithProgress {
 	private URI repo;
 
 	private Iterable<File> bundles;
 
+	/**
+	 * FrameworkLauncher used to publish bundles
+	 */
 	public FrameworkLauncher p2FrameworkLauncher;
 
+	/**
+	 * @return repository uri
+	 */
 	@Input
 	public URI getRepo() {
 		return this.repo;
@@ -25,12 +35,15 @@ public class PublishTask extends TaskWithProgress {
 
 	/**
 	 * URI of the repository in witch the bundles will be published
-	 * @param repo
+	 * @param repo uri of the repo
 	 */
 	public void setRepo(final URI repo) {
 		this.repo = repo;
 	}
 
+	/**
+	 * @return bundles that will be published on repository
+	 */
 	@InputFiles
 	public Iterable<File> getBundles() {
 		return this.bundles;
@@ -38,12 +51,15 @@ public class PublishTask extends TaskWithProgress {
 
 	/**
 	 * bundles that will be published on repository
-	 * @param bundles
+	 * @param bundles artifact to deploy
 	 */
 	public void setBundles(final Iterable<File> bundles) {
 		this.bundles = bundles;
 	}
 
+	/**
+	 * publish bundle to repo
+	 */
 	@TaskAction
 	public void publish() {
 		this.p2FrameworkLauncher.executeWithServiceProvider(sp -> sp.getService(P2RepositoryManager.class).publish(repo,
