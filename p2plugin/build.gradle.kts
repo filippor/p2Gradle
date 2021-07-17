@@ -27,6 +27,7 @@ dependencyLocking {
 
 dependencies{
 	implementation("it.filippor.p2:p2api:0.0.1")
+	runtimeElements("it.filippor.p2:p2impl:0.0.1")
 	implementation("org.osgi:osgi.core:8.0.0")
 	implementation("org.eclipse.platform:org.eclipse.osgi:+")
 }

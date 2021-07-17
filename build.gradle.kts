@@ -28,11 +28,11 @@ tasks.register("p2publish") {
   group = "build"
       dependsOn(gradle.includedBuild("p2test").task(":p2publish"))
 }
-tasks.register("model1") {
+tasks.register("modelTest") {
   group = "build"
       dependsOn(gradle.includedBuild("p2test").task(":p2testNested:model"))
 }
-tasks.register("model2") {
+tasks.register("modelPlugin") {
   group = "build"
       dependsOn(gradle.includedBuild("p2plugin").task(":model"))
 }
@@ -42,9 +42,13 @@ tasks.register("publishPlugin") {
       dependsOn(gradle.includedBuild("p2shared").task(":p2api:publishPlugins"))
 }
 
-tasks.register("dep") {
+tasks.register("depP2Impl") {
   group = "build"
       dependsOn(gradle.includedBuild("p2shared").task(":p2impl:dependencies"))
+}
+tasks.register("depPlugin") {
+  group = "build"
+      dependsOn(gradle.includedBuild("p2plugin").task(":dependencies"))
 }
 tasks.register("buildTest") {
   group = "build"
