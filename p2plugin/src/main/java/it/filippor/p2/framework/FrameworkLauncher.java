@@ -25,6 +25,10 @@ import org.slf4j.LoggerFactory;
 
 import it.filippor.p2.util.Extensions;
 
+/**
+ * @author filippo.rossoni
+ * Utility class to launch framework
+ */
 public class FrameworkLauncher {
   private static final Logger logger = LoggerFactory.getLogger(FrameworkLauncher.class);
 

@@ -7,18 +7,32 @@ import java.io.Serializable;
 
 import org.osgi.framework.VersionRange;
 
+
+/**
+ * @author filippo.rossoni
+ *Data Object that rapresent an osgi bundle
+ */
 public class Bundle implements Serializable {
 
   private static final long serialVersionUID = -5642357738474934782L;
   private String            id;
   private VersionRange      version;
 
+  /**
+   * create a bundle with id and version
+   * @param id
+   * @param version
+   */
   public Bundle(String id, VersionRange version) {
     super();
     this.id      = id;
     this.version = version;
   }
 
+  /**
+   * 
+   * @return id of bundle
+   */
   public String getId() {
     return id;
   }
@@ -27,6 +41,9 @@ public class Bundle implements Serializable {
     this.id = id;
   }
 
+  /**
+   * @return version of bundle
+   */
   public VersionRange getVersion() {
     return version;
   }

@@ -86,7 +86,7 @@ publishing {
 			pom {
 				name.set("p2impl")
 				description.set("Implementation of p2api")
-				//url.set("http://www.example.com/library")
+				url.set("https://github.com/filippor/p2Gradle/")
 				licenses {
 					license {
 						name.set("The Apache License, Version 2.0")
@@ -100,11 +100,11 @@ publishing {
 						email.set("filippo.rossoni@gmail.com")
 					}
 				}
-				//scm {
-				//	connection.set("scm:git:git://example.com/my-library.git")
-				//	developerConnection.set("scm:git:ssh://example.com/my-library.git")
-				//	url.set("http://example.com/my-library/")
-				//}
+				scm {
+					//connection.set("scm:git:git://example.com/my-library.git")
+					//developerConnection.set("scm:git:ssh://example.com/my-library.git")
+					url.set("https://github.com/filippor/p2Gradle/")
+				}
 			}
 		}
 	}

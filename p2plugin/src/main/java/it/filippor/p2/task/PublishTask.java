@@ -23,6 +23,10 @@ public class PublishTask extends TaskWithProgress {
 		return this.repo;
 	}
 
+	/**
+	 * URI of the repository in witch the bundles will be published
+	 * @param repo
+	 */
 	public void setRepo(final URI repo) {
 		this.repo = repo;
 	}
@@ -32,8 +36,12 @@ public class PublishTask extends TaskWithProgress {
 		return this.bundles;
 	}
 
-	public void setBundles(final Iterable<File> test) {
-		this.bundles = test;
+	/**
+	 * bundles that will be published on repository
+	 * @param bundles
+	 */
+	public void setBundles(final Iterable<File> bundles) {
+		this.bundles = bundles;
 	}
 
 	@TaskAction

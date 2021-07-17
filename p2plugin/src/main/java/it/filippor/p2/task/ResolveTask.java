@@ -19,6 +19,11 @@ import it.filippor.p2.framework.ServiceProvider;
 import it.filippor.p2.util.Extensions;
 import it.filippor.p2.util.ProgressMonitorWrapper;
 
+/**
+ * @author filippo.rossoni
+ * Task that download bundles from p2 repository and create a file named as bundle-resolutions[taskName] containing the list of path
+ *
+ */
 public class ResolveTask extends TaskWithProgress {
   public FrameworkLauncher p2FrameworkLauncher;
 
