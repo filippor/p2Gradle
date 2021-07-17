@@ -5,7 +5,7 @@ plugins {
 }
 
 group="it.filippor.p2"
-version="0.0.1"
+version="0.0.2"
 
 repositories {
 	mavenCentral()
@@ -27,8 +27,7 @@ dependencyLocking {
 
 dependencies{
 	implementation("it.filippor.p2:p2api:0.0.1")
-	runtimeElements("it.filippor.p2:p2impl:0.0.1")
-	implementation("org.osgi:osgi.core:8.0.0")
+	runtimeOnly("it.filippor.p2:p2impl:0.0.1")
 	implementation("org.eclipse.platform:org.eclipse.osgi:+")
 }
 
@@ -63,7 +62,7 @@ pluginBundle {
       // id is captured from java-gradle-plugin configuration
       displayName = "P2 Gradle Plugin"
       tags = listOf("p2", "osgi", "dependency")
-      version = "0.0.1"
+      version = "0.0.2"
     }
   }
 }

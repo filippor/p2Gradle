@@ -10,7 +10,7 @@ import org.osgi.framework.VersionRange;
 
 /**
  * @author filippo.rossoni
- *Data Object that rapresent an osgi bundle
+ *Data Object that represent an osgi bundle
  */
 public class Bundle implements Serializable {
 

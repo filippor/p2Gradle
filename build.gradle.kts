@@ -39,7 +39,6 @@ tasks.register("modelPlugin") {
 tasks.register("publishPlugin") {
   group = "build"
       dependsOn(gradle.includedBuild("p2plugin").task(":publishPlugins"))
-      dependsOn(gradle.includedBuild("p2shared").task(":p2api:publishPlugins"))
 }
 
 tasks.register("depP2Impl") {
