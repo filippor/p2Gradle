@@ -18,8 +18,8 @@ p2.setUpdateSites( mutableListOf(
                 uri("http://download.eclipse.org/releases/2019-06")))
 
 p2.publishTask("p2publish") {
-     setRepo(buildDir.toPath().resolve("targetSite").toUri())
-     setBundles(configurations.getByName("runtimeClasspath"))
+     repo = buildDir.toPath().resolve("targetSite").toUri()
+     bundles = configurations.getByName("runtimeClasspath")
    }
 
 dependencies {

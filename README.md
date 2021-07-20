@@ -12,12 +12,8 @@ plugins {
     id ("it.filippor.p2") version ( "0.0.1")
 }
 
-repositories {
-    mavenCentral()
-}
-
 ```
-the plugin download the eclipse provided bundle from maven central so it requires maven central repository
+the plugin download the eclipse provided bundle from maven central so it add maven central repository
 
 #### Set the updateSite to get the bundle
 ```kotlin
@@ -57,8 +53,8 @@ dependencies {
 #### publish to repository
 ```kotlin
 p2.publishTask("p2publish") {
-	setRepo(buildDir.toPath().resolve("targetSite").toUri())
-	setBundles(configurations.getByName("runtimeClasspath"))
+	repo = buildDir.toPath().resolve("targetSite").toUri()
+	bundles = configurations.getByName("runtimeClasspath")
 }
 ```
 
