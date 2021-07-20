@@ -13,9 +13,9 @@ plugins {
 }
 
 
-p2.setUpdateSites( mutableListOf(
+p2.updateSites = mutableListOf(
                 uri("http://download.eclipse.org/releases/2019-12"),
-                uri("http://download.eclipse.org/releases/2019-06")))
+                uri("http://download.eclipse.org/releases/2019-06"))
 
 p2.publishTask("p2publish") {
      repo = buildDir.toPath().resolve("targetSite").toUri()

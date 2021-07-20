@@ -21,10 +21,10 @@ the plugin download the eclipse provided bundle from maven central so it add mav
 
 #### Set the updateSite to get the bundle
 ```kotlin
-p2.setUpdateSites( mutableListOf(
+p2.updateSites = mutableListOf(
 	uri("http://download.eclipse.org/releases/2019-12"),
 	uri("http://download.eclipse.org/releases/2019-06")
-))
+)
 
 ```
 
