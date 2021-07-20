@@ -43,6 +43,9 @@ public class P2PublisherImpl {
 
 		Publisher publisher = new Publisher(info);
 		publisher.publish(actions, monitor);
+		metadataRepositoryManager.removeRepository(repo);
+		artifactRepositoryManager.removeRepository(repo);
+		
 	}
 
 	private IPublisherInfo createPublisherInfo(URI repo, IProgressMonitor monitor)
