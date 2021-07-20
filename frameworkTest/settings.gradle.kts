@@ -7,8 +7,4 @@
  * in the user manual at https://docs.gradle.org/5.3.1/userguide/multi_project_builds.html
  */
 
-rootProject.name = "p2Gradle"
-includeBuild("p2shared")
-includeBuild("p2plugin")
-includeBuild("p2test")
-includeBuild("frameworkTest")
+rootProject.name = "frameworkTest"

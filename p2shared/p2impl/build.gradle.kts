@@ -70,8 +70,15 @@ tasks.register<Jar>("sourcesJar") {
 }
 
 publishing {
+	repositories {
+	        maven {
+	            // change to point to your repo, e.g. http://my.org/repo
+	            url = uri(rootProject.buildDir.toPath().resolve("repo"))
+	        }
+	    }
+
 	publications {
-		create<MavenPublication>("mavenJava") {
+		create<MavenPublication>("P2impl") {
 			artifactId = "p2impl"
 			from(components["java"])
 			artifact(tasks["sourcesJar"])
