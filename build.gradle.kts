@@ -11,7 +11,7 @@ tasks.register("build") {
       dependsOn(gradle.includedBuild("p2shared").task(":p2api:build"))
       dependsOn(gradle.includedBuild("p2shared").task(":p2impl:build"))
       dependsOn(gradle.includedBuild("p2plugin").task(":build"))
-      dependsOn(gradle.includedBuild("p2test").task(":build"))
+ //     dependsOn(gradle.includedBuild("p2test").task(":build"))
 }
 
 tasks.register("publish") {
