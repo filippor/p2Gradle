@@ -13,7 +13,7 @@ gradle kotlin dsl see p2test/build.gradle.kts
 ```kotlin
 plugins {
     id ("java-library")
-    id ("it.filippor.p2") version ( "0.0.1")
+    id ("it.filippor.p2") version ( "0.0.4")
 }
 
 ```
