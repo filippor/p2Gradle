@@ -207,7 +207,7 @@ public class FrameworkTaskConfigurator {
   /**
    * add doLast action that run with framework activated and serviceProvider
    * 
-   * @param task task to configure
+   * @param taskProvider task to configure
    * @param action task configuration
    * @return task
    */

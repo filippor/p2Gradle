@@ -1,5 +1,6 @@
 package it.filippor.p2;
 
+import java.net.URI;
 import java.nio.file.Paths;
 
 import org.gradle.api.NonNullApi;
@@ -25,9 +26,9 @@ public class P2Plugin implements Plugin<Project> {
     RepositoryHandler rh = prj.getRootProject().getRepositories();
     {
       rh.mavenCentral();
-//      rh.maven(mvn->{
-//    	 mvn.setUrl(URI.create("https://dist.wso2.org/maven2/")); 
-//      });
+      rh.maven(mvn->{
+    	 mvn.setUrl(URI.create("https://raw.githubusercontent.com/filippor/p2Gradle/repo/repo")); 
+      });
       
     };
 

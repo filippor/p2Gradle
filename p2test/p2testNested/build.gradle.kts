@@ -14,11 +14,7 @@ plugins {
 }
 
 buildscript {
-	repositories {
-		mavenCentral()
-		mavenLocal()
-	
-	}
+
 	//dependencies {
 	//	classpath("biz.aQute.bnd:biz.aQute.bnd.gradle:5.0.1")
 	//}

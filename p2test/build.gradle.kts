@@ -9,13 +9,10 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id ("java-library")
-    id ("it.filippor.p2") version "0.0.3"
+    id ("it.filippor.p2") version "0.0.4"
 }
 
-repositories {
-	mavenLocal()
-    mavenCentral()
-}
+
 p2.setUpdateSites( mutableListOf(
                 uri("http://download.eclipse.org/releases/2019-12"),
                 uri("http://download.eclipse.org/releases/2019-06")))

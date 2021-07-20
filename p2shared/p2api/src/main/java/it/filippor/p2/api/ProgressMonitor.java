@@ -43,7 +43,7 @@ package it.filippor.p2.api;
  * it yet, or will select an implementation of {@link ProgressMonitor} that explicitly permits multiple calls to
  * {@link #beginTask}.</li>
  * <li>Will not rely on the callee to invoke {@link #done()} on the monitor. It must either select an implementation of
- * {@link ProgressMonitor} that does not require {@link #done()} to be called, for example {@link SubMonitor}, or it
+ * {@link ProgressMonitor} that does not require {@link #done()} to be called, for example  SubMonitor, or it
  * must invoke {@link #done()} itself after the method returns.</li>
  * <li>Will not pass in a null monitor unless the JavaDoc of the callee says that it accepts null.</li>
  * <li>Will pass in a monitor that ignores the name argument to {@link #beginTask} unless the JavaDoc for the callee

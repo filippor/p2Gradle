@@ -15,13 +15,19 @@ import org.osgi.framework.VersionRange;
 public class Bundle implements Serializable {
 
   private static final long serialVersionUID = -5642357738474934782L;
+  /**
+   * bundle id
+   */
   private String            id;
+  /**
+   * bundle version
+   */
   private VersionRange      version;
 
   /**
    * create a bundle with id and version
-   * @param id
-   * @param version
+   * @param id bundle id
+   * @param version bundle version
    */
   public Bundle(String id, VersionRange version) {
     super();
@@ -37,6 +43,9 @@ public class Bundle implements Serializable {
     return id;
   }
 
+  /**
+   * @param id id of bundle
+   */
   public void setId(String id) {
     this.id = id;
   }
@@ -48,6 +57,9 @@ public class Bundle implements Serializable {
     return version;
   }
 
+  /**
+   * @param version version of bundle
+   */
   public void setVersion(VersionRange version) {
     this.version = version;
   }
@@ -85,7 +97,13 @@ public class Bundle implements Serializable {
   public String toString() {
     return "Bundle [id=" + id + ", version=" + version + "]";
   }
-
+  
+  
+  /**
+   * Serialization
+   * @param out ObjectOutputStream
+   * @throws IOException on write error
+   */
   private void writeObject(ObjectOutputStream out) throws IOException {
     out.writeObject(id);
     if (version != null)
@@ -94,6 +112,12 @@ public class Bundle implements Serializable {
       out.writeObject(null);
   }
 
+  /**
+   * Serialization 
+   * @param in ObjectInputStream
+   * @throws IOException on read error
+   * @throws ClassNotFoundException error
+   */
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
     id = (String) in.readObject();
     String v = (String) in.readObject();

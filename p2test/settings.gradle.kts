@@ -9,13 +9,13 @@
 
 rootProject.name = "p2test"
 include("p2testNested")
-// pluginManagement {
-//     plugins {
-//     }
-//     resolutionStrategy {
-//     }
-//     repositories {
-//     	mavenCentral()
-//     	mavenLocal()
-//     }
-// }
+pluginManagement {
+     plugins {
+     }
+     resolutionStrategy {
+     }
+     repositories {
+     	mavenCentral()
+     	mavenLocal()
+     }
+ }
