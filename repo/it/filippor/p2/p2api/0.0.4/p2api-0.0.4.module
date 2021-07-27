@@ -1,0 +1,78 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "it.filippor.p2",
+    "module": "p2api",
+    "version": "0.0.4",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.1.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.osgi",
+          "module": "osgi.core",
+          "version": {
+            "requires": "8.0.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "p2api-0.0.4.jar",
+          "url": "p2api-0.0.4.jar",
+          "size": 3914,
+          "sha512": "7110180cc03a2b34ab004dcb64aa3747d5af7f193e8b62e6d90e69a06185b38f5b50670a8c5d80e84659edbd2209a6df78ef392856806c685c1398c6f7c06e12",
+          "sha256": "b3748b10de485673f7bb4af116147129fd57ccc54708e18b6b0f049fbf8ed422",
+          "sha1": "32ee9f59ee29ce212e17325c6bbeed329ca594ff",
+          "md5": "954fef2ae0040010259cfc1acfa791ce"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.osgi",
+          "module": "osgi.core",
+          "version": {
+            "requires": "8.0.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "p2api-0.0.4.jar",
+          "url": "p2api-0.0.4.jar",
+          "size": 3914,
+          "sha512": "7110180cc03a2b34ab004dcb64aa3747d5af7f193e8b62e6d90e69a06185b38f5b50670a8c5d80e84659edbd2209a6df78ef392856806c685c1398c6f7c06e12",
+          "sha256": "b3748b10de485673f7bb4af116147129fd57ccc54708e18b6b0f049fbf8ed422",
+          "sha1": "32ee9f59ee29ce212e17325c6bbeed329ca594ff",
+          "md5": "954fef2ae0040010259cfc1acfa791ce"
+        }
+      ]
+    }
+  ]
+}
