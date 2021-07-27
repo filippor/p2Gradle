@@ -8,6 +8,8 @@ this plugin launch an osgi framework with eclipse p2 bundle to perform the resol
 ## Example
 gradle kotlin dsl see p2test/build.gradle.kts
 
+gradle groovy dsl see testGroovy/build.gradle
+
 #### Apply plugin
 
 ```kotlin
@@ -21,7 +23,7 @@ the plugin download the eclipse provided bundle from maven central so it add mav
 
 #### Set the updateSite to get the bundle
 ```kotlin
-p2.updateSites = mutableListOf(
+p2.updateSites = listOf(
 	uri("http://download.eclipse.org/releases/2019-12"),
 	uri("http://download.eclipse.org/releases/2019-06")
 )

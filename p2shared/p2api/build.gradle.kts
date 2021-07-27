@@ -35,7 +35,7 @@ publishing {
 		repositories {
 	        maven {
 	            // change to point to your repo, e.g. http://my.org/repo
-	            url = uri(rootProject.buildDir.toPath().resolve("repo"))
+	            url = uri(rootProject.buildDir.toPath().getParent().getParent().getParent().resolve("p2GradleRepo").resolve("repo"))
 	        }
 	    }
 	

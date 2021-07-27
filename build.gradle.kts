@@ -2,6 +2,7 @@ tasks.register("clean") {
   group = "build"
       dependsOn(gradle.includedBuild("p2test").task(":p2testNested:clean"))
       dependsOn(gradle.includedBuild("p2test").task(":clean"))
+      dependsOn(gradle.includedBuild("testGroovy").task(":clean"))
       dependsOn(gradle.includedBuild("p2shared").task(":p2api:clean"))
       dependsOn(gradle.includedBuild("p2shared").task(":p2impl:clean"))
       dependsOn(gradle.includedBuild("p2plugin").task(":clean"))
@@ -57,7 +58,25 @@ tasks.register("depPlugin") {
   group = "build"
       dependsOn(gradle.includedBuild("p2plugin").task(":dependencies"))
 }
+tasks.register("depGroovy") {
+  group = "build"
+      dependsOn(gradle.includedBuild("testGroovy").task(":dependencies"))
+}
+tasks.register("modelGroovy") {
+  group = "build"
+      dependsOn(gradle.includedBuild("testGroovy").task(":model"))
+}
+tasks.register("depTest") {
+  group = "build"
+      dependsOn(gradle.includedBuild("p2test").task(":dependencies"))
+}
 tasks.register("buildTest") {
   group = "build"
       dependsOn(gradle.includedBuild("p2test").task(":build"))
+}
+tasks.register("buildGroovy") {
+  group = "build"
+      dependsOn(gradle.includedBuild("testGroovy").task(":build"))
+      dependsOn(gradle.includedBuild("testGroovy").task(":p2Publish"))
+      dependsOn(gradle.includedBuild("testGroovy").task(":hello"))
 }

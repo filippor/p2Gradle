@@ -9,16 +9,22 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id ("java-library")
-    id ("it.filippor.p2") version "0.0.7"
+    id ("it.filippor.p2") version "0.0.8"
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
 }
 
 
-p2.updateSites = mutableListOf(
+p2.updateSites = listOf(
                 uri("http://download.eclipse.org/releases/2019-12"),
                 uri("http://download.eclipse.org/releases/2019-06"))
 
 p2.publishTask("p2publish") {
-     repo = buildDir.toPath().resolve("targetSite").toUri()
+     repo = uri("$buildDir/targetSite/")
      bundles = configurations.getByName("runtimeClasspath")
    }
 

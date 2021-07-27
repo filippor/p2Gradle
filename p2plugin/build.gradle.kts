@@ -5,7 +5,7 @@ plugins {
 }
 
 group="it.filippor.p2"
-version="0.0.7"
+version="0.0.8"
 
 
 repositories {
@@ -37,18 +37,17 @@ dependencyLocking {
 
 
 dependencies{
-	compileOnly("it.filippor.p2:p2api:0.0.2")
+	compileOnly("it.filippor.p2:p2api:0.0.4")
 	compileOnly("org.osgi:osgi.annotation:8.0.0")
 	//runtimeOnly("it.filippor.p2:p2impl:0.0.2")
-	implementation("org.eclipse.platform:org.eclipse.osgi:+")
+	implementation("org.eclipse.platform:org.eclipse.osgi:3.16.300")
 }
 
-tasks.named<Jar>("jar") {
+tasks.jar {
+    dependsOn(configurations.compileClasspath)
     from ({
-        configurations.compileClasspath.files.map{it->
-        	if(it.toString().contains("p2api")){
-	        	if (it.isDirectory()) it else zipTree(it)
-	        }else  null 
+        configurations.compileClasspath.get().filter{ it.toString().contains("p2api")}.map {
+			if (it.isDirectory()) it else zipTree(it)
         }
     })
 }
@@ -61,7 +60,7 @@ pluginBundle {
 
   // tags and description can be set for the whole bundle here, but can also
   // be set / overridden in the config for specific plugins
-  description = "Get dependency and pblish artifact to p2 repository"
+  description = "Get dependency and publish artifact to p2 repository"
 
   // The plugins block can contain multiple plugin entries.
   //
@@ -85,7 +84,7 @@ pluginBundle {
       // id is captured from java-gradle-plugin configuration
       displayName = "P2 Gradle Plugin"
       tags = listOf("p2", "osgi", "dependency")
-      version = "0.0.7"
+      version = "0.0.8"
     }
   }
 }

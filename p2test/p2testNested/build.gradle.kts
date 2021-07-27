@@ -13,13 +13,15 @@ plugins {
    id ("biz.aQute.bnd.builder") version("5.3.0")
 }
 
-buildscript {
-
-	//dependencies {
-	//	classpath("biz.aQute.bnd:biz.aQute.bnd.gradle:5.0.1")
-	//}
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
 }
-//apply(plugin = "biz.aQute.bnd.builder")
+
+
+
+
 
 //p2.setUpdateSites( mutableListOf(
 //                uri("https://download.eclipse.org/releases/2019-03"),
@@ -33,7 +35,6 @@ p2.publishTask("p2publish") {
 repositories {
     // You can declare any Maven/Ivy/file repository here.
     mavenCentral()
-    mavenLocal()
 }
 
 
@@ -42,7 +43,7 @@ dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     implementation("org.apache.commons:commons-math3:3.6.1")
     //implementation(p2.bundles(false, "org.eclipse.core.resources:[3.13,3.14)"))
-    implementation(p2.bundles(true, "org.eclipse.core.resources:[3.13,3.14)"))
+    api(p2.bundles(true, "org.eclipse.swtbot.eclipse.finder:2.2.1"))
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("com.google.guava:guava:27.0.1-jre")
 

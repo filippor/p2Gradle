@@ -45,6 +45,10 @@ public class FrameworkTaskConfigurator {
 
   private final FrameworkLauncher p2FrameworkLauncher;
 
+  public FrameworkLauncher getP2FrameworkLauncher() {
+    return p2FrameworkLauncher;
+  }
+
   private final Project project;
 
   private Collection<URI> updateSites;
@@ -188,13 +192,14 @@ public class FrameworkTaskConfigurator {
 
     return publishTask;
   }
+  
 
   private FrameworkLauncher createFrameworkLauncher(final Project project) {
     Configuration bundles = project.getConfigurations()
         .findByName(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
     if (bundles == null) {
       bundles = project.getConfigurations().create(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
-      project.getDependencies().add(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG, "it.filippor.p2:p2impl:0.0.3");
+      project.getDependencies().add(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG, "it.filippor.p2:p2impl:0.0.4S");
     }
 
     final File frameworkStoragePath = project.getBuildDir().toPath().resolve("tmp").resolve("p2Framework").toFile();
@@ -211,8 +216,17 @@ public class FrameworkTaskConfigurator {
    * @param action task configuration
    * @return task
    */
-  public Task doLastOnFramework(final TaskProvider<?> taskProvider, final BiConsumer<Task, ServiceProvider> action) {
-    Task task = taskProvider.get();
+  public  Task doLastOnFramework(final TaskProvider<?> taskProvider, final BiConsumer<Task, ServiceProvider> action) {
+    return doLastOnFramework((Task) taskProvider.get(),action);
+  }
+  /**
+   * add doLast action that run with framework activated and serviceProvider
+   * 
+   * @param task task to configure
+   * @param action task configuration
+   * @return task
+   */
+  private  Task doLastOnFramework(Task task, final BiConsumer<Task, ServiceProvider> action) {
     task.getDependsOn().add(this.startFrameworkTask);
     this.stopFrameworkTask.mustRunAfter(this.stopFrameworkTask.getMustRunAfter(), task);
 
@@ -221,7 +235,8 @@ public class FrameworkTaskConfigurator {
         t.getLogger().warn("framework is not running");
         this.p2FrameworkLauncher.startFramework();
       }
-      this.p2FrameworkLauncher.executeWithServiceProvider(it -> action.accept(t, it));
+      if(action!=null)
+        this.p2FrameworkLauncher.executeWithServiceProvider(it -> action.accept(t, it));
     });
   }
 

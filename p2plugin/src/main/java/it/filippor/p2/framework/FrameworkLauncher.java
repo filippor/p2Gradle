@@ -71,7 +71,12 @@ public class FrameworkLauncher {
    * @param action execute action
    */
   public void executeWithServiceProvider(final Consumer<ServiceProvider> action) {
-    ServiceProvider serviceProvider = new ServiceProvider(EclipseStarter.getSystemBundleContext());
+    if(!isStarted()) {
+      logger.warn("framework is not started");
+      startFramework();
+    }
+    BundleContext bctx = EclipseStarter.getSystemBundleContext();
+    ServiceProvider serviceProvider = new ServiceProvider(bctx);
     action.accept(serviceProvider);
     serviceProvider.ungetAll();
   }

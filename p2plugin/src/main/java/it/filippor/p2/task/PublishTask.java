@@ -8,6 +8,7 @@ import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
 
 import it.filippor.p2.api.P2RepositoryManager;
+import it.filippor.p2.config.FrameworkTaskConfigurator;
 import it.filippor.p2.framework.FrameworkLauncher;
 import it.filippor.p2.util.ProgressMonitorWrapper;
 
@@ -20,6 +21,11 @@ public class PublishTask extends TaskWithProgress {
 
 	private Iterable<File> bundles;
 
+	public PublishTask() {
+      repo = getProject().getBuildDir().toPath().resolve("targetSite").toUri();
+      bundles = getProject().getConfigurations().getByName("runtimeClasspath");
+    }
+	
 	/**
 	 * FrameworkLauncher used to publish bundles
 	 */
@@ -62,7 +68,11 @@ public class PublishTask extends TaskWithProgress {
 	 */
 	@TaskAction
 	public void publish() {
-		this.p2FrameworkLauncher.executeWithServiceProvider(sp -> sp.getService(P2RepositoryManager.class).publish(repo,
+	FrameworkLauncher frameworkLauncher = this.p2FrameworkLauncher;
+    if(frameworkLauncher == null)
+      frameworkLauncher = getProject().getExtensions().findByType(FrameworkTaskConfigurator.class).getP2FrameworkLauncher();
+	
+	frameworkLauncher.executeWithServiceProvider(sp -> sp.getService(P2RepositoryManager.class).publish(repo,
 				bundles, ProgressMonitorWrapper.wrap(this)));
 	}
 }

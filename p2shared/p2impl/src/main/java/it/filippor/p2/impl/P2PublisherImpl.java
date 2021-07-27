@@ -4,6 +4,9 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.StreamSupport;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -21,6 +24,8 @@ import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 
 public class P2PublisherImpl {
 
+    private static final Logger LOGGER = Logger.getLogger(ArtifactRepositoryFacade.class.getCanonicalName());
+  
 	private IMetadataRepositoryManager metadataRepositoryManager;
 	private IArtifactRepositoryManager artifactRepositoryManager;
 
@@ -38,13 +43,18 @@ public class P2PublisherImpl {
 
 	public void publish(URI repo, Iterable<File> bundleLocations, IProgressMonitor monitor)
 			throws ProvisionException, OperationCanceledException {
-		IPublisherInfo info = createPublisherInfo(repo, monitor);
+		if(LOGGER.isLoggable(Level.INFO))
+		  if(!bundleLocations.iterator().hasNext()) LOGGER.info("no file to publish");
+		  else StreamSupport.stream(bundleLocations.spliterator(), false).forEach(f->LOGGER.info("publishing: " + f));
+		  
+	    IPublisherInfo info = createPublisherInfo(repo, monitor);
 		IPublisherAction[] actions = createActions(bundleLocations);
 
 		Publisher publisher = new Publisher(info);
 		publisher.publish(actions, monitor);
-		metadataRepositoryManager.removeRepository(repo);
-		artifactRepositoryManager.removeRepository(repo);
+		metadataRepositoryManager.removeRepository(info.getMetadataRepository().getLocation());
+		artifactRepositoryManager.removeRepository(info.getArtifactRepository().getLocation());
+		
 		
 	}
 
