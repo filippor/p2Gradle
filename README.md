@@ -6,9 +6,9 @@ https://plugins.gradle.org/plugin/it.filippor.p2
 this plugin launch an osgi framework with eclipse p2 bundle to perform the resolve and publish task
 
 ## Example
-gradle kotlin dsl see p2test/build.gradle.kts
+gradle kotlin dsl see https://github.com/filippor/p2Gradle/blob/master/p2test/build.gradle.kts
 
-gradle groovy dsl see testGroovy/build.gradle
+gradle groovy dsl see https://github.com/filippor/p2Gradle/blob/master/testGroovy/build.gradle
 
 #### Apply plugin
 
