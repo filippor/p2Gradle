@@ -55,6 +55,9 @@ public class FrameworkTaskConfigurator {
 
   private URI agentUri;
 
+  private List<String> startBundlesSymbolicNames = Arrays.asList("org.eclipse.equinox.ds",
+      "org.eclipse.equinox.registry", "org.eclipse.core.net", "org.apache.felix.scr", "p2impl");;
+
   /**
    * create configuration
    * @param project project to configure
@@ -204,8 +207,6 @@ public class FrameworkTaskConfigurator {
 
     final File frameworkStoragePath = project.getBuildDir().toPath().resolve("tmp").resolve("p2Framework").toFile();
     final Set<String> p2ApiPackage = new HashSet<>(Collections.singletonList("it.filippor.p2.api"));
-    final List<String> startBundlesSymbolicNames = Arrays.asList("org.eclipse.equinox.ds",
-        "org.eclipse.equinox.registry", "org.eclipse.core.net", "org.apache.felix.scr", "p2impl");
     return new FrameworkLauncher(frameworkStoragePath, p2ApiPackage, startBundlesSymbolicNames, bundles);
   }
 
