@@ -9,7 +9,7 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id ("java-library")
-    id ("it.filippor.p2") version "0.0.8"
+    id ("it.filippor.p2") version "0.0.9"
 }
 
 java {

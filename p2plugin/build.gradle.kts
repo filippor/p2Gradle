@@ -5,7 +5,7 @@ plugins {
 }
 
 group="it.filippor.p2"
-version="0.0.8"
+version="0.0.9"
 
 
 repositories {
@@ -84,7 +84,7 @@ pluginBundle {
       // id is captured from java-gradle-plugin configuration
       displayName = "P2 Gradle Plugin"
       tags = listOf("p2", "osgi", "dependency")
-      version = "0.0.8"
+      version = "0.0.9"
     }
   }
 }

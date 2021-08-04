@@ -125,7 +125,7 @@ public class FrameworkTaskConfigurator {
    */
   public ConfigurableFileCollection bundles(final boolean transitive, final String... bundles) {
     return this.bundles(transitive, Arrays.stream(bundles).map(s -> s.split(":"))
-        .map(sa -> new Bundle(sa[0], new org.osgi.framework.VersionRange(sa[1]))).toArray(Bundle[]::new));
+        .map(sa -> new Bundle(sa[0],sa.length>1?new org.osgi.framework.VersionRange(sa[1]):null)).toArray(Bundle[]::new));
   }
 
   /**
@@ -202,7 +202,7 @@ public class FrameworkTaskConfigurator {
         .findByName(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
     if (bundles == null) {
       bundles = project.getConfigurations().create(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
-      project.getDependencies().add(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG, "it.filippor.p2:p2impl:0.0.4S");
+      project.getDependencies().add(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG, "it.filippor.p2:p2impl:0.0.4");
     }
 
     final File frameworkStoragePath = project.getBuildDir().toPath().resolve("tmp").resolve("p2Framework").toFile();
