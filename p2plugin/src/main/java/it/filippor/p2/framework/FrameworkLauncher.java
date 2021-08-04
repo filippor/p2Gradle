@@ -3,6 +3,7 @@ package it.filippor.p2.framework;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -48,8 +49,8 @@ public class FrameworkLauncher {
     try {
       this.setInitialProperty();
       if ((!EclipseStarter.isRunning())) {
-        EclipseStarter.startup(this.getNonFrameworkArgs(), null);
-
+          EclipseStarter.startup(this.getNonFrameworkArgs(), null);
+         
       }
 
       BundleContext ctx = EclipseStarter.getSystemBundleContext();
@@ -60,6 +61,10 @@ public class FrameworkLauncher {
         tryActivateBundle(ctx, sn);
       }
       checkAllBundles(ctx);
+    } catch (SecurityException e) {
+      logger.error("{}\n try to apply this plugin before others \n"
+          + "biz.aQute.bnd.builder version 5.3.0 has conflict with org.osgi.service.log.LogLevel class but work fine if apllied after it.filippor.p2",e.getMessage());
+      throw Extensions.sneakyThrow(e);
     } catch (Exception e) {
       throw Extensions.sneakyThrow(e);
     }
@@ -145,7 +150,7 @@ public class FrameworkLauncher {
       final File tmp = File.createTempFile("p2store", "secure_storage");
       this.tempSecureStorage = tmp;
       tmp.deleteOnExit();
-      final List<String> nonFrameworkArgs = Arrays.asList("-eclipse.keyring", tmp.getAbsolutePath());
+      final List<String> nonFrameworkArgs = new ArrayList<>( List.of("-eclipse.keyring", tmp.getAbsolutePath()));
       if (FrameworkLauncher.logger.isDebugEnabled()) {
         nonFrameworkArgs.add("-debug");
         nonFrameworkArgs.add("-consoleLog");

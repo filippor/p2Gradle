@@ -49,6 +49,10 @@ tasks.register("publishPlugin") {
   group = "build"
       dependsOn(gradle.includedBuild("p2plugin").task(":publishPlugins"))
 }
+tasks.register("publishPluginLocal") {
+  group = "build"
+      dependsOn(gradle.includedBuild("p2plugin").task(":publish"))
+}
 
 tasks.register("depP2Impl") {
   group = "build"

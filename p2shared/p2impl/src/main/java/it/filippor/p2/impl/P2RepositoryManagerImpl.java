@@ -3,6 +3,7 @@ package it.filippor.p2.impl;
 import java.io.File;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -19,6 +20,7 @@ import org.osgi.service.component.annotations.Component;
 import it.filippor.p2.api.Bundle;
 import it.filippor.p2.api.P2RepositoryManager;
 import it.filippor.p2.api.ProgressMonitor;
+import it.filippor.p2.api.RepositoryData;
 import it.filippor.p2.impl.util.Utils;
 
 @Component()
@@ -36,8 +38,9 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
 		this.ctx = ctx;
 	}
 
+	@Override
 	public void init(URI repo, Collection<URI> sites, ProgressMonitor monitor) {
-		IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
+        IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
 		try {
 			SubMonitor mon = SubMonitor.convert(wrappedMonitor, "init", 1000);
 			agent = getAgent(repo);
@@ -48,7 +51,8 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
 			Utils.sneakyThrow(e);
 		}
 	}
-
+	
+	@Override
 	public void tearDown() {
 		repoContext = null;
 		artifactRepo = null;
@@ -57,7 +61,7 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
 	}
 
 	@Override
-	public Set<File> resolve(Collection<Bundle> bundles, boolean transitive, ProgressMonitor monitor) {
+	public Set<File> resolve(Collection<Bundle> bundles, boolean transitive,Map<String, String> targetProperties, ProgressMonitor monitor) {
 
 		IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
 
@@ -66,7 +70,7 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
 			mon.worked(1);
 			Set<IInstallableUnit> toInstall = repoContext.findMetadata(bundles, mon.split(400));
 
-			Set<File> files = artifactRepo.getFiles(toInstall, transitive, mon.split(400));
+			Set<File> files = artifactRepo.getFiles(toInstall, transitive,targetProperties, mon.split(400));
 			mon.done();
 			return files;
 		} catch (Exception e) {
@@ -75,27 +79,21 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
 		}
 	}
 
-	@Override
-	public void publish(URI repo, Iterable<File> bundleLocations, ProgressMonitor monitor) {
-		IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
-		try {
-			SubMonitor mon = SubMonitor.convert(wrappedMonitor, "init", 1000);
-			new P2PublisherImpl(agent).publish(repo, bundleLocations, mon.split(1000));
-			mon.done();
-		} catch (Exception e) {
-			Utils.sneakyThrow(e);
-		}
-	}
+    
 
-//	public void director(ProgressMonitor monitor) {
-//		IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
-//		try {
-//			SubMonitor mon = SubMonitor.convert(wrappedMonitor, "init", 1000);
-//			new P2Discovery().testDirector(agent, mon);
-//		} catch (Exception e) {
-//			Utils.sneakyThrow(e);
-//		}
-//	}
+    @Override
+    public void publish(Iterable<File> bundleLocations, Iterable<File> featureLocations, RepositoryData metadataRepository,
+        RepositoryData artifactRepository, ProgressMonitor monitor) {
+      IProgressMonitor wrappedMonitor = WrappedMonitor.wrap(monitor);
+      try {
+      	SubMonitor mon = SubMonitor.convert(wrappedMonitor, "init", 1000);
+        new P2PublisherImpl(agent).publish(metadataRepository, artifactRepository, bundleLocations,featureLocations, mon.split(1000));
+      	mon.done();
+      } catch (Exception e) {
+      	Utils.sneakyThrow(e);
+      }
+    }
+
 
 	private IProvisioningAgent getAgent(URI repo) throws ProvisionException {
 		ServiceReference<IProvisioningAgentProvider> sr = ctx.getServiceReference(IProvisioningAgentProvider.class);

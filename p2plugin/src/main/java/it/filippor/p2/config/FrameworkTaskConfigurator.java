@@ -2,12 +2,14 @@ package it.filippor.p2.config;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -33,6 +35,8 @@ import it.filippor.p2.util.ProgressMonitorWrapper;
  * P2 Plugin Configuration
  */
 public class FrameworkTaskConfigurator {
+  private static final String IT_FILIPPOR_P2_P2IMPL = "it.filippor.p2:p2impl:0.0.5";
+
   private static final String P2_FRAMEWORK_BUNDLES_CONFIG = "p2frameworkBundles";
 
   private static final String P2_START_FRAMEWORK_TASK = "p2startFramework";
@@ -44,31 +48,84 @@ public class FrameworkTaskConfigurator {
   private final Task startFrameworkTask;
 
   private final FrameworkLauncher p2FrameworkLauncher;
-
-  public FrameworkLauncher getP2FrameworkLauncher() {
-    return p2FrameworkLauncher;
-  }
-
+  
+  private Set<String> sharedPackages = Set.of("it.filippor.p2.api");
+  
   private final Project project;
 
   private Collection<URI> updateSites;
 
-  private URI agentUri;
+  private Path bundleCache;// = Paths.get(System.getProperty("user.home"), ".gradle", "caches", "p2", "pool");
 
   private List<String> startBundlesSymbolicNames = Arrays.asList("org.eclipse.equinox.ds",
-      "org.eclipse.equinox.registry", "org.eclipse.core.net", "org.apache.felix.scr", "p2impl");;
+      "org.eclipse.equinox.registry", "org.eclipse.core.net", "org.apache.felix.scr", "p2impl");
 
+  private Map<String, String> defaultTargetProperties;
+
+  
+  /**
+   * @return the framework launcher
+   */
+  public FrameworkLauncher getP2FrameworkLauncher() {
+    return p2FrameworkLauncher;
+  }
+
+  
+  /**
+   * @return the bundleCache path
+   */
+  public Path getBundleCache() {
+    return bundleCache;
+  }
+
+  /**
+   * @param bundleCache the bundleCache path to set
+   */
+  public void setBundleCache(Path bundleCache) {
+    this.bundleCache = bundleCache;
+  }
+
+  /**
+   * @return list of bundle symbolic name to start 
+   */
+  public List<String> getStartBundlesSymbolicNames() {
+    return startBundlesSymbolicNames;
+  }
+
+  /**
+   * @param startBundlesSymbolicNames list of bundle symbolic name to start
+   */
+  public void setStartBundlesSymbolicNames(List<String> startBundlesSymbolicNames) {
+    this.startBundlesSymbolicNames = startBundlesSymbolicNames;
+  }
+
+  /**
+   * @return package shared between framework and gradle
+   */
+  public Set<String> geSharedPackages() {
+    return sharedPackages;
+  }
+
+  /**
+   * @param sharedPackages package shared between framework and gradle
+   */
+  public void setSharedPackages(Set<String> sharedPackages) {
+    this.sharedPackages = sharedPackages;
+  }
+
+  
+  
   /**
    * create configuration
    * @param project project to configure
-   * @param agentUri p2 agent URI
+   * @param bundleCache bundle cache path
    */
-  public FrameworkTaskConfigurator(final Project project, final URI agentUri) {
-    this.agentUri = agentUri;
+  public FrameworkTaskConfigurator(final Project project, final Path bundleCache) {
+    this.bundleCache = bundleCache;
     this.updateSites = new ArrayList<>();
     final Project rootPrj = project.getRootProject();
     this.project = project;
-
+    
     this.p2FrameworkLauncher = this.createFrameworkLauncher(rootPrj.getRootProject());
 
     Task stopFrameworkTask = rootPrj.getTasks().findByName(FrameworkTaskConfigurator.P2_STOP_FRAMEWORK_TASK);
@@ -95,7 +152,7 @@ public class FrameworkTaskConfigurator {
             t.doLast(it -> {
               this.p2FrameworkLauncher.startFramework();
               this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> {
-                sp.getService(P2RepositoryManager.class).init(getAgentUri(), getUpdateSites(),
+                sp.getService(P2RepositoryManager.class).init(this.project.getBuildDir().toPath().resolve("p2").resolve("p2Agent").toUri(), this.updateSites,
                     ProgressMonitorWrapper.wrap(t));
               });
             });
@@ -109,7 +166,7 @@ public class FrameworkTaskConfigurator {
    * including transitive dependencies
    * 
    * @param bundles bundles to resolve
-   * @return resolved atifacts
+   * @return resolved artifacts
    */
   public ConfigurableFileCollection bundles(final String... bundles) {
     return this.bundles(true, bundles);
@@ -121,10 +178,20 @@ public class FrameworkTaskConfigurator {
    * 
    * @param transitive include transitive dependencies
    * @param bundles bundles to resolve
-   * @return resolved atifacts
+   * @return resolved artifacts
    */
-  public ConfigurableFileCollection bundles(final boolean transitive, final String... bundles) {
-    return this.bundles(transitive, Arrays.stream(bundles).map(s -> s.split(":"))
+  public ConfigurableFileCollection bundles(final boolean transitive,final String... bundles) {
+    return this.bundles(transitive,Arrays.stream(bundles).map(s -> s.split(":"))
+        .map(sa -> new Bundle(sa[0],sa.length>1?new org.osgi.framework.VersionRange(sa[1]):null)).toArray(Bundle[]::new));
+  }
+  /**
+   * @param transitive include transitive dependencies
+   * @param targetProperties artifact repository properties for resolution
+   * @param bundles  bundles bundles to resolve
+   * @return resolved artifacts
+   */
+  public ConfigurableFileCollection bundles(final boolean transitive,Map<String,String> targetProperties ,final String... bundles) {
+    return this.bundles(transitive,targetProperties, Arrays.stream(bundles).map(s -> s.split(":"))
         .map(sa -> new Bundle(sa[0],sa.length>1?new org.osgi.framework.VersionRange(sa[1]):null)).toArray(Bundle[]::new));
   }
 
@@ -147,21 +214,33 @@ public class FrameworkTaskConfigurator {
    * @param bundles bundles bundles to resolve
    * @return resolved atifacts
    */
-  public ConfigurableFileCollection bundles(final boolean transitive, final Bundle... bundles) {
+  public ConfigurableFileCollection bundles(final boolean transitive,final Bundle... bundles) {
+    return bundles(transitive,defaultTargetProperties,bundles);
+  }
+  /**
+   * create a file collection with bundles resolved from bundles specification
+   * including transitive dependencies if transitive is true
+   * 
+   * @param transitive include transitive dependencies
+   * @param targetProperties artifact repository properties for resolution
+   * @param bundles bundles bundles to resolve
+   * @return resolved atifacts
+   */
+  public ConfigurableFileCollection bundles(final boolean transitive, Map<String,String>targetProperties,final Bundle... bundles) {
     String nameQual = "";
     if (transitive) {
       nameQual = "transitive";
     }
-    String nameBundle = Arrays.toString(bundles);
+    String nameBundle = ""+Objects.hash((Object[])bundles) + targetProperties.hashCode();
     final String filesTaskName = nameQual + nameBundle;
     final String name = ("resolveP2" + filesTaskName);
-
     ResolveTask tmpResolve = (ResolveTask) this.project.getTasks().findByName(name);
     if (tmpResolve == null) {
       tmpResolve = this.project.getTasks().register(name, ResolveTask.class, it -> {
         it.p2FrameworkLauncher = this.p2FrameworkLauncher;
         it.bundles = Arrays.asList(bundles);
         it.transitive = transitive;
+        it.targetProperties= targetProperties;
       }).get();
     }
     tmpResolve.getDependsOn().add(startFrameworkTask);
@@ -201,13 +280,13 @@ public class FrameworkTaskConfigurator {
     Configuration bundles = project.getConfigurations()
         .findByName(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
     if (bundles == null) {
-      bundles = project.getConfigurations().create(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
-      project.getDependencies().add(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG, "it.filippor.p2:p2impl:0.0.4");
+      bundles = project.getRootProject().getConfigurations().create(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG);
+      project.getRootProject().getDependencies().add(FrameworkTaskConfigurator.P2_FRAMEWORK_BUNDLES_CONFIG, IT_FILIPPOR_P2_P2IMPL);
     }
 
-    final File frameworkStoragePath = project.getBuildDir().toPath().resolve("tmp").resolve("p2Framework").toFile();
-    final Set<String> p2ApiPackage = new HashSet<>(Collections.singletonList("it.filippor.p2.api"));
-    return new FrameworkLauncher(frameworkStoragePath, p2ApiPackage, startBundlesSymbolicNames, bundles);
+    final File frameworkStoragePath = project.getBuildDir().toPath().resolve("p2").resolve("p2Framework").toFile();
+    
+    return new FrameworkLauncher(frameworkStoragePath, sharedPackages, startBundlesSymbolicNames, bundles);
   }
 
   /**
@@ -255,17 +334,28 @@ public class FrameworkTaskConfigurator {
     this.updateSites = updateSites;
   }
 
-  /**
-   * @return p2 agent uri
-   */
-  public URI getAgentUri() {
-    return agentUri;
-  }
+  
 
   /**
-   * @param agentUri p2 agent uri
+   * @return targetProperties used for dependency that not specify one
    */
-  public void setAgentUri(URI agentUri) {
-    this.agentUri = agentUri;
+  public Map<String, String> getDefaultTargetProperties() {
+    return defaultTargetProperties;
+  }
+
+  protected Map<String, String> getBaseTargetProperties() {
+    Map<String, String> props = new HashMap<>();
+    props.put("org.eclipse.equinox.p2.roaming", "true");
+    props.put("org.eclipse.equinox.p2.cache", bundleCache.toString());
+    return props;
+  }
+  
+  /**
+   * @param defaultTargetProperties targetProperties used for dependency that not specify one
+   */
+  public void setDefaultTargetProperties(Map<String, String> defaultTargetProperties) {
+    
+    this.defaultTargetProperties = new HashMap<>(getBaseTargetProperties());
+    this.defaultTargetProperties.putAll(defaultTargetProperties);
   }
 }

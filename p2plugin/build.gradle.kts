@@ -5,12 +5,11 @@ plugins {
 }
 
 group="it.filippor.p2"
-version="0.0.9"
+version="0.0.10"
 
 
 repositories {
 	mavenCentral()
-    mavenLocal()
     maven {
         url = uri("https://raw.githubusercontent.com/filippor/p2Gradle/repo/repo")
     }
@@ -37,10 +36,10 @@ dependencyLocking {
 
 
 dependencies{
-	compileOnly("it.filippor.p2:p2api:0.0.4")
+	compileOnly("it.filippor.p2:p2api:0.0.5")
 	compileOnly("org.osgi:osgi.annotation:8.0.0")
-	//runtimeOnly("it.filippor.p2:p2impl:0.0.2")
 	implementation("org.eclipse.platform:org.eclipse.osgi:3.16.300")
+	
 }
 
 tasks.jar {
@@ -52,6 +51,14 @@ tasks.jar {
     })
 }
 
+publishing {
+ repositories {
+        maven {
+            name = "localPluginRepository"
+            url = uri("../../local-plugin-repository")
+        }
+    }
+}
 
 pluginBundle {
   // These settings are set for the whole plugin bundle
@@ -84,7 +91,7 @@ pluginBundle {
       // id is captured from java-gradle-plugin configuration
       displayName = "P2 Gradle Plugin"
       tags = listOf("p2", "osgi", "dependency")
-      version = "0.0.9"
+      version = "0.0.10"
     }
   }
 }

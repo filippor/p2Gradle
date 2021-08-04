@@ -23,7 +23,7 @@ dependencies {
 	compileOnly("org.osgi:osgi.annotation:8.0.0")
 	compileOnly("org.osgi:osgi.cmpn:7.0.0")
 	compileOnly("org.osgi:osgi.core:8.0.0")
-	compileOnly("org.eclipse.platform:org.eclipse.osgi:+")
+	compileOnly("org.eclipse.platform:org.eclipse.osgi:3.16.300")
 	
     runtimeOnly("org.eclipse.ecf:org.apache.commons.codec:+")
     runtimeOnly("org.eclipse.ecf:org.apache.commons.logging:+")

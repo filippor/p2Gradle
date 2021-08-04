@@ -5,7 +5,6 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -58,13 +57,13 @@ private final IProvisioningAgent         agent;
     return sites.toArray(new URI[sites.size()]);
   }
 
-  public Set<File> getFiles(Set<IInstallableUnit> toResolve, boolean transitive, SubMonitor monitor) throws ProvisionException {
+  public Set<File> getFiles(Set<IInstallableUnit> toResolve, boolean transitive,Map<String, String> targetProperties, SubMonitor monitor) throws ProvisionException {
     int totalWork = 100 + (toResolve.size() * 200);
     monitor = SubMonitor.convert(monitor, totalWork);
     if (toResolve.isEmpty())
       return new HashSet<>();
 
-    String profileId = toProfileId(toResolve);
+    String profileId = toProfileId(toResolve, targetProperties);
     if (profileRegistry.containsProfile(profileId)) {
       if (transitive) {
         toResolve.addAll(profileRegistry.getProfile(profileId).query(QueryUtil.ALL_UNITS, monitor.split(10)).toSet());
@@ -78,7 +77,7 @@ private final IProvisioningAgent         agent;
       return result.getHit();
     } else {
 
-      Set<IInstallableUnit> installed = install(toResolve, monitor.split(toResolve.size() * 150));
+      Set<IInstallableUnit> installed = install(toResolve,targetProperties, monitor.split(toResolve.size() * 150));
       reloadLocalRepo(monitor.split(100));
       if (transitive)
         toResolve.addAll(installed);
@@ -152,14 +151,14 @@ private final IProvisioningAgent         agent;
     localFileRepo = getLocalFileRepo(mon.split(50));
   }
 
-  private Set<IInstallableUnit> install(Set<IInstallableUnit> toInstall, IProgressMonitor mon) throws ProvisionException {
+  private Set<IInstallableUnit> install(Set<IInstallableUnit> toInstall,Map<String, String> targetProperties, IProgressMonitor mon) throws ProvisionException {
     // see org.eclipse.equinox.internal.p2.director.app.DirectorApplication.performProvisioningActions()
     SubMonitor monitor = SubMonitor.convert(mon, "install", 1000);
     // Creating an operation
     ProvisioningSession session = new ProvisioningSession(agent);
 
     InstallOperation installOperation = new InstallOperation(session, toInstall);
-    IProfile         profile          = createProfile(toProfileId(toInstall));
+    IProfile         profile          = createProfile(toInstall, targetProperties);
 
     installOperation.setProfileId(profile.getProfileId());
 
@@ -188,14 +187,13 @@ private final IProvisioningAgent         agent;
     return result;
   }
 
-  private IProfile createProfile(String profileName) throws ProvisionException {
-    Map<String, String> props = new HashMap<>();
-    props.put("org.eclipse.equinox.p2.roaming", "true");
-    return profileRegistry.addProfile(profileName, props);
+  private IProfile createProfile(Set<IInstallableUnit> toInstall,Map<String,String> targetProperties) throws ProvisionException {
+    String profileName = toProfileId(toInstall, targetProperties);
+    return profileRegistry.addProfile(profileName, targetProperties);
   }
 
-  private String toProfileId(Set<IInstallableUnit> toInstall) {
-    return toInstall.stream().map(Object::toString).collect(Collectors.joining(","));
+  private String toProfileId(Set<IInstallableUnit> toInstall,Map<String,String> targetProperties) {
+    return ""+Objects.hash(toInstall.stream().map(Object::toString).collect(Collectors.joining(","))) + targetProperties.hashCode();
   }
 
 }

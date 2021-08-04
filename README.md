@@ -15,7 +15,7 @@ gradle groovy dsl see https://github.com/filippor/p2Gradle/blob/master/testGroov
 ```kotlin
 plugins {
     id ("java-library")
-    id ("it.filippor.p2") version ( "0.0.9")
+    id ("it.filippor.p2") version ( "0.0.10")
 }
 
 ```
@@ -72,8 +72,10 @@ setBundles accept any Iterable<File> and publish the file on repository
 
 
 ### Notes
-The local cache for the p2 repository is located at <user.home>/.gradle/caches/p2 but can be configured with 
-p2.setAgentUri(URI)
+If used with plugin biz.aQute.bnd.builder becouse gredle classpath is not isolate it.filippor.p2 plugin nedd to be applied before biz.aQute.bnd.builder
+
+The local cache for the p2 repository is located at <user.home>/.gradle/caches/p2/pool but can be configured with 
+p2.setBundleCache(Path)
 
 
 the plugin create a configuration named p2frameworkBundles that contains the bundles installed in the osgi framework to execute the provisioning operation

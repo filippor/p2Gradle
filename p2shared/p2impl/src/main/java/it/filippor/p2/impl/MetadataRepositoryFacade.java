@@ -65,6 +65,9 @@ public class MetadataRepositoryFacade {
   }
 
   private org.eclipse.equinox.p2.metadata.VersionRange toVersion(VersionRange version) {
+    if(version == null) {
+      return org.eclipse.equinox.p2.metadata.VersionRange.emptyRange;
+    }
     return org.eclipse.equinox.p2.metadata.VersionRange.create(version.toString());
   }
 

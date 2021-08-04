@@ -2,6 +2,8 @@ package it.filippor.p2;
 
 import java.net.URI;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.gradle.api.NonNullApi;
 import org.gradle.api.Plugin;
@@ -27,45 +29,25 @@ public class P2Plugin implements Plugin<Project> {
     {
       rh.mavenCentral();
       rh.maven(mvn->{
+         mvn.setName("it.filippor.p2.repo");
     	 mvn.setUrl(URI.create("https://raw.githubusercontent.com/filippor/p2Gradle/repo/repo")); 
       });
       
     };
 
-    final FrameworkTaskConfigurator taskConfigurator = new FrameworkTaskConfigurator(prj, 
-          Paths.get(System.getProperty("user.home"), ".gradle", "caches", "p2").toUri());
-    
-    prj.getExtensions().add(FrameworkTaskConfigurator.class, "p2", taskConfigurator);
-    
-//    taskConfigurator.setUpdateSites( Arrays.asList(
-//                URI.create("http://download.eclipse.org/releases/2019-03"),
-//                URI.create("http://download.eclipse.org/releases/2019-06")));
-//    
-//    Configuration compile = prj.getConfigurations().findByName("compile");
-//    if (compile == null) {
-//      compile = prj.getConfigurations().create("compile");
-//    }
-//
-//    Configuration api = prj.getConfigurations().findByName("api");
-//    if (api == null) {
-//      api = prj.getConfigurations().create("api");
-//    }
-//
-//    Configuration test = prj.getConfigurations().findByName("prova123");
-//    if (test == null) {
-//      test = prj.getConfigurations().create("prova123");
-//    }
-//    final Configuration testF = test;
-//
-//    Extensions.dependencies(prj, (DependencyHandler it) -> {
-//      it.add("api", taskConfigurator.p2Bundles(false, "org.eclipse.core.resources:[3.13,3.14)"));
-//      it.add("compile", taskConfigurator.p2Bundles(true, "org.eclipse.core.resources:[3.13,3.14)"));
-//      it.add(testF.getName(), taskConfigurator.p2Bundles("org.eclipse.core.filesystem:[1.7,1.8)"));
-//    });
+    final FrameworkTaskConfigurator taskConfigurator = new FrameworkTaskConfigurator(prj,
+        Paths.get(System.getProperty("user.home"), ".gradle", "caches", "p2", "pool"));
 
-//    taskConfigurator.publishTask("p2Publish", (PublishTask it) -> {
-//      it.setRepo(prj.getBuildDir().toPath().resolve("targetSite").toUri());
-//      it.setBundles(testF);
-//    });
+    taskConfigurator.setDefaultTargetProperties(Map.of("org.eclipse.equinox.p2.environments", getOsString()));
+
+    prj.getExtensions().add(FrameworkTaskConfigurator.class, "p2", taskConfigurator);
+
+  }
+  
+  
+
+  private String getOsString() {
+    //TODO: consider other platform
+    return "osgi.os=win32,osgi.arch=x86_64,osgi.ws=win32";
   }
 }

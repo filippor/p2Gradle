@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.osgi.framework.VersionRange;
 
@@ -45,9 +46,11 @@ public class Bundle implements Serializable {
 
   /**
    * @param id id of bundle
+   * @return this for fluent api
    */
-  public void setId(String id) {
+  public Bundle setId(String id) {
     this.id = id;
+    return this;
   }
 
   /**
@@ -59,18 +62,18 @@ public class Bundle implements Serializable {
 
   /**
    * @param version version of bundle
+   * @return this for fluent api
    */
-  public void setVersion(VersionRange version) {
+  public Bundle setVersion(VersionRange version) {
     this.version = version;
+    return this;
   }
+
+  
 
   @Override
   public int hashCode() {
-    final int prime  = 31;
-    int       result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + ((version == null) ? 0 : version.hashCode());
-    return result;
+    return Objects.hash(id, version);
   }
 
   @Override
@@ -82,15 +85,7 @@ public class Bundle implements Serializable {
     if (getClass() != obj.getClass())
       return false;
     Bundle other = (Bundle) obj;
-    if (id == null) {
-      if (other.id != null)
-        return false;
-    } else if (!id.equals(other.id))
-      return false;
-    if (version == null) {
-      return other.version == null;
-    } else
-      return version.equals(other.version);
+    return Objects.equals(id, other.id) && Objects.equals(version, other.version);
   }
 
   @Override

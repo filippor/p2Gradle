@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,11 @@ public class ResolveTask extends TaskWithProgress {
   public boolean transitive;
 
   /**
+   * artifact repository properties used for resolution
+   */
+  public Map<String, String> targetProperties;
+
+  /**
    * @return bundles to resolve
    */
   @Input
@@ -57,7 +63,15 @@ public class ResolveTask extends TaskWithProgress {
   }
 
   /**
-   * @return file with dependencies
+   * @return the targetProperties
+   */
+  @Input
+  public Map<String, String> getTargetProperties() {
+    return targetProperties;
+  }
+
+  /**
+   * @return file containing dependencies path one every line
    */
   @OutputFile
   public File getOutputFile() {
@@ -76,7 +90,7 @@ public class ResolveTask extends TaskWithProgress {
     this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> {
       try {
         final Set<String> paths = sp.getService(P2RepositoryManager.class)
-          .resolve(bundles, transitive, ProgressMonitorWrapper.wrap(this))
+          .resolve(bundles, transitive,targetProperties ,ProgressMonitorWrapper.wrap(this))
           .stream()
           .map(File::toPath)
           .map(Path::toString)

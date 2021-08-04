@@ -9,7 +9,14 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id ("java-library")
-    id ("it.filippor.p2") version "0.0.9"
+    id ("it.filippor.p2") version "0.0.10"
+}
+
+repositories {
+	mavenCentral()
+	maven{
+		url = uri("../../p2GradleRepo/repo")
+	}
 }
 
 java {
@@ -24,7 +31,11 @@ p2.updateSites = listOf(
                 uri("http://download.eclipse.org/releases/2019-06"))
 
 p2.publishTask("p2publish") {
-     repo = uri("$buildDir/targetSite/")
+    // metadataRepository.uri = uri("$buildDir/targetSiteMetadata/")
+     //metadataRepository.type=it.filippor.p2.api.RepositoryData.METADATA_TYPE_COMPOSITE_REPOSITORY
+
+     //artifactRepository.uri=uri("$buildDir/targetSiteArtifact/")
+     artifactRepository.type=it.filippor.p2.api.RepositoryData.ARTIFACT_TYPE_COMPOSITE_REPOSITORY
      bundles = configurations.getByName("runtimeClasspath")
    }
 
