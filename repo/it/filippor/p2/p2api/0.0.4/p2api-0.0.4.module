@@ -36,11 +36,11 @@
         {
           "name": "p2api-0.0.4.jar",
           "url": "p2api-0.0.4.jar",
-          "size": 3914,
-          "sha512": "7110180cc03a2b34ab004dcb64aa3747d5af7f193e8b62e6d90e69a06185b38f5b50670a8c5d80e84659edbd2209a6df78ef392856806c685c1398c6f7c06e12",
-          "sha256": "b3748b10de485673f7bb4af116147129fd57ccc54708e18b6b0f049fbf8ed422",
-          "sha1": "32ee9f59ee29ce212e17325c6bbeed329ca594ff",
-          "md5": "954fef2ae0040010259cfc1acfa791ce"
+          "size": 3912,
+          "sha512": "d0617b2c5f28b8712f93ba683a6729b61dd675fb07ca8c4e9ff8a14c68f32d2d06d66591576221a663cf9b021aa0864aff44cab65674e2c8dfcc2f836e0a4bbd",
+          "sha256": "9a306a5bd7057204c92fb1af6606e82cd249b3aa058fd1f7514ae03337953a16",
+          "sha1": "1d88a2fec9d351882872c94fd1edbd4f72128056",
+          "md5": "f41776f49e5fcf9456ad2892d0bf24cf"
         }
       ]
     },
@@ -66,11 +66,11 @@
         {
           "name": "p2api-0.0.4.jar",
           "url": "p2api-0.0.4.jar",
-          "size": 3914,
-          "sha512": "7110180cc03a2b34ab004dcb64aa3747d5af7f193e8b62e6d90e69a06185b38f5b50670a8c5d80e84659edbd2209a6df78ef392856806c685c1398c6f7c06e12",
-          "sha256": "b3748b10de485673f7bb4af116147129fd57ccc54708e18b6b0f049fbf8ed422",
-          "sha1": "32ee9f59ee29ce212e17325c6bbeed329ca594ff",
-          "md5": "954fef2ae0040010259cfc1acfa791ce"
+          "size": 3912,
+          "sha512": "d0617b2c5f28b8712f93ba683a6729b61dd675fb07ca8c4e9ff8a14c68f32d2d06d66591576221a663cf9b021aa0864aff44cab65674e2c8dfcc2f836e0a4bbd",
+          "sha256": "9a306a5bd7057204c92fb1af6606e82cd249b3aa058fd1f7514ae03337953a16",
+          "sha1": "1d88a2fec9d351882872c94fd1edbd4f72128056",
+          "md5": "f41776f49e5fcf9456ad2892d0bf24cf"
         }
       ]
     }
