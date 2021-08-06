@@ -39,7 +39,7 @@ dependencies {
 api is a gradle configuration you can use any configuration.
 
 
-the version range is defined as
+the version range can be omitted and is defined as
 
 ```
 	  range ::= interval | atleast
