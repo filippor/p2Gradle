@@ -13,6 +13,6 @@ include("p2impl")
 
 pluginManagement {
   plugins {
-    id ("biz.aQute.bnd.builder") version "5.3.0"
+    id ("biz.aQute.bnd.builder") version "7.0.0"
   }
 }

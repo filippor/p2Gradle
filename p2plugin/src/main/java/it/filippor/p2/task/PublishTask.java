@@ -3,11 +3,8 @@ package it.filippor.p2.task;
 import java.io.File;
 import java.net.URI;
 import java.util.Collections;
-import java.util.Objects;
-
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
 import it.filippor.p2.api.P2RepositoryManager;
@@ -40,17 +37,12 @@ public class PublishTask extends TaskWithProgress {
    * FrameworkLauncher used to publish bundles
    */
   public FrameworkLauncher p2FrameworkLauncher;
-  
-  @Internal
-  public URI getRepo() {
-    if(Objects.equals(metadataRepository.getUri(), artifactRepository.getUri()))
-      return metadataRepository.getUri();
-    return null;
-  }
-  
+
+
+
   /**
    * URI of the repository in witch the bundles will be published set both artifact and metadata repository uri
-   * 
+   *
    * @param repo uri of the repo
    */
   public void setRepo(final URI repo) {
@@ -105,7 +97,7 @@ public class PublishTask extends TaskWithProgress {
 
   /**
    * bundles that will be published on repository
-   * 
+   *
    * @param bundles artifact to deploy
    */
   public void setBundles(final Iterable<File> bundles) {
@@ -113,7 +105,7 @@ public class PublishTask extends TaskWithProgress {
   }
   /**
    * features that will be published on repository
-   * 
+   *
    * @param features features to deploy
    */
   public void setFeatures(final Iterable<File> features) {

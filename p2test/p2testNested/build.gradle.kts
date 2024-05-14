@@ -9,7 +9,7 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
    id ("java-library")
-   id ("biz.aQute.bnd.builder") version("5.3.0")
+   id ("biz.aQute.bnd.builder") version("7.0.0")
    id ("it.filippor.p2")
 }
 

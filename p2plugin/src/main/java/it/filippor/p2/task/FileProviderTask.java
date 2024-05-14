@@ -13,7 +13,7 @@ import org.gradle.api.tasks.OutputFiles;
 /**
  * @author filippo.rossoni
  * task that read the file created by the resolver task and create a ConfigurableFileCollection
- * used to skip the execution of resolver task if input dosn't change 
+ * used to skip the execution of resolver task if input does not change 
  *
  */
 public class FileProviderTask extends TaskWithProgress {

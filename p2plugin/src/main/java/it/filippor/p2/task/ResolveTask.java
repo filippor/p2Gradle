@@ -32,7 +32,7 @@ public class ResolveTask extends TaskWithProgress {
   public FrameworkLauncher p2FrameworkLauncher;
 
   /**
-   * resolve transitive dependencies
+   * bundles to resolve
    */
   public Collection<Bundle> bundles;
 
