@@ -9,7 +9,7 @@ repositories {
 }
 java {
 	    toolchain {
-	        languageVersion.set(JavaLanguageVersion.of(11))
+	        languageVersion.set(JavaLanguageVersion.of(17))
 	    }
 	}
 dependencyLocking {
@@ -23,8 +23,9 @@ dependencies {
 	compileOnly("org.osgi:osgi.annotation:8.0.0")
 	compileOnly("org.osgi:osgi.cmpn:7.0.0")
 	compileOnly("org.osgi:osgi.core:8.0.0")
-	compileOnly("org.eclipse.platform:org.eclipse.osgi:3.16.300")
+	compileOnly("org.eclipse.platform:org.eclipse.osgi:3.18.600")
 	
+    runtimeOnly("org.eclipse.platform:org.eclipse.equinox.registry:+")
     runtimeOnly("org.eclipse.ecf:org.apache.commons.codec:+")
     runtimeOnly("org.eclipse.ecf:org.apache.commons.logging:+")
     runtimeOnly("org.eclipse.ecf:org.apache.httpcomponents.httpclient:+")

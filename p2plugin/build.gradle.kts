@@ -10,9 +10,9 @@ version="0.0.10"
 
 repositories {
 	mavenCentral()
-    maven {
+   /* maven {
         url = uri("https://raw.githubusercontent.com/filippor/p2Gradle/repo/repo")
-    }
+    }*/
 }
 
 gradlePlugin {
@@ -26,7 +26,7 @@ gradlePlugin {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -38,7 +38,7 @@ dependencyLocking {
 dependencies{
 	compileOnly("it.filippor.p2:p2api:0.0.5")
 	compileOnly("org.osgi:osgi.annotation:8.0.0")
-	implementation("org.eclipse.platform:org.eclipse.osgi:3.16.300")
+	implementation("org.eclipse.platform:org.eclipse.osgi:3.18.600")
 	
 }
 

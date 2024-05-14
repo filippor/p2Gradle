@@ -15,7 +15,7 @@ plugins {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -23,9 +23,9 @@ java {
 
 
 
-//p2.setUpdateSites( mutableListOf(
-//                uri("https://download.eclipse.org/releases/2019-03"),
-//                uri("https://download.eclipse.org/releases/2019-06")))
+p2.setUpdateSites( mutableListOf(
+                uri("https://download.eclipse.org/releases/2019-03"),
+                uri("https://download.eclipse.org/releases/2019-06")))
 
 p2.publishTask("p2publish") {
      setRepo(buildDir.toPath().resolve("targetSite").toUri())
