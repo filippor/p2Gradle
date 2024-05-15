@@ -1,0 +1,359 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "it.filippor.p2",
+    "module": "p2impl",
+    "version": "0.0.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.7"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "p2impl-0.0.6.jar",
+          "url": "p2impl-0.0.6.jar",
+          "size": 22985,
+          "sha512": "d608923553bd780ae5a66906c6a00904359fe67fe9229d22a5e44abb06a56e3ff0c45b955bfebef8b420d010b6c9314b9fbfe01023eb031c98860318995a49a0",
+          "sha256": "eb0dfae21fc922eece8a89ef42aaa3477f3b4b0a3d448dd07cd50246b20f2ee3",
+          "sha1": "c94f9484c5938777205f853c4f4b0432ab044e2b",
+          "md5": "73adbaa08bc901367d824b0dc18893b7"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.common",
+          "version": {
+            "requires": "3.19.0"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.director",
+          "version": {
+            "requires": "2.6.300"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.engine",
+          "version": {
+            "requires": "2.10.0"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.metadata.repository",
+          "version": {
+            "requires": "1.5.300"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.operations",
+          "version": {
+            "requires": "2.7.300"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.publisher",
+          "version": {
+            "requires": "1.9.100"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "org.eclipse.osgi"
+            }
+          ]
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.publisher.eclipse",
+          "version": {
+            "requires": "1.6.0"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.repository",
+          "version": {
+            "requires": "2.8.100"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.registry",
+          "version": {
+            "requires": "3.12.0"
+          }
+        },
+        {
+          "group": "org.eclipse.ecf",
+          "module": "org.apache.commons.codec",
+          "version": {
+            "requires": "1.9.0.v20170208-1614"
+          }
+        },
+        {
+          "group": "org.eclipse.ecf",
+          "module": "org.apache.commons.logging",
+          "version": {
+            "requires": "1.1.1.v201101211721"
+          }
+        },
+        {
+          "group": "org.eclipse.ecf",
+          "module": "org.apache.httpcomponents.httpclient",
+          "version": {
+            "requires": "4.5.2.v20170210-0925"
+          }
+        },
+        {
+          "group": "org.eclipse.ecf",
+          "module": "org.apache.httpcomponents.httpcore",
+          "version": {
+            "requires": "4.4.6.v20170210-0925"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.core.net",
+          "version": {
+            "requires": "1.5.300"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "org.eclipse.osgi"
+            }
+          ]
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.core.runtime",
+          "version": {
+            "requires": "3.31.0"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "org.eclipse.osgi"
+            }
+          ]
+        },
+        {
+          "group": "org.eclipse.ecf",
+          "module": "org.eclipse.ecf.identity",
+          "version": {
+            "requires": "3.10.0"
+          }
+        },
+        {
+          "group": "org.eclipse.ecf",
+          "module": "org.eclipse.ecf.provider.filetransfer.httpclient45",
+          "version": {
+            "requires": "1.0.600"
+          }
+        },
+        {
+          "group": "org.eclipse.ecf",
+          "module": "org.eclipse.ecf.provider.filetransfer.ssl",
+          "version": {
+            "requires": "1.1.0"
+          }
+        },
+        {
+          "group": "org.eclipse.ecf",
+          "module": "org.eclipse.ecf.ssl",
+          "version": {
+            "requires": "1.3.0"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.concurrent",
+          "version": {
+            "requires": "1.3.0"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.frameworkadmin",
+          "version": {
+            "requires": "2.3.100"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.frameworkadmin.equinox",
+          "version": {
+            "requires": "1.3.100"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.launcher",
+          "version": {
+            "requires": "1.6.700"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.director.app",
+          "version": {
+            "requires": "1.3.300"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.garbagecollector",
+          "version": {
+            "requires": "1.3.200"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.jarprocessor",
+          "version": {
+            "requires": "1.3.300"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.artifact.repository",
+          "version": {
+            "requires": "1.5.300"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.touchpoint.eclipse",
+          "version": {
+            "requires": "2.4.200"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.touchpoint.natives",
+          "version": {
+            "requires": "1.5.200"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.p2.transport.ecf",
+          "version": {
+            "requires": "1.4.200"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.simpleconfigurator",
+          "version": {
+            "requires": "1.5.200"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.simpleconfigurator.manipulator",
+          "version": {
+            "requires": "2.3.100"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.osgi.compatibility.state",
+          "version": {
+            "requires": "1.2.1000"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "org.eclipse.osgi"
+            }
+          ]
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.osgi.services",
+          "version": {
+            "requires": "3.12.0"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.osgi.util",
+          "version": {
+            "requires": "3.7.300"
+          }
+        },
+        {
+          "group": "org.eclipse.tycho",
+          "module": "org.eclipse.tycho.noopsecurity",
+          "version": {
+            "requires": "3.0.5"
+          }
+        },
+        {
+          "group": "org.eclipse.platform",
+          "module": "org.eclipse.equinox.ds",
+          "version": {
+            "requires": "1.6.200"
+          }
+        },
+        {
+          "group": "org.bouncycastle",
+          "module": "bcpg-jdk15on",
+          "version": {
+            "requires": "1.65"
+          }
+        },
+        {
+          "group": "org.bouncycastle",
+          "module": "bcprov-jdk15on",
+          "version": {
+            "requires": "1.65.01"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "p2impl-0.0.6.jar",
+          "url": "p2impl-0.0.6.jar",
+          "size": 22985,
+          "sha512": "d608923553bd780ae5a66906c6a00904359fe67fe9229d22a5e44abb06a56e3ff0c45b955bfebef8b420d010b6c9314b9fbfe01023eb031c98860318995a49a0",
+          "sha256": "eb0dfae21fc922eece8a89ef42aaa3477f3b4b0a3d448dd07cd50246b20f2ee3",
+          "sha1": "c94f9484c5938777205f853c4f4b0432ab044e2b",
+          "md5": "73adbaa08bc901367d824b0dc18893b7"
+        }
+      ]
+    }
+  ]
+}
