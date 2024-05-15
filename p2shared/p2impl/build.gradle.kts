@@ -7,11 +7,14 @@ plugins {
 repositories {
 	mavenCentral()
 }
+
 java {
-	    toolchain {
-	        languageVersion.set(JavaLanguageVersion.of(17))
-	    }
-	}
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+
 dependencyLocking {
 	    lockAllConfigurations()
 }
@@ -20,11 +23,20 @@ dependencyLocking {
 dependencies {
 	// This dependency is exported to consumers, that is to say found on their compile classpath.
 	compileOnly(project(":p2api"))
-	compileOnly("org.osgi:osgi.annotation:8.0.0")
-	compileOnly("org.osgi:osgi.cmpn:7.0.0")
 	compileOnly("org.osgi:osgi.core:8.0.0")
-	compileOnly("org.eclipse.platform:org.eclipse.osgi:3.18.600")
+	compileOnly("org.osgi:osgi.annotation:8.1.0")
+	compileOnly("org.osgi:osgi.cmpn:7.0.0")
+	compileOnly("org.eclipse.platform:org.eclipse.osgi:3.19.0")
 	
+    implementation("org.eclipse.platform:org.eclipse.equinox.common:+")
+    implementation("org.eclipse.platform:org.eclipse.equinox.p2.director:+")
+    implementation("org.eclipse.platform:org.eclipse.equinox.p2.engine:+")
+    implementation("org.eclipse.platform:org.eclipse.equinox.p2.metadata.repository:+")
+    implementation("org.eclipse.platform:org.eclipse.equinox.p2.operations:+")
+    implementation("org.eclipse.platform:org.eclipse.equinox.p2.publisher:+"){exclude(module = "org.eclipse.osgi")}
+    implementation("org.eclipse.platform:org.eclipse.equinox.p2.publisher.eclipse:+")
+    implementation("org.eclipse.platform:org.eclipse.equinox.p2.repository:+")
+
     runtimeOnly("org.eclipse.platform:org.eclipse.equinox.registry:+")
     runtimeOnly("org.eclipse.ecf:org.apache.commons.codec:+")
     runtimeOnly("org.eclipse.ecf:org.apache.commons.logging:+")
@@ -36,23 +48,13 @@ dependencies {
     runtimeOnly("org.eclipse.ecf:org.eclipse.ecf.provider.filetransfer.httpclient45:+")
     runtimeOnly("org.eclipse.ecf:org.eclipse.ecf.provider.filetransfer.ssl:+")
     runtimeOnly("org.eclipse.ecf:org.eclipse.ecf.ssl:+")
-    implementation("org.eclipse.platform:org.eclipse.equinox.common:+")
     runtimeOnly("org.eclipse.platform:org.eclipse.equinox.concurrent:+")
     runtimeOnly("org.eclipse.platform:org.eclipse.equinox.frameworkadmin:+")
     runtimeOnly("org.eclipse.platform:org.eclipse.equinox.frameworkadmin.equinox:+")
     runtimeOnly("org.eclipse.platform:org.eclipse.equinox.launcher:+")
-//    implementation("org.eclipse.platform:org.eclipse.equinox.p2.artifact.repository:+")
-    implementation("org.eclipse.platform:org.eclipse.equinox.p2.director:+")
     runtimeOnly("org.eclipse.platform:org.eclipse.equinox.p2.director.app:+")
-    implementation("org.eclipse.platform:org.eclipse.equinox.p2.engine:+")
     runtimeOnly("org.eclipse.platform:org.eclipse.equinox.p2.garbagecollector:+")
     runtimeOnly("org.eclipse.platform:org.eclipse.equinox.p2.jarprocessor:+")
-    implementation("org.eclipse.platform:org.eclipse.equinox.p2.metadata.repository:+")
-    implementation("org.eclipse.platform:org.eclipse.equinox.p2.operations:+")
-    implementation("org.eclipse.platform:org.eclipse.equinox.p2.publisher:+"){exclude(module = "org.eclipse.osgi")}
-    implementation("org.eclipse.platform:org.eclipse.equinox.p2.publisher.eclipse:+")
-    implementation("org.eclipse.platform:org.eclipse.equinox.p2.repository:+")
-//    runtimeOnly("org.eclipse.platform:org.eclipse.equinox.p2.repository.tools:+")
     runtimeOnly("org.eclipse.platform:org.eclipse.equinox.p2.artifact.repository:+")
     runtimeOnly("org.eclipse.platform:org.eclipse.equinox.p2.touchpoint.eclipse:+")
     runtimeOnly("org.eclipse.platform:org.eclipse.equinox.p2.touchpoint.natives:+")
@@ -62,7 +64,6 @@ dependencies {
     runtimeOnly("org.eclipse.platform:org.eclipse.osgi.compatibility.state:+"){exclude(module = "org.eclipse.osgi")}
     runtimeOnly("org.eclipse.platform:org.eclipse.osgi.services:+")
     runtimeOnly("org.eclipse.platform:org.eclipse.osgi.util:+")
-//    runtimeOnly("org.eclipse.tycho:org.eclipse.tycho.noopsecurity:1.7.0")
     runtimeOnly("org.eclipse.tycho:org.eclipse.tycho.noopsecurity:+")
     runtimeOnly("org.eclipse.platform:org.eclipse.equinox.ds:+")
 

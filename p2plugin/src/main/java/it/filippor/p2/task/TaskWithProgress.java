@@ -6,11 +6,17 @@ import org.gradle.api.DefaultTask;
 import org.gradle.internal.logging.progress.ProgressLoggerFactory;
 
 /**
- * @author filippo.rossoni
  * Gradle task with Logger
+ * @author filippo.rossoni
  */
 public class TaskWithProgress extends DefaultTask {
-
+	
+	/**
+	 * Constructor
+	 */
+	public TaskWithProgress() {
+		super();
+	}
   /**
    * Get Logger factory
    * @return logger factory

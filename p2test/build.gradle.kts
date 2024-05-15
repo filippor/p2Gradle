@@ -12,19 +12,13 @@ plugins {
     id ("it.filippor.p2") version "0.0.10"
 }
 
+
 repositories {
 	mavenCentral()
 	maven{
 		url = uri("../../p2GradleRepo/repo")
 	}
 }
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
-}
-
 
 p2.updateSites = listOf(
                 uri("http://download.eclipse.org/releases/2019-12"),

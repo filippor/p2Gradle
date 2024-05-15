@@ -8,8 +8,8 @@ import it.filippor.p2.api.ProgressMonitor;
 import it.filippor.p2.task.TaskWithProgress;
 
 /**
- * @author filippo.rossoni
  *Wrapper to convert gradle TaskWithProgress to it.filippor.p2.api.ProgressMonitor
+ * @author filippo.rossoni
  */
 public class ProgressMonitorWrapper implements ProgressMonitor {
   private int totalWork = 0;
@@ -29,6 +29,7 @@ public class ProgressMonitorWrapper implements ProgressMonitor {
   private final Logger log;
 
   /**
+   * wrap a task
    * @param task task to wrap
    * @return progress monitor
    */

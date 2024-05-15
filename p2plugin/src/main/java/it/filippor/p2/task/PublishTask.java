@@ -3,6 +3,9 @@ package it.filippor.p2.task;
 import java.io.File;
 import java.net.URI;
 import java.util.Collections;
+
+import org.gradle.api.file.Directory;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
@@ -14,7 +17,8 @@ import it.filippor.p2.framework.FrameworkLauncher;
 import it.filippor.p2.util.ProgressMonitorWrapper;
 
 /**
- * @author filippo.rossoni Task to publish artifact to repository
+ * Task to publish artifact to repository
+ * @author filippo.rossoni 
  */
 public class PublishTask extends TaskWithProgress {
 
@@ -27,7 +31,7 @@ public class PublishTask extends TaskWithProgress {
    * default constructor
    */
   public PublishTask() {
-    URI repo = getProject().getBuildDir().toPath().resolve("targetSite").toUri();
+    URI repo = getProject().getLayout().getBuildDirectory().dir("targetSite").get().getAsFile().toURI();
     bundles = getProject().getConfigurations().getByName("runtimeClasspath");
     metadataRepository = RepositoryData.simpleMetadata(repo);
     artifactRepository = RepositoryData.simpleArtifact(repo);
@@ -49,8 +53,17 @@ public class PublishTask extends TaskWithProgress {
     metadataRepository.setUri(repo);
     artifactRepository.setUri(repo);
   }
+  /**
+   * URI of the repository in witch the bundles will be published set both artifact and metadata repository uri
+   *
+   * @param repo uri of the repo
+   */
+	public void setRepo(final Provider<Directory> repo) {
+		setRepo(repo.get().getAsFile().toURI());
+	}
 
   /**
+   * getMetadataRepository
    * @return the metadataRepository
    */
   @Input
@@ -59,6 +72,7 @@ public class PublishTask extends TaskWithProgress {
   }
 
   /**
+   * setMetadataRepository
    * @param metadataRepository the metadataRepository to set
    */
   public void setMetadataRepository(RepositoryData metadataRepository) {
@@ -66,6 +80,7 @@ public class PublishTask extends TaskWithProgress {
   }
 
   /**
+   * getArtifactRepository
    * @return the artifactRepository
    */
   @Input
@@ -74,6 +89,7 @@ public class PublishTask extends TaskWithProgress {
   }
 
   /**
+   * setArtifactRepository
    * @param artifactRepository the artifactRepository to set
    */
   public void setArtifactRepository(RepositoryData artifactRepository) {
@@ -81,6 +97,7 @@ public class PublishTask extends TaskWithProgress {
   }
 
   /**
+   * getBundles
    * @return bundles that will be published on repository
    */
   @InputFiles
@@ -88,6 +105,7 @@ public class PublishTask extends TaskWithProgress {
     return this.bundles;
   }
   /**
+   * getFeatures
    * @return features that will be published on repository
    */
   @InputFiles

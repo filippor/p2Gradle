@@ -22,6 +22,6 @@ dependencies {
 }
 
 
-p2.doLastOnFramework(tasks.register("hello"), {t,sp->
+p2.doLastOnFramework(tasks.register("hello"), {_,sp->
 	println(sp.getService(it.filippor.p2.api.P2RepositoryManager::class.java))
 }) 

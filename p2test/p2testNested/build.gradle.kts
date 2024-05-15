@@ -13,14 +13,6 @@ plugins {
    id ("it.filippor.p2")
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
-}
-
-
-
 
 
 p2.setUpdateSites( mutableListOf(
@@ -28,9 +20,9 @@ p2.setUpdateSites( mutableListOf(
                 uri("https://download.eclipse.org/releases/2019-06")))
 
 p2.publishTask("p2publish") {
-     setRepo(buildDir.toPath().resolve("targetSite").toUri())
+     setRepo(layout.buildDirectory.dir("targetSite"))
      setBundles(configurations.getByName("runtimeClasspath"))
-   }
+}
 
 repositories {
     // You can declare any Maven/Ivy/file repository here.

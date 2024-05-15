@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author filippo.rossoni
  *Utility class to retrieve a service from osgi framework
+ * @author filippo.rossoni
  */
 public class ServiceProvider {
   private static final Logger logger = LoggerFactory.getLogger(ServiceProvider.class);
@@ -20,6 +20,7 @@ public class ServiceProvider {
   private final List<ServiceReference<?>> refs = new ArrayList<>();
 
   /**
+   * Constructor
    * @param bctx bundle context
    */
   public ServiceProvider(final BundleContext bctx) {

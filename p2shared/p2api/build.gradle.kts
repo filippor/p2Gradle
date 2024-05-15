@@ -9,10 +9,11 @@ buildscript {
 	}
 }
 java {
-	    toolchain {
-	        languageVersion.set(JavaLanguageVersion.of(17))
-	    }
-	}
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 repositories {
 	mavenCentral()
 }
@@ -22,7 +23,7 @@ dependencyLocking {
 }
 dependencies {
 	api("org.osgi:osgi.core:8.0.0")
-	compileOnly("org.osgi:osgi.annotation:8.0.0")
+	compileOnly("org.osgi:osgi.annotation:8.1.0")
 }
 
 tasks.register<Jar>("sourcesJar") {

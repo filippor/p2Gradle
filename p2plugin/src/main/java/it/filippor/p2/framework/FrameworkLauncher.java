@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 import it.filippor.p2.util.Extensions;
 
 /**
- * @author filippo.rossoni
  * Utility class to launch framework
+ * @author filippo.rossoni
  */
 public class FrameworkLauncher {
   private static final Logger logger = LoggerFactory.getLogger(FrameworkLauncher.class);
@@ -42,6 +42,22 @@ public class FrameworkLauncher {
 
   private transient File tempSecureStorage;
 
+  /**
+   * Constructor
+   * @param frameworkStorage location of osgi framework storage
+   * @param extraSystemPackage package to share between gradle and osgi
+   * @param startBundlesSymbolicNames bundles to start
+   * @param bundles bundles to install in osgi framework
+   */
+  public FrameworkLauncher(final File frameworkStorage, final Collection<String> extraSystemPackage,
+                           final Iterable<String> startBundlesSymbolicNames, final Iterable<File> bundles) {
+    super();
+    this.frameworkStorage          = frameworkStorage;
+    this.extraSystemPackage        = extraSystemPackage;
+    this.startBundlesSymbolicNames = startBundlesSymbolicNames;
+    this.bundles                   = bundles;
+  }
+  
   /**
    *  start the framework
    */
@@ -212,26 +228,14 @@ public class FrameworkLauncher {
   }
 
   /**
+   * get framework status
    * @return  framework is running
    */
   public boolean isStarted() {
     return EclipseStarter.isRunning();
   }
 
-  /**
-   * @param frameworkStorage location of osgi framework storage
-   * @param extraSystemPackage package to share with gradle
-   * @param startBundlesSymbolicNames bundles to start
-   * @param bundles bundles to install in osgi framework
-   */
-  public FrameworkLauncher(final File frameworkStorage, final Collection<String> extraSystemPackage,
-                           final Iterable<String> startBundlesSymbolicNames, final Iterable<File> bundles) {
-    super();
-    this.frameworkStorage          = frameworkStorage;
-    this.extraSystemPackage        = extraSystemPackage;
-    this.startBundlesSymbolicNames = startBundlesSymbolicNames;
-    this.bundles                   = bundles;
-  }
+
 
   @Override
   public int hashCode() {

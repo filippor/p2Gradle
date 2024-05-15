@@ -1,3 +1,4 @@
+
 plugins {
 	id("com.gradle.plugin-publish") version "0.15.0"
     id("java-gradle-plugin")
@@ -5,14 +6,19 @@ plugins {
 }
 
 group="it.filippor.p2"
-version="0.0.10"
+version="0.0.11"
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
 
 repositories {
 	mavenCentral()
-   /* maven {
+	maven {
         url = uri("https://raw.githubusercontent.com/filippor/p2Gradle/repo/repo")
-    }*/
+    }
 }
 
 gradlePlugin {
@@ -24,21 +30,15 @@ gradlePlugin {
     }
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
-}
-
 dependencyLocking {
     lockAllConfigurations()
 }
 
 
 dependencies{
-	compileOnly("it.filippor.p2:p2api:0.0.5")
+	compileOnly("it.filippor.p2:p2api:0.0.6")
 	compileOnly("org.osgi:osgi.annotation:8.0.0")
-	implementation("org.eclipse.platform:org.eclipse.osgi:3.18.600")
+	implementation("org.eclipse.platform:org.eclipse.osgi:3.19.0")
 	
 }
 
@@ -91,7 +91,7 @@ pluginBundle {
       // id is captured from java-gradle-plugin configuration
       displayName = "P2 Gradle Plugin"
       tags = listOf("p2", "osgi", "dependency")
-      version = "0.0.10"
+      version = "0.0.11"
     }
   }
 }

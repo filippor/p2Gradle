@@ -2,7 +2,6 @@ package it.filippor.p2;
 
 import java.net.URI;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.gradle.api.NonNullApi;
@@ -12,13 +11,16 @@ import org.gradle.api.artifacts.dsl.RepositoryHandler;
 
 import it.filippor.p2.config.FrameworkTaskConfigurator;
 
+
 /**
- * @author filippo.rossoni
- * P2 plugin
+ * Plugin to work with p2 repository
  */
 @NonNullApi
 public class P2Plugin implements Plugin<Project> {
- 
+	/**
+	 * default constructor
+	 */
+	public P2Plugin() {}
   /**
    *apply plugin
    */
