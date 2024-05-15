@@ -35,7 +35,7 @@ import it.filippor.p2.util.ProgressMonitorWrapper;
  * @author filippo.rossoni
  */
 public class FrameworkTaskConfigurator {
-	private static final String IT_FILIPPOR_P2_P2IMPL = "it.filippor.p2:p2impl:0.0.6";
+	private static final String IT_FILIPPOR_P2_P2IMPL = "it.filippor.p2:p2impl:0.0.7";
 
 	private static final String P2_FRAMEWORK_BUNDLES_CONFIG = "p2frameworkBundles";
 

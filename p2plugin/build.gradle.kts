@@ -10,7 +10,7 @@ version="0.0.11"
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+       languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -36,7 +36,7 @@ dependencyLocking {
 
 
 dependencies{
-	compileOnly("it.filippor.p2:p2api:0.0.6")
+	compileOnly("it.filippor.p2:p2api:0.0.7")
 	compileOnly("org.osgi:osgi.annotation:8.0.0")
 	implementation("org.eclipse.platform:org.eclipse.osgi:3.19.0")
 	
