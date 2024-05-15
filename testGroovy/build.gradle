@@ -9,7 +9,7 @@
 plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
-    id "it.filippor.p2" version "0.0.9"
+    id "it.filippor.p2" version "0.0.11"
     id "biz.aQute.bnd.builder" version "5.3.0"
 }
 

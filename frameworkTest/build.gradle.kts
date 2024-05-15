@@ -8,7 +8,7 @@
 
 plugins {
     // Apply the java-library plugin to add support for Java Library
-    id ("it.filippor.p2") version "0.0.3"
+    id ("it.filippor.p2") version "0.0.11"
 }
 
 repositories {
@@ -23,5 +23,5 @@ dependencies {
 
 
 p2.doLastOnFramework(tasks.register("hello"), {_,sp->
-	println(sp.getService(it.filippor.p2.api.P2RepositoryManager::class.java))
+	println("Service available: " + sp.getService(it.filippor.p2.api.P2RepositoryManager::class.java))
 }) 
