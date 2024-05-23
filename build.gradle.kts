@@ -62,14 +62,7 @@ tasks.register("depPlugin") {
       dependsOn(gradle.includedBuild("p2plugin").task(":dependencies"))
 }
 
-tasks.register("depGroovy") {
-  group = "build"
-      dependsOn(gradle.includedBuild("testGroovy").task(":dependencies"))
-}
-tasks.register("modelGroovy") {
-  group = "build"
-      dependsOn(gradle.includedBuild("testGroovy").task(":model"))
-}
+
 
 tasks.register("depTest") {
   group = "build"
@@ -78,6 +71,15 @@ tasks.register("depTest") {
 tasks.register("buildTest") {
   group = "build"
       dependsOn(gradle.includedBuild("p2test").task(":build"))
+}
+
+tasks.register("depGroovy") {
+  group = "build"
+      dependsOn(gradle.includedBuild("testGroovy").task(":dependencies"))
+}
+tasks.register("modelGroovy") {
+  group = "build"
+      dependsOn(gradle.includedBuild("testGroovy").task(":model"))
 }
 
 tasks.register("buildGroovy") {

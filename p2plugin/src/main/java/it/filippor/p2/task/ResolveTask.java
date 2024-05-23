@@ -9,6 +9,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import it.filippor.p2.api.Bundle;
+import it.filippor.p2.api.P2RepositoryManager;
+import it.filippor.p2.framework.FrameworkLauncher;
+import it.filippor.p2.framework.ServiceProvider;
+import it.filippor.p2.util.Extensions;
+import it.filippor.p2.util.ProgressMonitorWrapper;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.provider.Provider;
@@ -16,17 +22,10 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
-import it.filippor.p2.api.Bundle;
-import it.filippor.p2.api.P2RepositoryManager;
-import it.filippor.p2.framework.FrameworkLauncher;
-import it.filippor.p2.framework.ServiceProvider;
-import it.filippor.p2.util.Extensions;
-import it.filippor.p2.util.ProgressMonitorWrapper;
-
 /**
  * Task that download bundles from p2 repository and create a file named as
  * bundle-resolutions[taskName] containing the list of path
- * 
+ *
  * @author filippo.rossoni
  */
 public class ResolveTask extends TaskWithProgress {
@@ -58,7 +57,7 @@ public class ResolveTask extends TaskWithProgress {
 
 	/**
 	 * getTransitive
-	 * 
+	 *
 	 * @return bundles to resolve
 	 */
 	@Input
@@ -68,7 +67,7 @@ public class ResolveTask extends TaskWithProgress {
 
 	/**
 	 * getBundles
-	 * 
+	 *
 	 * @return resolve transitive dependencies
 	 */
 	@Input
@@ -78,23 +77,23 @@ public class ResolveTask extends TaskWithProgress {
 
 	/**
 	 * getTargetProperties
-	 * 
+	 *
 	 * @return the targetProperties
 	 */
 	@Input
 	public Map<String, String> getTargetProperties() {
-		return targetProperties;
+		return this.targetProperties;
 	}
 
 	/**
 	 * getOutputFile
-	 * 
+	 *
 	 * @return file containing dependencies path one every line
 	 */
 	@OutputFile
 	public RegularFile getOutputFile() {
 		Provider<Directory> dir = this.getProject().getLayout().getBuildDirectory().dir("bundle-resolutions");
-		return dir.get().file(this.getName());
+		return dir.get().file(this.getName()+".filelist");
 	}
 
 	/**
@@ -109,7 +108,7 @@ public class ResolveTask extends TaskWithProgress {
 		this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> {
 			try {
 				final Set<String> paths = sp.getService(P2RepositoryManager.class)
-						.resolve(bundles, transitive, targetProperties, ProgressMonitorWrapper.wrap(this)).stream()
+						.resolve(this.bundles, this.transitive, this.targetProperties, ProgressMonitorWrapper.wrap(this)).stream()
 						.map(File::toPath).map(Path::toString).collect(Collectors.toSet());
 
 				final Path outputPath = this.getOutputFile().getAsFile().toPath();

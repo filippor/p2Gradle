@@ -13,29 +13,30 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+import it.filippor.p2.api.Bundle;
+import it.filippor.p2.api.P2RepositoryManager;
+import it.filippor.p2.framework.FrameworkLauncher;
+import it.filippor.p2.framework.ServiceProvider;
+import it.filippor.p2.task.FileProviderTask;
+import it.filippor.p2.task.PublishTask;
+import it.filippor.p2.task.ResolveTask;
+import it.filippor.p2.task.TaskWithProgress;
+import it.filippor.p2.util.ProgressMonitorWrapper;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.TaskProvider;
-
-import it.filippor.p2.api.Bundle;
-import it.filippor.p2.api.P2RepositoryManager;
-import it.filippor.p2.framework.FrameworkLauncher;
-import it.filippor.p2.framework.ServiceProvider;
-import it.filippor.p2.task.PublishTask;
-import it.filippor.p2.task.ResolveTask;
-import it.filippor.p2.task.TaskWithProgress;
-import it.filippor.p2.util.ProgressMonitorWrapper;
 
 /**
  * P2 Plugin Configuration
- * 
+ *
  * @author filippo.rossoni
  */
 public class FrameworkTaskConfigurator {
-	private static final String IT_FILIPPOR_P2_P2IMPL = "it.filippor.p2:p2impl:0.0.7";
+	private static final String IT_FILIPPOR_P2_P2IMPL = "it.filippor.p2:p2impl:0.0.8";
 
 	private static final String P2_FRAMEWORK_BUNDLES_CONFIG = "p2frameworkBundles";
 
@@ -65,25 +66,25 @@ public class FrameworkTaskConfigurator {
 
 	/**
 	 * get ftramework launcher
-	 * 
+	 *
 	 * @return the framework launcher
 	 */
 	public FrameworkLauncher getP2FrameworkLauncher() {
-		return p2FrameworkLauncher;
+		return this.p2FrameworkLauncher;
 	}
 
 	/**
 	 * getBundleCache
-	 * 
+	 *
 	 * @return the bundleCache path
 	 */
 	public Path getBundleCache() {
-		return bundleCache;
+		return this.bundleCache;
 	}
 
 	/**
 	 * set path to cache for bundles
-	 * 
+	 *
 	 * @param bundleCache the bundleCache path to set
 	 */
 	public void setBundleCache(Path bundleCache) {
@@ -92,16 +93,16 @@ public class FrameworkTaskConfigurator {
 
 	/**
 	 * getStartBundlesSymbolicNames
-	 * 
+	 *
 	 * @return list of bundle symbolic name to start
 	 */
 	public List<String> getStartBundlesSymbolicNames() {
-		return startBundlesSymbolicNames;
+		return this.startBundlesSymbolicNames;
 	}
 
 	/**
 	 * setStartBundlesSymbolicNames
-	 * 
+	 *
 	 * @param startBundlesSymbolicNames list of bundle symbolic name to start
 	 */
 	public void setStartBundlesSymbolicNames(List<String> startBundlesSymbolicNames) {
@@ -110,16 +111,16 @@ public class FrameworkTaskConfigurator {
 
 	/**
 	 * geSharedPackages
-	 * 
+	 *
 	 * @return package shared between framework and gradle
 	 */
 	public Set<String> geSharedPackages() {
-		return sharedPackages;
+		return this.sharedPackages;
 	}
 
 	/**
 	 * setSharedPackages
-	 * 
+	 *
 	 * @param sharedPackages package shared between framework and gradle
 	 */
 	public void setSharedPackages(Set<String> sharedPackages) {
@@ -147,8 +148,9 @@ public class FrameworkTaskConfigurator {
 						if (this.p2FrameworkLauncher.isStarted()) {
 							this.p2FrameworkLauncher.executeWithServiceProvider((ServiceProvider sp) -> {
 								P2RepositoryManager repositoryManager = sp.getService(P2RepositoryManager.class);
-								if (repositoryManager != null)
-									repositoryManager.tearDown();
+								if (repositoryManager != null) {
+                                    repositoryManager.tearDown();
+                                }
 							});
 							this.p2FrameworkLauncher.stopFramework();
 						}
@@ -186,7 +188,7 @@ public class FrameworkTaskConfigurator {
 	 *
 	 * @return resolved artifacts
 	 */
-	public ConfigurableFileCollection bundles(final String... bundles) {
+	public FileCollection bundles(final String... bundles) {
 		return this.bundles(true, bundles);
 	}
 
@@ -199,7 +201,7 @@ public class FrameworkTaskConfigurator {
 	 *
 	 * @return resolved artifacts
 	 */
-	public ConfigurableFileCollection bundles(final boolean transitive, final String... bundles) {
+	public FileCollection bundles(final boolean transitive, final String... bundles) {
 		return this.bundles(transitive,
 				Arrays.stream(bundles).map(s -> s.split(":"))
 						.map(sa -> new Bundle(sa[0], sa.length > 1 ? new org.osgi.framework.VersionRange(sa[1]) : null))
@@ -214,7 +216,7 @@ public class FrameworkTaskConfigurator {
 	 *
 	 * @return resolved artifacts
 	 */
-	public ConfigurableFileCollection bundles(final boolean transitive, Map<String, String> targetProperties,
+	public FileCollection bundles(final boolean transitive, Map<String, String> targetProperties,
 			final String... bundles) {
 		return this.bundles(transitive, targetProperties,
 				Arrays.stream(bundles).map(s -> s.split(":"))
@@ -230,7 +232,7 @@ public class FrameworkTaskConfigurator {
 	 *
 	 * @return resolved atifacts
 	 */
-	public ConfigurableFileCollection bundles(final Bundle... bundles) {
+	public FileCollection bundles(final Bundle... bundles) {
 		return this.bundles(true, bundles);
 	}
 
@@ -243,8 +245,8 @@ public class FrameworkTaskConfigurator {
 	 *
 	 * @return resolved atifacts
 	 */
-	public ConfigurableFileCollection bundles(final boolean transitive, final Bundle... bundles) {
-		return bundles(transitive, defaultTargetProperties, bundles);
+	public FileCollection bundles(final boolean transitive, final Bundle... bundles) {
+		return bundles(transitive, this.defaultTargetProperties, bundles);
 	}
 
 	/**
@@ -257,14 +259,14 @@ public class FrameworkTaskConfigurator {
 	 *
 	 * @return resolved atifacts
 	 */
-	public ConfigurableFileCollection bundles(final boolean transitive, Map<String, String> targetProperties,
+	public FileCollection bundles(final boolean transitive, Map<String, String> targetProperties,
 			final Bundle... bundles) {
 		String nameQual = "";
 		if (transitive) {
 			nameQual = "transitive";
 		}
-		String nameBundle = "" + Objects.hash((Object[]) bundles) + targetProperties.hashCode();
-		final String filesTaskName = nameQual + nameBundle;
+		String bundleName = "" + Objects.hash((Object[]) bundles) + targetProperties.hashCode();
+		final String filesTaskName = "files-"+nameQual + bundleName;
 		final String name = ("resolveP2" + filesTaskName);
 		ResolveTask tmpResolve = (ResolveTask) this.project.getTasks().findByName(name);
 		if (tmpResolve == null) {
@@ -275,12 +277,17 @@ public class FrameworkTaskConfigurator {
 				it.targetProperties = targetProperties;
 			}).get();
 		}
-		tmpResolve.getDependsOn().add(startFrameworkTask);
+		tmpResolve.getDependsOn().add(this.startFrameworkTask);
+		this.stopFrameworkTask.mustRunAfter(this.stopFrameworkTask.getMustRunAfter(), tmpResolve);
 		final ResolveTask resolve = tmpResolve;
 
-		this.stopFrameworkTask.mustRunAfter(stopFrameworkTask.getMustRunAfter(), resolve);
-
-		return this.project.files(resolve);
+        Task filesTask = this.project.getTasks().findByName(filesTaskName);
+        if (filesTask == null) {
+            filesTask = this.project.getTasks().register(filesTaskName, FileProviderTask.class, it ->
+            it.setResolver(resolve)).get();
+        }
+        ConfigurableFileCollection result = this.project.files().builtBy(filesTask).from(filesTask);
+        return result;
 	}
 
 	/**
@@ -314,7 +321,7 @@ public class FrameworkTaskConfigurator {
 		}
 		final File frameworkStoragePath = this.project.getLayout().getBuildDirectory().dir("p2").get().dir("p2Framework").getAsFile();
 
-		return new FrameworkLauncher(frameworkStoragePath, sharedPackages, startBundlesSymbolicNames, bundles);
+		return new FrameworkLauncher(frameworkStoragePath, this.sharedPackages, this.startBundlesSymbolicNames, bundles);
 	}
 
 	/**
@@ -346,8 +353,9 @@ public class FrameworkTaskConfigurator {
 				t.getLogger().warn("framework is not running");
 				this.p2FrameworkLauncher.startFramework();
 			}
-			if (action != null)
-				this.p2FrameworkLauncher.executeWithServiceProvider(it -> action.accept(t, it));
+			if (action != null) {
+                this.p2FrameworkLauncher.executeWithServiceProvider(it -> action.accept(t, it));
+            }
 		});
 	}
 
@@ -356,7 +364,7 @@ public class FrameworkTaskConfigurator {
 	 * @return configured update site
 	 */
 	public Collection<URI> getUpdateSites() {
-		return updateSites;
+		return this.updateSites;
 	}
 
 	/**
@@ -372,7 +380,7 @@ public class FrameworkTaskConfigurator {
 	 * @return targetProperties used for dependency that not specify one
 	 */
 	public Map<String, String> getDefaultTargetProperties() {
-		return defaultTargetProperties;
+		return this.defaultTargetProperties;
 	}
 
 	/**
@@ -382,7 +390,7 @@ public class FrameworkTaskConfigurator {
 	protected Map<String, String> getBaseTargetProperties() {
 		Map<String, String> props = new HashMap<>();
 		props.put("org.eclipse.equinox.p2.roaming", "true");
-		props.put("org.eclipse.equinox.p2.cache", bundleCache.toString());
+		props.put("org.eclipse.equinox.p2.cache", this.bundleCache.toString());
 		return props;
 	}
 

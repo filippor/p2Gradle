@@ -1,8 +1,8 @@
 package it.filippor.p2.impl;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-
 import it.filippor.p2.api.ProgressMonitor;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 
 public class WrappedMonitor implements IProgressMonitor {
 
@@ -13,8 +13,9 @@ public class WrappedMonitor implements IProgressMonitor {
   }
 
   public static IProgressMonitor wrap(ProgressMonitor monitor) {
-    if (monitor == null)
-      return null;
+    if (monitor == null) {
+        return null;
+    }
     return new WrappedMonitor(monitor);
   }
 

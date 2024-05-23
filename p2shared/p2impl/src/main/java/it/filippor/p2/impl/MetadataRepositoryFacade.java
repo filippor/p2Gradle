@@ -8,6 +8,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import it.filippor.p2.api.Bundle;
+import it.filippor.p2.impl.util.LazyProvider;
+import org.osgi.framework.VersionRange;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
@@ -16,10 +20,6 @@ import org.eclipse.equinox.p2.query.IQuery;
 import org.eclipse.equinox.p2.query.QueryUtil;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
-import org.osgi.framework.VersionRange;
-
-import it.filippor.p2.api.Bundle;
-import it.filippor.p2.impl.util.LazyProvider;
 
 public class MetadataRepositoryFacade {
 
@@ -57,8 +57,9 @@ public class MetadataRepositoryFacade {
         .filter(set -> !set.isEmpty())
         .findAny();
 
-      if (!ius.isPresent())
+      if (!ius.isPresent()) {
         throw new IllegalArgumentException(bundle + " not found serching in p2 repositories :" + getReposAsString(mon.split(10)));
+    }
 
       return ius.get().stream();
     }).collect(Collectors.toSet());

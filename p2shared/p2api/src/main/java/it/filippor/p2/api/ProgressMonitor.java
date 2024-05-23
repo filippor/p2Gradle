@@ -76,7 +76,7 @@ public interface ProgressMonitor {
 
   /**
    * Notifies that the main task is beginning. This must only be called once on a given progress monitor instance.
-   * 
+   *
    * @param name
    *          the name (or description) of the main task
    * @param totalWork
@@ -95,7 +95,7 @@ public interface ProgressMonitor {
   /**
    * Internal method to handle scaling correctly. This method must not be called by a client. Clients should always use
    * the method <code>worked(int)</code>.
-   * 
+   *
    * @param work
    *          the amount of work done
    */
@@ -112,7 +112,7 @@ public interface ProgressMonitor {
 
   /**
    * Sets the cancel state to the given value.
-   * 
+   *
    * @param value
    *          <code>true</code> indicates that cancelation has been requested (but not necessarily acknowledged);
    *          <code>false</code> clears this flag

@@ -12,7 +12,7 @@ import java.util.Set;
  *Repository Manager
  */
 public interface P2RepositoryManager {
-  
+
   /**
    * Initialize repository at agent location with remote repository at sites
    * @param agent uri of agent location where p2 agent write data
@@ -26,7 +26,7 @@ public interface P2RepositoryManager {
    */
   void tearDown();
 
-  
+
   /**
    * resolve artifacts on remote repository configured in init
    * @param artifacts artifact to rresolve
@@ -44,14 +44,14 @@ public interface P2RepositoryManager {
 //   * @param monitor progress monitor
 //   */
 //  default void publish(URI repo, Iterable<File> bundleLocations,Map<String, String> repositoryProperties, ProgressMonitor monitor) {
-//    publish(bundleLocations, 
-//        new RepositoryData(repo, "Metadata Repository", RepositoryData.METADATA_TYPE_SIMPLE_REPOSITORY, repositoryProperties), 
-//        new RepositoryData(repo, "Artifact Repository", RepositoryData.ARTIFACT_TYPE_SIMPLE_REPOSITORY, repositoryProperties), 
+//    publish(bundleLocations,
+//        new RepositoryData(repo, "Metadata Repository", RepositoryData.METADATA_TYPE_SIMPLE_REPOSITORY, repositoryProperties),
+//        new RepositoryData(repo, "Artifact Repository", RepositoryData.ARTIFACT_TYPE_SIMPLE_REPOSITORY, repositoryProperties),
 //        monitor);
 //  }
-  
+
   /**
-   * publish artifact in bundleLocations to repository 
+   * publish artifact in bundleLocations to repository
    * @param bundleLocations bundle to publish
    * @param featureLocations feature to publish
    * @param metadataRepository metadata repository

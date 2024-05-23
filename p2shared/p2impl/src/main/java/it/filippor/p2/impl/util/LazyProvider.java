@@ -14,8 +14,9 @@ public class LazyProvider<T> {
     try {
       if (data == null) {
         synchronized (this) {
-          if (data == null)
+          if (data == null) {
             data = supplier.get(monitor);
+        }
         }
       }
       return data;

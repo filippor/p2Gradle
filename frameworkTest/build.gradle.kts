@@ -6,13 +6,14 @@
  * User Manual available at https://docs.gradle.org/5.3.1/userguide/java_library_plugin.html
  */
 
+
 plugins {
     // Apply the java-library plugin to add support for Java Library
-    id ("it.filippor.p2") version "0.0.11"
+    id ("it.filippor.p2") 
 }
 
 repositories {
-	//mavenLocal()
+	//mavenLocal()files
     //mavenCentral()
 }
 

@@ -37,7 +37,7 @@ public class Bundle implements Serializable {
   }
 
   /**
-   * 
+   *
    * @return id of bundle
    */
   public String getId() {
@@ -69,7 +69,7 @@ public class Bundle implements Serializable {
     return this;
   }
 
-  
+
 
   @Override
   public int hashCode() {
@@ -78,12 +78,12 @@ public class Bundle implements Serializable {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) {
+        return true;
+    }
+    if ((obj == null) || (getClass() != obj.getClass())) {
+        return false;
+    }
     Bundle other = (Bundle) obj;
     return Objects.equals(id, other.id) && Objects.equals(version, other.version);
   }
@@ -92,8 +92,8 @@ public class Bundle implements Serializable {
   public String toString() {
     return "Bundle [id=" + id + ", version=" + version + "]";
   }
-  
-  
+
+
   /**
    * Serialization
    * @param out ObjectOutputStream
@@ -101,14 +101,15 @@ public class Bundle implements Serializable {
    */
   private void writeObject(ObjectOutputStream out) throws IOException {
     out.writeObject(id);
-    if (version != null)
-      out.writeObject(version.toString());
-    else
-      out.writeObject(null);
+    if (version != null) {
+        out.writeObject(version.toString());
+    } else {
+        out.writeObject(null);
+    }
   }
 
   /**
-   * Serialization 
+   * Serialization
    * @param in ObjectInputStream
    * @throws IOException on read error
    * @throws ClassNotFoundException error
@@ -116,10 +117,11 @@ public class Bundle implements Serializable {
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
     id = (String) in.readObject();
     String v = (String) in.readObject();
-    if (v != null)
-      version = new VersionRange(v);
-    else
-      version = null;
+    if (v != null) {
+        version = new VersionRange(v);
+    } else {
+        version = null;
+    }
   }
 
 }

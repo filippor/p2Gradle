@@ -4,21 +4,20 @@ import java.io.File;
 import java.net.URI;
 import java.util.Collections;
 
+import it.filippor.p2.api.P2RepositoryManager;
+import it.filippor.p2.api.RepositoryData;
+import it.filippor.p2.config.FrameworkTaskConfigurator;
+import it.filippor.p2.framework.FrameworkLauncher;
+import it.filippor.p2.util.ProgressMonitorWrapper;
 import org.gradle.api.file.Directory;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
 
-import it.filippor.p2.api.P2RepositoryManager;
-import it.filippor.p2.api.RepositoryData;
-import it.filippor.p2.config.FrameworkTaskConfigurator;
-import it.filippor.p2.framework.FrameworkLauncher;
-import it.filippor.p2.util.ProgressMonitorWrapper;
-
 /**
  * Task to publish artifact to repository
- * @author filippo.rossoni 
+ * @author filippo.rossoni
  */
 public class PublishTask extends TaskWithProgress {
 
@@ -137,9 +136,10 @@ public class PublishTask extends TaskWithProgress {
   @TaskAction
   public void publish() {
     FrameworkLauncher frameworkLauncher = this.p2FrameworkLauncher;
-    if (frameworkLauncher == null)
-      frameworkLauncher = getProject().getExtensions().findByType(FrameworkTaskConfigurator.class)
-          .getP2FrameworkLauncher();
+    if (frameworkLauncher == null) {
+        frameworkLauncher = getProject().getExtensions().findByType(FrameworkTaskConfigurator.class)
+              .getP2FrameworkLauncher();
+    }
     frameworkLauncher.executeWithServiceProvider(sp -> {
 
       sp.getService(P2RepositoryManager.class).publish(bundles,features ,metadataRepository, artifactRepository,

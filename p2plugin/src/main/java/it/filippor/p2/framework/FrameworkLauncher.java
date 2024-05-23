@@ -13,8 +13,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.eclipse.core.runtime.adaptor.EclipseStarter;
-import org.eclipse.osgi.internal.framework.EquinoxConfiguration;
+import it.filippor.p2.util.Extensions;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -23,7 +22,8 @@ import org.osgi.framework.wiring.BundleRevision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.filippor.p2.util.Extensions;
+import org.eclipse.core.runtime.adaptor.EclipseStarter;
+import org.eclipse.osgi.internal.framework.EquinoxConfiguration;
 
 /**
  * Utility class to launch framework
@@ -57,7 +57,7 @@ public class FrameworkLauncher {
     this.startBundlesSymbolicNames = startBundlesSymbolicNames;
     this.bundles                   = bundles;
   }
-  
+
   /**
    *  start the framework
    */
@@ -66,7 +66,7 @@ public class FrameworkLauncher {
       this.setInitialProperty();
       if ((!EclipseStarter.isRunning())) {
           EclipseStarter.startup(this.getNonFrameworkArgs(), null);
-         
+
       }
 
       BundleContext ctx = EclipseStarter.getSystemBundleContext();
@@ -249,33 +249,40 @@ public class FrameworkLauncher {
 
   @Override
   public boolean equals(final Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) {
+        return true;
+    }
+    if ((obj == null) || (getClass() != obj.getClass())) {
+        return false;
+    }
     FrameworkLauncher other = (FrameworkLauncher) obj;
     if (this.frameworkStorage == null) {
-      if (other.frameworkStorage != null)
+      if (other.frameworkStorage != null) {
         return false;
-    } else if (!this.frameworkStorage.equals(other.frameworkStorage))
-      return false;
+    }
+    } else if (!this.frameworkStorage.equals(other.frameworkStorage)) {
+        return false;
+    }
     if (this.extraSystemPackage == null) {
-      if (other.extraSystemPackage != null)
+      if (other.extraSystemPackage != null) {
         return false;
-    } else if (!this.extraSystemPackage.equals(other.extraSystemPackage))
-      return false;
+    }
+    } else if (!this.extraSystemPackage.equals(other.extraSystemPackage)) {
+        return false;
+    }
     if (this.startBundlesSymbolicNames == null) {
-      if (other.startBundlesSymbolicNames != null)
+      if (other.startBundlesSymbolicNames != null) {
         return false;
-    } else if (!this.startBundlesSymbolicNames.equals(other.startBundlesSymbolicNames))
-      return false;
+    }
+    } else if (!this.startBundlesSymbolicNames.equals(other.startBundlesSymbolicNames)) {
+        return false;
+    }
     if (this.bundles == null) {
       return other.bundles == null;
-    } else
-      return this.bundles.equals(other.bundles);
+    } else {
+        return this.bundles.equals(other.bundles);
+    }
   }
 
- 
+
 }

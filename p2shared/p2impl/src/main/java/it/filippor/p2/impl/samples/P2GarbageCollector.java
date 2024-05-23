@@ -19,6 +19,6 @@ package it.filippor.p2.impl.samples;
 //        IProfile profile = profileRegistry.getProfile("SDKProfile");
 //        GarbageCollector gc = (GarbageCollector) agent.getService(GarbageCollector.SERVICE_NAME);
 //        gc.runGC(profile);
-//        
+//
 //  }
 //}

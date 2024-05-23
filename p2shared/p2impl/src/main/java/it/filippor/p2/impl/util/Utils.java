@@ -3,10 +3,10 @@ package it.filippor.p2.impl.util;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.equinox.p2.metadata.IInstallableUnit;
+import it.filippor.p2.api.Bundle;
 import org.osgi.framework.VersionRange;
 
-import it.filippor.p2.api.Bundle;
+import org.eclipse.equinox.p2.metadata.IInstallableUnit;
 
 public class Utils {
   @SuppressWarnings("unchecked")

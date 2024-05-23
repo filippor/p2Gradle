@@ -15,7 +15,7 @@ gradle groovy dsl see https://github.com/filippor/p2Gradle/blob/master/testGroov
 ```kotlin
 plugins {
     id ("java-library")
-    id ("it.filippor.p2") version ( "0.0.10")
+    id ("it.filippor.p2") version ( "0.0.13")
 }
 
 ```

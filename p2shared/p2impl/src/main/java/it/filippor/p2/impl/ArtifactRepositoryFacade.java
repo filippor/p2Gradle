@@ -13,6 +13,9 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import it.filippor.p2.impl.util.Result;
+import it.filippor.p2.impl.util.Utils;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.SubMonitor;
@@ -32,9 +35,6 @@ import org.eclipse.equinox.p2.repository.artifact.IArtifactDescriptor;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepository;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.artifact.IFileArtifactRepository;
-
-import it.filippor.p2.impl.util.Result;
-import it.filippor.p2.impl.util.Utils;
 
 public class ArtifactRepositoryFacade {
   private static final Logger LOGGER = Logger.getLogger(ArtifactRepositoryFacade.class.getCanonicalName());
@@ -60,8 +60,9 @@ private final IProvisioningAgent         agent;
   public Set<File> getFiles(Set<IInstallableUnit> toResolve, boolean transitive,Map<String, String> targetProperties, SubMonitor monitor) throws ProvisionException {
     int totalWork = 100 + (toResolve.size() * 200);
     monitor = SubMonitor.convert(monitor, totalWork);
-    if (toResolve.isEmpty())
-      return new HashSet<>();
+    if (toResolve.isEmpty()) {
+        return new HashSet<>();
+    }
 
     String profileId = toProfileId(toResolve, targetProperties);
     if (profileRegistry.containsProfile(profileId)) {
@@ -79,8 +80,9 @@ private final IProvisioningAgent         agent;
 
       Set<IInstallableUnit> installed = install(toResolve,targetProperties, monitor.split(toResolve.size() * 150));
       reloadLocalRepo(monitor.split(100));
-      if (transitive)
+      if (transitive) {
         toResolve.addAll(installed);
+    }
       Result<Set<File>, Set<IInstallableUnit>> result = getFromLocalRepo(toResolve, monitor.split(toResolve.size() * 50));
 
       if (!result.getMiss().isEmpty()) {
@@ -95,7 +97,7 @@ private final IProvisioningAgent         agent;
   private List<IFileArtifactRepository> getLocalFileRepo(IProgressMonitor parentMonitor) {
     URI[]      knownRepositories = artifactManager.getKnownRepositories(IRepositoryManager.REPOSITORIES_LOCAL);
     SubMonitor monitor           = SubMonitor.convert(parentMonitor, "get local repo", 100 * knownRepositories.length);
-    
+
     return Arrays.stream(knownRepositories).map(uri -> {
     	LOGGER.info("Loading repository " + uri);
     	try {

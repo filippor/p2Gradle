@@ -28,22 +28,25 @@ public class Result<A, B> {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) {
+        return true;
+    }
+    if ((obj == null) || (getClass() != obj.getClass())) {
+        return false;
+    }
     Result<?, ?> other = (Result<?, ?>) obj;
     if (hit == null) {
-      if (other.hit != null)
+      if (other.hit != null) {
         return false;
-    } else if (!hit.equals(other.hit))
-      return false;
+    }
+    } else if (!hit.equals(other.hit)) {
+        return false;
+    }
     if (miss == null) {
       return other.miss == null;
-    } else
-      return miss.equals(other.miss);
+    } else {
+        return miss.equals(other.miss);
+    }
   }
 
   @Override

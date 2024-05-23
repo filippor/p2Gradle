@@ -10,7 +10,7 @@ import org.gradle.internal.logging.progress.ProgressLoggerFactory;
  * @author filippo.rossoni
  */
 public class TaskWithProgress extends DefaultTask {
-	
+
 	/**
 	 * Constructor
 	 */

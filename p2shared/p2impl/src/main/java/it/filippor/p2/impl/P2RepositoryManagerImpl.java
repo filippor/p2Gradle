@@ -6,22 +6,22 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import it.filippor.p2.api.Bundle;
+import it.filippor.p2.api.P2RepositoryManager;
+import it.filippor.p2.api.ProgressMonitor;
+import it.filippor.p2.api.RepositoryData;
+import it.filippor.p2.impl.util.Utils;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.IProvisioningAgentProvider;
 import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-
-import it.filippor.p2.api.Bundle;
-import it.filippor.p2.api.P2RepositoryManager;
-import it.filippor.p2.api.ProgressMonitor;
-import it.filippor.p2.api.RepositoryData;
-import it.filippor.p2.impl.util.Utils;
 
 @Component()
 public class P2RepositoryManagerImpl implements P2RepositoryManager {
@@ -51,13 +51,14 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
 			Utils.sneakyThrow(e);
 		}
 	}
-	
+
 	@Override
 	public void tearDown() {
 		repoContext = null;
 		artifactRepo = null;
-		if (agent != null)
-			agent.stop();
+		if (agent != null) {
+            agent.stop();
+        }
 	}
 
 	@Override
@@ -79,7 +80,7 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
 		}
 	}
 
-    
+
 
     @Override
     public void publish(Iterable<File> bundleLocations, Iterable<File> featureLocations, RepositoryData metadataRepository,
@@ -97,8 +98,9 @@ public class P2RepositoryManagerImpl implements P2RepositoryManager {
 
 	private IProvisioningAgent getAgent(URI repo) throws ProvisionException {
 		ServiceReference<IProvisioningAgentProvider> sr = ctx.getServiceReference(IProvisioningAgentProvider.class);
-		if (sr == null)
-			throw new IllegalStateException("cannot find agent provider");
+		if (sr == null) {
+            throw new IllegalStateException("cannot find agent provider");
+        }
 		IProvisioningAgentProvider agentProvider = ctx.getService(sr);
 		return agentProvider.createAgent(repo);
 	}

@@ -1,11 +1,10 @@
 package it.filippor.p2.util;
 
+import it.filippor.p2.api.ProgressMonitor;
+import it.filippor.p2.task.TaskWithProgress;
 import org.gradle.api.logging.Logger;
 import org.gradle.internal.logging.progress.ProgressLogger;
 import org.gradle.internal.logging.progress.ProgressLoggerFactory;
-
-import it.filippor.p2.api.ProgressMonitor;
-import it.filippor.p2.task.TaskWithProgress;
 
 /**
  *Wrapper to convert gradle TaskWithProgress to it.filippor.p2.api.ProgressMonitor

@@ -3,8 +3,13 @@
  */
 package p2Gradle;
 
+import org.eclipse.swtbot.eclipse.finder.SWTBotInfo;
+
 public class Library {
-  public boolean someLibraryMethod() {
-    return true;
-  }
+
+    public boolean someLibraryMethod() {
+
+        SWTBotInfo.printInfo();
+        return true;
+    }
 }

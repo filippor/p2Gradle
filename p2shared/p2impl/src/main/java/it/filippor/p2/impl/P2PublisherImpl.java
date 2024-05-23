@@ -12,6 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.StreamSupport;
 
+import it.filippor.p2.api.RepositoryData;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.ProvisionException;
@@ -25,8 +27,6 @@ import org.eclipse.equinox.p2.repository.artifact.IArtifactRepository;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
-
-import it.filippor.p2.api.RepositoryData;
 
 public class P2PublisherImpl {
 
@@ -49,11 +49,13 @@ public class P2PublisherImpl {
 
   public void publish(RepositoryData metadataRepository, RepositoryData artifactRepository, Iterable<File> bundleLocations,
       Iterable<File> featureLocations, IProgressMonitor monitor) throws ProvisionException, IOException {
-    if (LOGGER.isLoggable(Level.INFO))
-      if (!bundleLocations.iterator().hasNext())
-        LOGGER.info("no file to publish");
-      else
-        StreamSupport.stream(bundleLocations.spliterator(), false).forEach(f -> LOGGER.info("publishing: " + f));
+    if (LOGGER.isLoggable(Level.INFO)) {
+        if (!bundleLocations.iterator().hasNext()) {
+            LOGGER.info("no file to publish");
+        } else {
+            StreamSupport.stream(bundleLocations.spliterator(), false).forEach(f -> LOGGER.info("publishing: " + f));
+        }
+    }
 
     PublisherInfo info = new PublisherInfo();
     info.setMetadataRepository(loadOrCreateMetadataRepository(metadataRepository, monitor));
@@ -61,9 +63,9 @@ public class P2PublisherImpl {
     info.setArtifactOptions(IPublisherInfo.A_PUBLISH | IPublisherInfo.A_INDEX |IPublisherInfo.A_OVERWRITE);
     try {
       Publisher publisher = new Publisher(info);
-  
+
       IPublisherAction[] actions = createActions(bundleLocations,featureLocations);
-      
+
       publisher.publish(actions, monitor);
     }finally {
       metadataRepositoryManager.removeRepository(info.getMetadataRepository().getLocation());
@@ -78,15 +80,16 @@ public class P2PublisherImpl {
       artifactRepository = artifactRepositoryManager.loadRepository(repo.getUri(), monitor);
       String currentType = artifactRepository.getType();
       if (!isArtifactRepoTypeCompatible(repo, artifactRepository)) {
-        LOGGER.warning(() -> String.format("artifact repository %s has change type from %s to %s repository deleting repository %s" 
+        LOGGER.warning(() -> String.format("artifact repository %s has change type from %s to %s repository deleting repository %s"
             ,repo.getName(), currentType, repo.getType(),repo.getUri()));
         artifactRepositoryManager.removeRepository(artifactRepository.getLocation());
         deleteRepository(artifactRepository.getLocation());
         throw new ProvisionException("type changed");
       }
       if (!artifactRepository.getProperties().equals(repo.getProperties())) {
-        for (Entry<String, String> e : repo.getProperties().entrySet())
-          artifactRepository.setProperty(e.getKey(), e.getValue(), monitor);
+        for (Entry<String, String> e : repo.getProperties().entrySet()) {
+            artifactRepository.setProperty(e.getKey(), e.getValue(), monitor);
+        }
       }
     } catch (ProvisionException e) {
       artifactRepository = artifactRepositoryManager.createRepository(repo.getUri(),  repo.getName(), repo.getType(),
@@ -96,9 +99,10 @@ public class P2PublisherImpl {
   }
 
   private boolean isArtifactRepoTypeCompatible(RepositoryData requestedType, IArtifactRepository currentType) {
-    if(IArtifactRepositoryManager.TYPE_COMPOSITE_REPOSITORY.equals(requestedType.getType()) 
-        && "org.eclipse.equinox.internal.p2.artifact.repository.CompositeArtifactRepository".equals(currentType.getType()))
-      return true;
+    if(IArtifactRepositoryManager.TYPE_COMPOSITE_REPOSITORY.equals(requestedType.getType())
+        && "org.eclipse.equinox.internal.p2.artifact.repository.CompositeArtifactRepository".equals(currentType.getType())) {
+        return true;
+    }
     return currentType.getType().equals(requestedType.getType());
   }
 
@@ -120,8 +124,9 @@ public class P2PublisherImpl {
         throw new ProvisionException("type changed");
       }
       if (!metadataRepository.getProperties().equals(repo.getProperties())) {
-        for (Entry<String, String> e : repo.getProperties().entrySet())
-          metadataRepository.setProperty(e.getKey(), e.getValue(), monitor);
+        for (Entry<String, String> e : repo.getProperties().entrySet()) {
+            metadataRepository.setProperty(e.getKey(), e.getValue(), monitor);
+        }
       }
     } catch (ProvisionException e) {
       metadataRepository = metadataRepositoryManager.createRepository(repo.getUri(), repo.getName(), repo.getType(),

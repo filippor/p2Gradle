@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class RepositoryData implements Serializable {
-  
-  
+
+
 
   @Override
   public String toString() {
@@ -35,7 +35,7 @@ public class RepositoryData implements Serializable {
    */
   public static final String ARTIFACT_TYPE_COMPOSITE_REPOSITORY = "org.eclipse.equinox.p2.artifact.repository.compositeRepository"; //$NON-NLS-1$
 
-  
+
   private String name;
   private URI uri;
   private String type;
@@ -53,7 +53,7 @@ public class RepositoryData implements Serializable {
   public static RepositoryData simpleArtifact(URI uri, Map<String, String> properties) {
     return new RepositoryData(uri, "Artifact Repository", ARTIFACT_TYPE_SIMPLE_REPOSITORY, properties);
   }
-  
+
   public RepositoryData(URI uri, String name, String type, Map<String, String> properties) {
     this.uri = uri;
     this.name = name;
@@ -124,19 +124,19 @@ public class RepositoryData implements Serializable {
     this.properties = properties;
     return this;
   }
-  
+
   @Override
   public int hashCode() {
     return Objects.hash(name, properties, type, uri);
   }
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) {
+        return true;
+    }
+    if ((obj == null) || (getClass() != obj.getClass())) {
+        return false;
+    }
     RepositoryData other = (RepositoryData) obj;
     return Objects.equals(name, other.name) && Objects.equals(properties, other.properties)
         && Objects.equals(type, other.type) && Objects.equals(uri, other.uri);
